@@ -10,6 +10,7 @@ struct DayView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingSettings = false
+    @State private var showingBackTapGuide = false
 
     private let topSentinelID = "toktok.top"
 
@@ -52,6 +53,17 @@ struct DayView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView(model: model)
+        }
+        .sheet(isPresented: $showingBackTapGuide) {
+            NavigationStack {
+                RecordingGuideView()
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("닫기") { showingBackTapGuide = false }
+                        }
+                    }
+            }
+            .preferredColorScheme(.dark)
         }
     }
 
@@ -177,9 +189,18 @@ struct DayView: View {
             }
             .padding(24)
         case .loaded where model.blocks.isEmpty:
-            Text("기록한 순간이 여기에 쌓여요")
-                .foregroundStyle(Theme.secondaryText)
-                .padding(24)
+            VStack(spacing: 12) {
+                Text("기록한 순간이 여기에 쌓여요")
+                    .foregroundStyle(Theme.secondaryText)
+                Button {
+                    showingBackTapGuide = true
+                } label: {
+                    Label("뒷면 탭으로 기록 연결하기", systemImage: "hand.tap")
+                        .frame(minHeight: 44)
+                }
+                .foregroundStyle(Theme.accent)
+            }
+            .padding(24)
         default:
             EmptyView()
         }

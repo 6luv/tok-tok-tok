@@ -105,3 +105,17 @@
 | TokTokTests (DayViewModelTests 4건, IntentFormattingTests 2건) | 실기기에서 실행할 앱 타깃 테스트 | NOT RUN (Xcode 필요) |
 | UI·접근성 수동 점검(빈 상태, 1건, 50건, 큰 글씨 최대, VoiceOver, 모션 감소, 스크롤 유지·‘새 기록 N개’) | | NOT RUN (실기기 필요) |
 | T16 경계 통과·백그라운드 복귀·시스템 시각 변경 갱신 | 코드: 구간 끝까지 대기 후 재조회, scenePhase active, significantTimeChange, 시간대 변경 알림 | NOT RUN (실기기 필요) |
+
+## R-005 사용자 실기기 실행 보고 + 뒷면 탭 연결 도우미 (feature/back-tap-setup)
+
+- 날짜: 2026-10-31
+- 사용자 보고(Claude가 직접 관찰한 결과 아님): feature/day-screen을 사용자 iPhone에서 실행 확인. 기기 모델·iOS 버전·확인한 시나리오 범위는 아직 기록되지 않음.
+  - 이에 따라 TS-005(앱 타깃 미컴파일)는 “사용자 Mac에서 빌드·실행됨(보고)”으로 갱신. TokTokTests 실행 결과는 여전히 NOT RUN.
+- 원격 푸시: main, feature/branch-rules, feature/day-boundary, feature/local-storage, feature/app-intent, feature/day-screen를 origin에 푸시하고 `git rev-parse`로 로컬과 원격 커밋 일치 확인 — PASS
+- 명령: `cd TokTokCore && swift test` (Linux, Swift 6.4.1) → 32 tests, 0 failures (신규 `testLatestIntentRecord` 포함)
+
+| 항목 | 판정 |
+|---|---|
+| 최근 단축어 기록 조회(`latestRecord(source:)`): 없음 → 최신 intent 반환, app 기록 무시, 14일 밖 제외 | PASS (Linux) |
+| 뒷면 탭 연결 도우미 화면(ShortcutsLink, 새 단축어 열기, 연결 확인 표시) | NOT RUN (Xcode 빌드·실기기 필요) |
+| 사용자가 만든 단축어가 뒷면 탭 목록에 보이고 탭으로 기록되는지 | NOT RUN (실기기) |

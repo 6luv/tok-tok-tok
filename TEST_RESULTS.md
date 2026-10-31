@@ -119,3 +119,20 @@
 | 최근 단축어 기록 조회(`latestRecord(source:)`): 없음 → 최신 intent 반환, app 기록 무시, 14일 밖 제외 | PASS (Linux) |
 | 뒷면 탭 연결 도우미 화면(ShortcutsLink, 새 단축어 열기, 연결 확인 표시) | NOT RUN (Xcode 빌드·실기기 필요) |
 | 사용자가 만든 단축어가 뒷면 탭 목록에 보이고 탭으로 기록되는지 | NOT RUN (실기기) |
+
+## R-006 PR 병합 후 main 재검증
+
+- 날짜: 2026-10-31 / 사용자 지시로 PR #1~#6을 순서대로 생성·병합(merge commit)
+- 각 병합 직후 origin/main을 별도 worktree로 받아 `cd TokTokCore && swift test` 실행(Linux, Swift 6.4.1):
+
+| 병합 | main 커밋 | 결과 |
+|---|---|---|
+| #1 feature/branch-rules | 2c2cc7f | TokTokCore 없음(문서만) |
+| #2 feature/day-boundary | 11f0bca | 13건 PASS |
+| #3 feature/local-storage | 67f8488 | 28건 PASS |
+| #4 feature/app-intent | 2ae2887 | 28건 PASS |
+| #5 feature/day-screen | 1ac1547 | 31건 PASS |
+| #6 feature/back-tap-setup | fedbb12 | 32건 PASS |
+
+- 병합 충돌: 없음(GitHub mergeable_state clean)
+- 미실행: main 기준 Xcode 빌드·TokTokTests·실기기 확인, Codex 독립 검증

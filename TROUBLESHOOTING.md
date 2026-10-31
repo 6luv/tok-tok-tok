@@ -55,3 +55,16 @@
 - 발견일: 2026-10-31 / 상태: fixed
 - 관측: `@Sendable` 시계 클로저가 가변 지역 변수를 캡처해 "Swift 6 language mode에서는 오류" 경고.
 - 수정: 잠금을 가진 `MutableClock` 테스트 도우미로 교체. 경고 0건 확인.
+
+### TS-004 블록 구분선 대비 낮음 (관찰)
+
+- 발견일: 2026-10-31 / 상태: open / 심각도 제안: P3
+- 관측: DESIGN 토큰 구분선 #343438과 블록 #1C1C1F의 대비 1.37:1(계산값).
+- 영향: 텍스트 가독성 문제는 아님. 블록 사이 경계가 어둡게 보일 수 있음.
+- 조치: 디자인 결정 대기. 실기기에서 실제로 구분이 어려우면 구분선 색 조정 검토.
+
+### TS-005 앱 타깃 코드 미컴파일 (확인 필요)
+
+- 발견일: 2026-10-31 / 상태: open
+- 내용: TokTok 앱 타깃(SwiftUI·App Intents)과 TokTokTests는 이 세션에서 컴파일하지 못했다(TS-001). 공식 문서에서 확인한 API만 사용했지만 첫 Xcode 빌드에서 컴파일 오류가 날 수 있다.
+- 다음 단계: 사용자 Mac에서 `xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'generic/platform=iOS' build` 또는 Xcode에서 실기기로 Run. 오류 로그를 이 항목에 기록하고 수정 커밋을 연결한다.

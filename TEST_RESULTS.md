@@ -88,3 +88,20 @@
 | TokTokTests (IntentFormattingTests) | NOT RUN | 동일 |
 | T14 실제 App Intent 런타임(UI Scene 없이 실행) | NOT RUN | 실기기 필요. 서비스 단위는 R-002에서 PASS |
 | 단축어 앱 액션 노출, 실기기 실행 매트릭스 전체 | NOT RUN | 실기기 필요 |
+
+## R-004 하루 화면·설정·연결 안내 (feature/day-screen)
+
+- 실행 ID / 날짜: R-004 / 2026-10-31
+- 대상: feature/day-screen (feature/app-intent 기반 누적 브랜치)
+- 명령: `cd TokTokCore && swift test` (Linux, Swift 6.4.1) → 31 tests, 0 failures
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 표시 규칙 | DESIGN 예시: 헤더 “10월 31일 기록”, 구간 “10/31 23:00 – 11/01 23:00”, 블록 03:15:08(11월 1일) 위·23:18:42(10월 31일) 아래 | PASS (Linux) |
+| VoiceOver 문구 | “11월 1일 오전 3시 15분 8초, 시간 기록” 생성 | PASS (Linux 문자열 생성만, 실제 VoiceOver 낭독 NOT RUN) |
+| T15 | 같은 시각 기록의 표시 순서가 입력 순서와 무관 | PASS (Linux) |
+| 색상 대비(토큰 계산값) | 본문/블록 15.61:1, 보조/블록 7.89:1, 본문/배경 18.06:1, 보조/배경 9.13:1, 버튼 글자/강조 11.48:1 — 모두 4.5:1 이상 | PASS (WCAG 공식으로 토큰 hex 계산. 실제 렌더링 측정은 NOT RUN) |
+| 구분선/블록 대비 | 1.37:1. 텍스트가 아니라 장식 요소지만 블록 경계가 약하게 보일 수 있음 | 관찰(P3, TS-004) |
+| TokTokTests (DayViewModelTests 4건, IntentFormattingTests 2건) | 실기기에서 실행할 앱 타깃 테스트 | NOT RUN (Xcode 필요) |
+| UI·접근성 수동 점검(빈 상태, 1건, 50건, 큰 글씨 최대, VoiceOver, 모션 감소, 스크롤 유지·‘새 기록 N개’) | | NOT RUN (실기기 필요) |
+| T16 경계 통과·백그라운드 복귀·시스템 시각 변경 갱신 | 코드: 구간 끝까지 대기 후 재조회, scenePhase active, significantTimeChange, 시간대 변경 알림 | NOT RUN (실기기 필요) |

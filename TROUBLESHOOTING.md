@@ -1,6 +1,6 @@
 # 트러블슈팅 기록
 
-현재 재현된 앱 결함 없음: 앱이 아직 구현되지 않았기 때문이다. 아래는 진단 가이드이며 관측 결과가 아니다.
+아래 '이슈 기록'은 개발 중 실제로 관측한 문제다. '초기 진단 가이드'는 관측 결과가 아니다.
 
 ## 기록 템플릿
 
@@ -32,3 +32,26 @@
 | 백그라운드 햅틱 없음 | 지원 실행 환경 확인; 햅틱 부재를 저장 실패 또는 성공으로 판단하지 않음 |
 
 데이터를 삭제해 증상을 없애는 조치는 복구로 간주하지 않는다. 파괴적 조치가 필요하면 데이터 영향과 복구 가능성을 먼저 기록하고 사용자 승인을 받는다.
+
+## 이슈 기록
+
+### TS-001 개발 환경에 Xcode 없음 / 원격 저장소 인증 불가
+
+- 발견일: 2026-10-31 / 담당: Claude / 상태: open(환경 제약)
+- 관측: 연결된 Mac의 명령 실행 환경은 Linux VM(aarch64)이며 `xcodebuild`·`swift` 없음. 클라우드 작업 공간(Ubuntu 24.04)에도 Xcode 없음. `git ls-remote origin`은 `could not read Username for 'https://github.com'`로 실패.
+- 조치: 플랫폼 독립 로직을 TokTokCore Swift 패키지로 분리하고 Linux용 Swift 6.4.1을 설치해 `swift test`로 검증. iOS 앱 타깃(App Intent·SwiftUI)은 컴파일하지 못했으므로 사용자 Mac의 Xcode에서 빌드·실기기 실행이 필요.
+- 화면 제어(computer use)로 Xcode를 조작하는 방안은 macOS 화면 기록 권한 미부여 상태였고, 사용자가 시뮬레이터 대신 실기기로 확인하기로 해 사용하지 않음.
+- 원격 fetch/push는 하지 않았다. 브랜치 비교는 로컬 브랜치 기준.
+
+### TS-002 테스트 입력의 소수 초 ISO8601 파싱 실패 (테스트 코드 결함)
+
+- 발견일: 2026-10-31 / 상태: fixed
+- 재현: `swift test` 중 `StorageAndServiceTests.swift:18: Fatal error: Unexpectedly found nil` (signal 4)
+- 원인: 기본 `ISO8601DateFormatter`는 `.123Z` 소수 초를 파싱하지 않음. 제품 코드 문제 아님.
+- 수정: 테스트에서 정수 초 문자열 + `addingTimeInterval(0.123456)`으로 입력 생성. 재실행 28건 통과.
+
+### TS-003 Swift 6 동시성 경고(테스트 코드)
+
+- 발견일: 2026-10-31 / 상태: fixed
+- 관측: `@Sendable` 시계 클로저가 가변 지역 변수를 캡처해 "Swift 6 language mode에서는 오류" 경고.
+- 수정: 잠금을 가진 `MutableClock` 테스트 도우미로 교체. 경고 0건 확인.

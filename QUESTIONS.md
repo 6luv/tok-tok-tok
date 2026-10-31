@@ -33,7 +33,7 @@
 | Q07 | 소리·햅틱 없음. VoiceOver 안내만 | `DayViewModel` |
 | Q08 | 경과 시간 표시 없음 | — |
 | Q09 | 이름 TokTok(사용자 지정), iOS 17 이상, 한국어 우선, Bundle ID `com.jangminjoo.TokTok` 잠정, 가격 미정 | `project.pbxproj` |
-| Q10 | 미정. 앱 안내에 잠금·화면 꺼짐 동작은 “확인되지 않았어요”로 표기 | `RecordingGuideView` |
+| Q10 | 미정. 2026-10-31 사용자 실기기에서 화면 꺼짐 뒷면 탭 기록 실패(TS-007). 앱 안내에 화면 꺼짐 제약과 Siri 대안을 표기. 지원 범위·대체 수단(잠금 화면 컨트롤 등)은 사용자 결정 대기 | `RecordingGuideView` |
 | Q11 | 다크 고정, 테마 선택 없음 | `TokTokApp`, Info.plist `UIUserInterfaceStyle=Dark` |
 
 추가 잠정 결정(구현 중 발생):

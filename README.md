@@ -22,17 +22,34 @@
 
 | 항목 | 값 |
 |---|---|
-| 앱 이름 / Bundle ID | 미정 |
-| Xcode / Swift / SDK | 확인 필요 |
-| 최소 iOS | 17 이상 제안, 미확정 |
-| project 또는 workspace / shared scheme | 생성 후 기록 |
-| 테스트 simulator ID / 실기기 기종·OS | 확인 필요 |
-| 구현 모델 | 요청 명칭 Claude Opus 5.5; 실제 제공 ID 확인 필요 |
+| 앱 이름 / Bundle ID | TokTok / `com.example.TokTok` (잠정 — 실제 Apple Developer Team에 맞게 Xcode Signing에서 변경) |
+| Xcode / Swift / SDK | 사용자 Mac에서 확인 필요(이 세션에서 Xcode 실행 불가, TS-001). 프로젝트 형식은 objectVersion 77이라 Xcode 16 이상 필요. 도메인 테스트: Swift 6.4.1 Linux |
+| 최소 iOS | 17.0 (Q09 잠정 제안 채택, 미확정) |
+| project 또는 workspace / shared scheme | `TokTok.xcodeproj` / shared scheme `TokTok` (앱 + `TokTokTests`). 도메인 패키지 `TokTokCore` (로컬 Swift 패키지) |
+| 테스트 simulator ID / 실기기 기종·OS | 시뮬레이터 사용 안 함(사용자 결정, 저장공간). 실기기 기종·OS는 사용자 확인 후 기록 |
+| 구현 모델 | 요청 명칭 Claude Opus 5.5; 세션 구성 모델 ID `claude-opus-5-5` (실제 응답 모델은 런타임에 따라 다를 수 있음) |
 | 검증 모델 | 요청 명칭 Codex Astra; 실제 제공 ID 확인 필요 |
 
 ## 실행 하네스
 
 프로젝트 생성 후 실제 파일명·scheme·destination으로 다음 템플릿을 채운다. 꺾쇠 자리표시자를 그대로 실행하지 않는다. workspace를 만들었다면 -project 대신 -workspace를 사용한다.
+
+도메인 로직(Mac 터미널 또는 Linux):
+
+```sh
+cd TokTokCore && swift test
+```
+
+실기기(사용자 iPhone) 대상 앱 빌드·테스트:
+
+```sh
+xcodebuild -version
+xcodebuild -list -project TokTok.xcodeproj
+xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'generic/platform=iOS' build
+xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'platform=iOS,id=<연결한 iPhone UDID>' -resultBundlePath build/TokTok-device.xcresult test
+```
+
+참고용 원래 템플릿:
 
 ```sh
 xcodebuild -version

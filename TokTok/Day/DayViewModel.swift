@@ -1,6 +1,9 @@
 import Foundation
 import SwiftUI
 import TokTokCore
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// 하루 화면 상태. 저장소 I/O는 메인 스레드 밖에서 실행한다.
 @MainActor
@@ -119,10 +122,10 @@ final class DayViewModel: ObservableObject {
             unseenCount = 0
             let text = "\(presentation.timeText(record.occurredAt)) 기록됨"
             showFeedback(.saved(text), autoHide: true)
-            AccessibilityNotification.Announcement(text).post()
+            announce(text)
         case .failure(RecordError.saveFailed(let pending)):
             showFeedback(.saveFailed(pending), autoHide: false)
-            AccessibilityNotification.Announcement("기록을 저장하지 못했어요").post()
+            announce("기록을 저장하지 못했어요")
         case .failure(RecordError.boundaryNotConfigured):
             state = .needsSetup
         case .failure:
@@ -131,6 +134,12 @@ final class DayViewModel: ObservableObject {
     }
 
     func dismissFeedback() { feedback = nil }
+
+    private func announce(_ text: String) {
+        #if canImport(UIKit)
+        UIAccessibility.post(notification: .announcement, argument: text)
+        #endif
+    }
 
     private func showFeedback(_ f: Feedback, autoHide: Bool) {
         feedbackToken += 1

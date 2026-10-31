@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import TokTokCore
 #if canImport(UIKit)
@@ -28,16 +29,16 @@ struct DayView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await model.reload(markExternal: true) } }
         }
-        .onReceive(NotificationCenter.default.publisher(for: RecordsChangeNotifier.name)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: RecordsChangeNotifier.name).receive(on: RunLoop.main)) { _ in
             Task { await model.reload(markExternal: true) }
         }
         #if canImport(UIKit)
         // 시스템 시각·시간대 변경 시 현재 구간 재계산(T16)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification).receive(on: RunLoop.main)) { _ in
             Task { await model.reload() }
         }
         #endif
-        .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange).receive(on: RunLoop.main)) { _ in
             Task { await model.reload() }
         }
         // 설정한 경계에 도달하면 새 구간으로 재조회(자정이 아님)
@@ -116,7 +117,7 @@ struct DayView: View {
                             if index > 0 { Theme.separator.frame(height: 1) }
                             RecordBlockView(block: block)
                                 .id(block.id)
-                                .transition(reduceMotion ? .identity : .opacity)
+                                .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
                         }
                     }
                     // 블록을 목록 영역 바닥에서부터 쌓는다
@@ -261,6 +262,6 @@ struct DayView: View {
 }
 
 private struct TopOffsetKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
+    static let defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }

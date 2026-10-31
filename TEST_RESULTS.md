@@ -72,3 +72,19 @@
 
 - 미실행: T09의 앱·Intent 별도 프로세스 동시 쓰기, iOS 파일 보호(`completeUntilFirstUserAuthentication`) 하의 잠금 상태 쓰기, Apple 플랫폼 Foundation에서의 동일 테스트 — NOT RUN (Xcode 빌드·실기기 필요).
 - 한계: 테스트를 root 권한으로 실행해 권한 거부(chmod) 방식의 실패 주입은 쓰지 않았다. 대신 디렉터리 자리에 파일을 둬 실패를 만들었다.
+
+## R-003 Xcode 프로젝트·App Intent (feature/app-intent)
+
+- 실행 ID / 날짜: R-003 / 2026-10-31
+- 대상: feature/app-intent (feature/local-storage 기반 누적 브랜치)
+- 실제 실행한 것:
+  - `pbxproj` Python 파서(`pbxproj` 4.x)로 `TokTok.xcodeproj/project.pbxproj` 구문 파싱 성공, 타깃 `TokTok`·`TokTokTests` 확인, 끊긴 객체 참조 0건 — PASS (구문 검사만)
+  - Apple 문서 확인: `openAppWhenRun` iOS 16.0–26.0(deprecated), `supportedModes` iOS 26.0+, `authenticationPolicy` iOS 16.0+ 기본 `.alwaysAllowed`
+- 미실행:
+
+| 항목 | 판정 | 이유 |
+|---|---|---|
+| Xcode 빌드(앱·Intent 컴파일, App Intents 메타데이터 추출) | NOT RUN | 이 세션에 Xcode 없음(TS-001) |
+| TokTokTests (IntentFormattingTests) | NOT RUN | 동일 |
+| T14 실제 App Intent 런타임(UI Scene 없이 실행) | NOT RUN | 실기기 필요. 서비스 단위는 R-002에서 PASS |
+| 단축어 앱 액션 노출, 실기기 실행 매트릭스 전체 | NOT RUN | 실기기 필요 |

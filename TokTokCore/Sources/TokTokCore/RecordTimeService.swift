@@ -87,6 +87,14 @@ public final class RecordTimeService: @unchecked Sendable {
         }
     }
 
+    /// 최근 lookback 기간 안에서 해당 경로로 저장된 가장 최근 기록.
+    /// 뒷면 탭·단축어 연결 확인용이며, 어느 트리거였는지는 구분하지 않는다(모두 `.intent`).
+    public func latestRecord(source: RecordSource, lookback: TimeInterval = 14 * 86_400) throws -> TimeRecord? {
+        let now = clock()
+        let result = try repository.records(from: now.addingTimeInterval(-lookback), to: now.addingTimeInterval(60))
+        return result.records.last { $0.source == source }
+    }
+
     /// 현재 시각이 속한 기록일. 미설정이면 nil.
     public func currentRecordDay() throws -> RecordDay? {
         let s: AppSettings

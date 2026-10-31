@@ -34,7 +34,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    NavigationLink("기록 방법과 뒷면 탭 연결") { RecordingGuideView() }
+                    NavigationLink("뒷면 탭 연결") { RecordingGuideView() }
                     NavigationLink("개인정보와 데이터") { PrivacyInfoView() }
                 }
             }

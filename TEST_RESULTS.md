@@ -48,3 +48,27 @@
 | S05 교차 | Foundation `Calendar.nextDate(.nextTime, .first)`와 96개 분 값 × 3일 일치 | PASS (Linux Foundation) |
 
 - 한계: Linux의 swift-foundation/ICU 결과다. Apple 플랫폼 Foundation에서의 동일 결과는 Xcode 테스트 실행 전까지 NOT RUN. 계산기는 `TimeZone.secondsFromGMT(for:)`만 사용해 플랫폼 차이를 줄였다.
+
+## R-002 로컬 저장·기록 서비스 (feature/local-storage)
+
+- 실행 ID / 날짜: R-002 / 2026-10-31
+- 실행 담당 / 모델: 구현 담당 Claude, `claude-opus-5-5` (검증 담당 아님)
+- 대상: feature/local-storage (feature/day-boundary 기반 누적 브랜치)
+- 도구: Swift 6.4.1-RELEASE, Linux x86_64. 임시 디렉터리의 실제 파일 저장소 사용(메모리 저장소 아님)
+- 명령: `cd TokTokCore && swift test` (전체 28건 0 실패), `swift test --skip-build --filter StorageAndServiceTests` 10회 반복(매회 15건 0 실패)
+
+| 테스트 | 내용 | 판정 |
+|---|---|---|
+| T01 | 시계 1회 읽기, 저장 지연 50ms에도 occurredAt 불변, 시간대·오프셋·source 저장 | PASS (Linux) |
+| T07 | 23:00→00:00 경계 변경 후 UUID·시각·건수 동일, 표시 그룹 변경 | PASS (Linux) |
+| T09 | 단일 프로세스 동시 100개 요청(app/intent 혼합) → 100건, ID 중복 0, 오류 0. 10회 반복 | PASS (Linux, 단일 프로세스) |
+| T10 | 저장소 재생성 후 원본 필드 동일(소수 초 포함), 알 수 없는 source 값은 unknown | PASS (Linux). 이전 스키마 마이그레이션은 이전 버전이 없어 해당 없음 |
+| T11 | 디렉터리 생성 실패 주입 → saveFailed(성공 응답 없음), 원인 제거 후 같은 ID·원래 시각으로 재시도 1건 | PASS (Linux) |
+| T12 | 같은 ID 재저장 1건, 다른 ID 같은 시각 2건 | PASS (Linux) |
+| T13 | 설정 쓰기 실패 주입 시 이전 값(04:30) 유지 | PASS (Linux) |
+| T14 | UI 없이 `RecordTimeService.live` 생성, 미설정 시 boundaryNotConfigured·기록 0건, 설정 후 기록 | PASS (Linux, App Intent 런타임 아님) |
+| T15 | 같은 시각 5건의 정렬이 반복 조회에서 동일 | PASS (Linux) |
+| 기타 | 손상 파일은 삭제하지 않고 unreadableCount로 보고, 월 디렉터리 경계 조회 | PASS (Linux) |
+
+- 미실행: T09의 앱·Intent 별도 프로세스 동시 쓰기, iOS 파일 보호(`completeUntilFirstUserAuthentication`) 하의 잠금 상태 쓰기, Apple 플랫폼 Foundation에서의 동일 테스트 — NOT RUN (Xcode 빌드·실기기 필요).
+- 한계: 테스트를 root 권한으로 실행해 권한 거부(chmod) 방식의 실패 주입은 쓰지 않았다. 대신 디렉터리 자리에 파일을 둬 실패를 만들었다.

@@ -1,49 +1,140 @@
+import AppIntents
+import Combine
 import SwiftUI
+import TokTokCore
 
-/// 기록 방법 안내(R03). 앱은 뒷면 탭 설정을 직접 바꾸거나 연결 여부를 확인하지 않는다.
+/// 뒷면 탭 연결 도우미(R03).
+///
+/// 앱이 할 수 있는 것: 단축어 앱의 TokTok 페이지 열기(`ShortcutsLink`, iOS 16+),
+/// 새 단축어 편집기 열기(`shortcuts://create-shortcut`, Apple 단축어 사용 설명서의 URL 스킴),
+/// 연결 후 마지막 단축어 기록을 보여 줘 사용자가 직접 확인하게 하기.
+/// 앱이 할 수 없는 것: 손쉬운 사용 > 뒷면 탭 설정 화면을 열거나 값을 바꾸기, 연결 여부 자동 확인.
+/// 공개되지 않은 설정 URL은 사용하지 않는다.
 struct RecordingGuideView: View {
+    static let suggestedShortcutName = "TokTok 기록"
+
+    @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var latest: TimeRecord?
+    @State private var checkedAt: Date?
+
     var body: some View {
         List {
-            Section("앱에서") {
-                Text("하루 화면 아래의 ‘현재 시간 기록’ 버튼을 누르면 그 순간의 시각이 저장돼요.")
-            }
-
-            Section("단축어") {
-                Text("단축어 앱에서 ‘TokTok’을 찾으면 ‘현재 시간 기록’ 동작이 있어요. 입력할 값 없이 바로 실행돼요.")
+            Section {
+                Text("뒷면을 두 번 또는 세 번 톡톡 치면 지금 시각이 TokTok에 기록되도록 연결해요. iPhone 설정에서 직접 골라야 하는 부분이 있어서, 아래 순서대로 한 번만 따라 해 주세요.")
+                    .foregroundStyle(Theme.secondaryText)
             }
 
             Section {
-                step(1, "설정 앱을 열어요.")
-                step(2, "손쉬운 사용 → 터치 → 뒷면 탭으로 이동해요.")
-                step(3, "‘두 번 탭’ 또는 ‘세 번 탭’을 골라요.")
-                step(4, "단축어 목록에서 ‘현재 시간 기록’을 선택해요.")
-                Text("목록에 보이지 않으면 단축어 앱에서 새 단축어를 만들고 ‘TokTok’ → ‘현재 시간 기록’ 동작을 추가한 뒤, 그 단축어를 4단계에서 선택해 주세요.")
+                stepRow(1, "단축어 앱에서 ‘TokTok 기록’ 단축어 만들기")
+                Text("아래 버튼으로 새 단축어 편집기를 열고 ‘동작 추가’에서 TokTok → ‘현재 시간 기록’을 넣은 뒤, 이름을 ‘\(Self.suggestedShortcutName)’로 저장해요.")
+                    .font(.footnote)
+                    .foregroundStyle(Theme.secondaryText)
+                Button {
+                    if let url = URL(string: "shortcuts://create-shortcut") { openURL(url) }
+                } label: {
+                    Label("새 단축어 만들기", systemImage: "plus.square.on.square")
+                        .frame(minHeight: 44)
+                }
+                .foregroundStyle(Theme.accent)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("TokTok 동작이 어디 있는지 먼저 보고 싶다면:")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.secondaryText)
+                    ShortcutsLink()
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Text("1. 단축어 만들기")
+            }
+
+            Section {
+                stepRow(2, "설정 앱 → 손쉬운 사용 → 터치 → 뒷면 탭")
+                stepRow(3, "‘두 번 탭’ 또는 ‘세 번 탭’ 선택")
+                stepRow(4, "단축어 목록에서 ‘\(Self.suggestedShortcutName)’ 선택")
+                Text("이 화면은 iPhone 설정 안에 있어서 TokTok이 대신 열거나 바꿀 수 없어요. 홈 화면의 설정 앱에서 직접 이동해 주세요. iOS 버전과 언어에 따라 메뉴 이름이 조금 다를 수 있어요.")
                     .font(.footnote)
                     .foregroundStyle(Theme.secondaryText)
             } header: {
-                Text("뒷면 탭 연결")
+                Text("2. 뒷면 탭에 연결")
+            }
+
+            Section {
+                stepRow(5, "뒷면을 톡톡 쳐 본 뒤 이 화면으로 돌아오기")
+                verification
+            } header: {
+                Text("3. 연결 확인")
             } footer: {
-                Text("iOS 버전과 언어에 따라 메뉴 이름이 조금 다를 수 있어요. TokTok은 이 설정을 대신 바꾸거나 연결됐는지 확인할 수 없어요. 연결한 뒤 한 번 탭해 보고 하루 화면에 기록이 생겼는지 확인해 주세요.")
+                Text("단축어·뒷면 탭·Siri로 실행한 기록은 앱에서 구분할 수 없어 모두 ‘단축어 기록’으로 보여요.")
             }
 
             Section("알아 두세요") {
                 Text("기록 시각은 단축어가 TokTok을 실행한 순간이에요. 손가락으로 탭한 정확한 순간과 조금 차이가 날 수 있어요.")
+                Text("단축어가 실행되면 화면 위에 짧은 알림이 보일 수 있어요. 이 알림은 iOS가 표시하며 TokTok이 끌 수 없어요.")
                 Text("잠금 상태나 화면이 꺼진 상태에서의 동작은 기기와 iOS 버전에 따라 다를 수 있으며 아직 확인되지 않았어요. 중요한 기록은 하루 화면에서 저장됐는지 확인해 주세요.")
-                Text("처음 하루 시작 시간을 정하기 전에는 단축어로 기록할 수 없어요.")
+                Text("앱 안의 ‘현재 시간 기록’ 버튼은 연결 없이도 언제든 쓸 수 있어요.")
             }
         }
         .scrollContentBackground(.hidden)
         .background(Theme.background)
-        .navigationTitle("기록 방법")
+        .navigationTitle("뒷면 탭 연결")
+        .task { await refresh() }
+        .onChange(of: scenePhase) { _, phase in
+            // 설정 앱에서 시험 탭 후 돌아오면 다시 확인
+            if phase == .active { Task { await refresh() } }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: RecordsChangeNotifier.name).receive(on: RunLoop.main)) { _ in
+            Task { await refresh() }
+        }
     }
 
-    private func step(_ n: Int, _ text: String) -> some View {
+    @ViewBuilder
+    private var verification: some View {
+        if let latest {
+            let p = DayPresentation(timeZone: .current)
+            let block = p.blocks(for: [latest])[0]
+            VStack(alignment: .leading, spacing: 4) {
+                Label("마지막 단축어 기록", systemImage: "checkmark.circle")
+                    .foregroundStyle(Theme.text)
+                Text("\(block.dateText) \(block.timeText)")
+                    .font(.title3.monospacedDigit())
+                    .foregroundStyle(Theme.text)
+                Text("방금 뒷면을 탭했는데 이 시각이 바뀌지 않았다면 2단계 연결을 다시 확인해 주세요.")
+                    .font(.footnote)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+            .accessibilityElement(children: .combine)
+        } else if checkedAt != nil {
+            Text("최근 2주 동안 단축어로 저장된 기록이 아직 없어요.")
+                .foregroundStyle(Theme.secondaryText)
+        } else {
+            ProgressView()
+        }
+        Button {
+            Task { await refresh() }
+        } label: {
+            Label("다시 확인", systemImage: "arrow.clockwise")
+                .frame(minHeight: 44)
+        }
+        .foregroundStyle(Theme.accent)
+    }
+
+    private func refresh() async {
+        let found: TimeRecord? = await Task.detached {
+            try? RecordTimeService.live().latestRecord(source: .intent)
+        }.value
+        latest = found
+        checkedAt = Date()
+    }
+
+    private func stepRow(_ n: Int, _ text: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text("\(n)")
                 .font(.headline.monospacedDigit())
                 .foregroundStyle(Theme.accent)
                 .accessibilityHidden(true)
             Text(text)
+                .foregroundStyle(Theme.text)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(n)단계. \(text)")

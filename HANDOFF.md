@@ -13,10 +13,12 @@
 
 ```
 main ─┬─ feature/branch-rules
-      └─ feature/day-boundary ─ feature/local-storage ─ feature/app-intent ─ feature/day-screen
+      └─ feature/day-boundary ─ feature/local-storage ─ feature/app-intent ─ feature/day-screen ─ feature/back-tap-setup
 ```
 
-병합 순서(검증 통과 후): branch-rules(독립) → day-boundary → local-storage → app-intent → day-screen.
+병합 순서(검증 통과 후): branch-rules(독립) → day-boundary → local-storage → app-intent → day-screen → back-tap-setup.
+
+원격: 2026-10-31 사용자 요청으로 origin(github.com/6luv/tok-tok)에 모든 브랜치를 푸시했다. PR은 만들지 않았다.
 
 | 브랜치 | 기준 | 변경 내용 | 요구사항·테스트 | 테스트 결과 | 남은 문제 | Codex | main 병합 |
 |---|---|---|---|---|---|---|---|
@@ -24,6 +26,7 @@ main ─┬─ feature/branch-rules
 | feature/day-boundary | main | TokTokCore 패키지, DayBoundary·RecordDay·DayBoundaryCalculator | R06 / T02~T06, T08 | Linux 13건 PASS (R-001) | Apple Foundation 실행 NOT RUN | 미실행 | 안 함 |
 | feature/local-storage | day-boundary | TimeRecord, FileRecordRepository, SettingsStore, RecordTimeService | R01 R07 R08 / T01 T07 T09~T15 | Linux 누적 28건 PASS, 저장 테스트 10회 반복 PASS (R-002) | 별도 프로세스 동시 쓰기·잠금 상태 파일 보호 NOT RUN | 미실행 | 안 함 |
 | feature/app-intent | local-storage | Xcode 프로젝트·shared scheme·TokTokTests, RecordNowIntent, AppShortcuts, PrivacyInfo | R02 / T14 | pbxproj 구문 검사 PASS, Xcode 빌드 NOT RUN (R-003) | 컴파일 미확인(TS-005), 실기기 매트릭스 전체 NOT RUN | 미실행 | 안 함 |
+| feature/back-tap-setup | day-screen | 뒷면 탭 연결 도우미: ShortcutsLink, 새 단축어 편집기 열기, 설정 경로 안내, 마지막 단축어 기록 확인, 빈 화면에서 진입 | R03 | Linux 32건 PASS, 앱 화면 NOT RUN (R-005) | 앱이 뒷면 탭 설정 자체는 못 바꿈(TS-006), 이 브랜치 변경은 미컴파일 | 미실행 | 안 함 |
 | feature/day-screen | app-intent | 하루 화면, 첫 경계 설정, 설정, 뒷면 탭 안내, 개인정보 안내 | R03 R04 R05 R06 R09 / T15 T16 | Linux 31건 PASS, 앱 UI NOT RUN (R-004) | TS-004(구분선 대비), TS-005 | 미실행 | 안 함 |
 
 각 브랜치의 커밋은 `git log main..<브랜치>`로 확인한다.
@@ -34,7 +37,7 @@ QUESTIONS.md 하단 “MVP 구현에 적용한 잠정 정책” 표 참고(Q01~Q
 
 ## 실기기 확인 절차 (사용자)
 
-1. `git switch feature/day-screen` 후 `TokTok.xcodeproj`를 Xcode 16 이상으로 연다.
+1. `git switch feature/back-tap-setup` 후 `TokTok.xcodeproj`를 Xcode 16 이상으로 연다.
 2. TokTok 타깃 → Signing & Capabilities에서 Team을 고르고, 필요하면 Bundle Identifier(`com.example.TokTok`, 잠정)를 바꾼다.
 3. iPhone을 연결하고 개발자 모드를 켠 뒤 Run. 빌드 오류가 나면 오류 전문을 TROUBLESHOOTING.md TS-005에 남기거나 Claude에게 전달한다.
 4. 첫 화면에서 하루 시작 시간을 고르고 ‘이 시간으로 시작’.

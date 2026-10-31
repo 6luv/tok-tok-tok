@@ -269,4 +269,22 @@ final class StorageAndServiceTests: XCTestCase {
         XCTAssertEqual(got.records, [a, b])
         XCTAssertEqual(FileRecordRepository.monthKeys(from: utc("2026-12-31T00:00:00Z"), to: utc("2027-01-01T00:00:00Z")), ["2026-12"])
     }
+
+    // MARK: 뒷면 탭 연결 확인용 최근 단축어 기록
+
+    func testLatestIntentRecord() throws {
+        let clock = MutableClock(utc("2026-10-31T14:00:00Z"))
+        let service = try makeService(clock: { clock.value })
+        XCTAssertNil(try service.latestRecord(source: .intent))
+        let a = try service.recordNow(source: .intent)
+        clock.value = clock.value.addingTimeInterval(30)
+        _ = try service.recordNow(source: .app)
+        XCTAssertEqual(try service.latestRecord(source: .intent), a)
+        clock.value = clock.value.addingTimeInterval(30)
+        let b = try service.recordNow(source: .intent)
+        XCTAssertEqual(try service.latestRecord(source: .intent), b)
+        // 기간 밖은 제외
+        clock.value = clock.value.addingTimeInterval(15 * 86_400)
+        XCTAssertNil(try service.latestRecord(source: .intent))
+    }
 }

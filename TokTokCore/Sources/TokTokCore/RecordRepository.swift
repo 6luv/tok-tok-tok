@@ -20,6 +20,15 @@ public protocol RecordRepository: Sendable {
     func save(_ record: TimeRecord) throws
     /// [start, end) 구간의 기록을 시간순으로 반환.
     func records(from start: Date, to end: Date) throws -> RecordQueryResult
+    /// 사용자가 확인한 기록만 지운다. 넘겨준 기록과 내용이 같은 파일만 지우며,
+    /// 읽지 못한 파일·다른 기록은 건드리지 않는다. 지운 개수를 반환한다.
+    func delete(_ records: [TimeRecord]) throws -> Int
+}
+
+extension RecordRepository {
+    public func delete(_ records: [TimeRecord]) throws -> Int {
+        throw StorageError.writeFailed("이 저장소는 삭제를 지원하지 않음")
+    }
 }
 
 /// 기록 1건 = 파일 1개인 로컬 저장소.
@@ -123,6 +132,24 @@ public final class FileRecordRepository: RecordRepository, @unchecked Sendable {
         }
         results.sort(by: TimeRecord.chronological)
         return RecordQueryResult(records: results, unreadableCount: unreadable)
+    }
+
+    public func delete(_ records: [TimeRecord]) throws -> Int {
+        var deleted = 0
+        for record in records {
+            let url = fileURL(for: record)
+            guard fileManager.fileExists(atPath: url.path) else { continue } // 이미 없음
+            // 같은 ID라도 내용이 다르면 지우지 않는다(사용자가 본 기록만 지움)
+            guard let existing = try? decoder.decode(TimeRecord.self, from: Data(contentsOf: url)),
+                  existing == record else { continue }
+            do {
+                try fileManager.removeItem(at: url)
+                deleted += 1
+            } catch {
+                throw StorageError.writeFailed("\(deleted)개 지운 뒤 실패: \(error)")
+            }
+        }
+        return deleted
     }
 
     /// 구간이 걸치는 UTC 월 키들.

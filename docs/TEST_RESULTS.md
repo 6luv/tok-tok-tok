@@ -266,3 +266,18 @@
 
 - 날짜: 2026-11-10 / 사용자 결정: 뒷면 탭 실행 중 iOS 표시가 이미 보이므로 앱 결과 토스트 제거
 - 변경: `RecordNowIntent`가 스니펫·대화 없이 `.result()`만 반환. 앱 안 기록 토스트는 유지
+
+## R-013 오늘 기록 지우기·설정 상단 고정·다크 아이콘 고정 (feature/settings-reset)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 기준: main 516c618에서 분기
+- 변경: Q06 사용자 결정. `FileRecordRepository.delete`(넘겨준 기록과 내용이 같은 파일만 삭제), `RecordTimeService.deleteRecords`, 설정 맨 아래 ‘오늘 기록 지우기’+확인 대화상자, 설정 ‘취소·설정·적용’ 줄을 스크롤 밖에 고정, 앱 아이콘 다크 한 장으로 고정
+- 명령: `cd TokTokCore && swift test` → 35 tests, 0 failures(`testDeleteRemovesOnlyConfirmedRecords`, `testDeleteSkipsFileWhoseContentDiffers` 추가) / `xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 확인한 기록만 삭제, 이후 기록·읽지 못한 파일 보존, 내용 다른 같은 ID 미삭제 | TokTokCore 단위 테스트(실제 파일 저장소) | PASS |
+| 앱 빌드 | generic iOS 빌드 | PASS (빌드만) |
+| 설정 스크롤 시 상단 줄 고정, 삭제 대화상자·삭제 후 하루 화면 갱신, 아이콘 | 사용자 실기기 확인 대기 | NOT RUN |
+| 앱 테스트(TokTokTests) | 디스크 여유 부족으로 미실행 | NOT RUN |
+

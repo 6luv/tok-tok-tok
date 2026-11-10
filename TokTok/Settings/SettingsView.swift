@@ -16,6 +16,8 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             NeuPage {
+                header
+
                 NeuSection {
                     BoundaryPicker(hour: $hour, minute: $minute, showsExample: false)
                     if let errorText {
@@ -28,14 +30,9 @@ struct SettingsView: View {
                 }
 
                 NeuSection {
-                    Picker("화면 모드", selection: $appearance) {
-                        ForEach(AppAppearance.allCases) { Text($0.title).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
+                    NeuSegmented(options: AppAppearance.allCases, selection: $appearance) { $0.title }
                 } header: {
                     Text("화면 모드")
-                } footer: {
-                    Text("바로 적용돼요")
                 }
 
                 NeuSection {
@@ -52,17 +49,29 @@ struct SettingsView: View {
             }
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("취소") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(saving ? "저장 중…" : "적용") { apply() }
-                        .disabled(saving || !hasChanges)
-                }
-            }
+            // 시스템 막대 대신 화면 안의 뉴모피즘 버튼을 쓴다. 하위 화면(뒷면 탭 연결 등)은 시스템 뒤로 가기를 유지한다.
+            .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: loadCurrent)
         }
+    }
+
+    /// 취소 · 설정 · 적용. ‘적용’은 하루 시작 시간을 바꿨을 때만 켜지고 메인 색 글자로 보인다.
+    private var header: some View {
+        ZStack {
+            Text("설정")
+                .font(.headline)
+                .foregroundStyle(Theme.text)
+                .accessibilityAddTraits(.isHeader)
+            HStack {
+                Button("취소") { dismiss() }
+                    .buttonStyle(SecondaryButtonStyle())
+                Spacer()
+                Button(saving ? "저장 중…" : "적용") { apply() }
+                    .buttonStyle(SecondaryButtonStyle(emphasized: true))
+                    .disabled(saving || !hasChanges)
+            }
+        }
+        .padding(.top, 8)
     }
 
     private var hasChanges: Bool {

@@ -7,7 +7,7 @@
 | 파일 | 용도 |
 |---|---|
 | PRD.md | 요구사항·데이터·하루 경계·iOS 제약 |
-| DESIGN.md | 다크 화면·전체 폭 블록·바닥 쌓기·접근성 |
+| DESIGN.md | 다크 화면·한 판 기록 목록·위쪽 쌓기·접근성 |
 | CLAUDE.md | Claude 구현 규칙·순서·인계 |
 | AGENTS.md | 공통 제약·Codex 독립 검증 |
 | QUESTIONS.md | 미결정 제품 질문과 잠정 처리 |

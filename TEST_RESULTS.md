@@ -201,3 +201,18 @@
 | 하루 화면 라이트·다크 | 시뮬레이터 스크린숏 | PASS (시각 확인, 시뮬레이터) |
 | 설정·안내·개인정보 화면 문구 | 컴파일만 확인 | NOT RUN (화면 확인 안 함) |
 | VoiceOver 제목+구간 낭독, 큰 글씨, 실기기 | | NOT RUN |
+
+## R-012 기록 목록 한 판·날짜 첫 행만·위쪽 쌓기 (feature/day-list-panel)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 기준: main 156cc35에서 분기
+- 변경: 사용자 결정(HTML 시안 H). 기록 목록 전체를 파인 판 하나에 담고 최신 행만 튀어나옴, 시각과 날짜를 한 행에 묶음, 날짜는 같은 달력 날짜 묶음의 맨 위 행에만(`RecordBlock.showsDate`), 목록은 위쪽 정렬
+- 명령: `cd TokTokCore && swift test` → 33 tests, 0 failures(`testShowsDateOnlyWhenCalendarDateChanges` 추가, 기존 예시에 showsDate 검증 추가) / `xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 날짜 첫 행 규칙·VoiceOver 날짜 포함 | TokTokCore 단위 테스트 | PASS |
+| 앱 빌드 | generic iOS 빌드 | PASS (빌드만) |
+| 앱 테스트(TokTokTests) | 디스크 여유 703MB로 시뮬레이터 빌드 생략, 실기기 테스트는 개인 기록 영향을 피해 미실행 | NOT RUN |
+| 하루 화면 모양(판·최신 행·위쪽 정렬·자정 넘김 날짜) | HTML 시안으로만 확인, 앱 화면은 사용자 실기기 캡처 대기 | NOT RUN |
+| 큰 글씨(AX)·VoiceOver·라이트 모드 실기기 | | NOT RUN |

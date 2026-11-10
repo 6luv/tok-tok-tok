@@ -121,7 +121,6 @@ final class DayViewModel: ObservableObject {
             scrollTarget = record.id
             unseenCount = 0
             let text = "\(presentation.timeText(record.occurredAt)) 기록됨"
-            RecordSound.play()
             showFeedback(.saved(record.occurredAt), autoHide: true)
             announce(text)
         case .failure(RecordError.saveFailed(let pending)):

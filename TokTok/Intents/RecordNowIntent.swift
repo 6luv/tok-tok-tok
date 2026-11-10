@@ -10,8 +10,8 @@ import TokTokCore
 ///   실제 트리거 전달·파일 보호 접근 가능 여부는 별개이며 실기기 검증 전에는 보장하지 않는다.
 /// - 기록 시각은 perform 진입 직후 서비스가 한 번 읽는다. 물리적 탭 시각이 아니다.
 /// - 단축어·Siri·뒷면 탭 중 어느 경로인지 추정하지 않고 source = .intent로 저장한다.
-/// - 결과: 글자 대화(dialog) 대신 디자인한 스니펫(`RecordToastView`)을 돌려준다(사용자 요청 2026-11-10).
-///   단축어 실행 중이라는 iOS 자체 표시는 시스템 UI라 앱이 끌 수 없다.
+/// - 결과: 아무 대화·스니펫도 돌려주지 않는다(사용자 결정 2026-11-10). 뒷면 탭·단축어 실행 중이라는
+///   iOS 자체 표시가 이미 보이므로 앱 결과 토스트를 겹쳐 띄우지 않는다. 실패는 오류로 알린다.
 /// - 소리는 내지 않는다(사용자 결정 2026-11-10). 토스트만 잠깐 보이고 iOS가 닫는다.
 struct RecordNowIntent: AppIntent {
     static var title: LocalizedStringResource = "현재 시간 기록"
@@ -20,7 +20,7 @@ struct RecordNowIntent: AppIntent {
 
     init() {}
 
-    func perform() async throws -> some IntentResult & ShowsSnippetView {
+    func perform() async throws -> some IntentResult {
         let service: RecordTimeService
         do {
             service = try RecordTimeService.live()
@@ -31,9 +31,7 @@ struct RecordNowIntent: AppIntent {
             let record = try service.recordNow(source: .intent)
             // 저장이 확인된 뒤에만 알린다.
             RecordsChangeNotifier.post()
-            return .result(view: RecordToastView(date: record.occurredAt)
-                .environment(\.tokTokAccent, AppAccent.stored)
-                .fontDesign(.rounded))
+            return .result()
         } catch RecordError.boundaryNotConfigured {
             throw RecordIntentError.boundaryNotConfigured
         } catch RecordError.saveFailed {

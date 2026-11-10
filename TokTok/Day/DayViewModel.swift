@@ -162,6 +162,15 @@ final class DayViewModel: ObservableObject {
         await reload()
     }
 
+    /// 지금 화면의 기록일 기록을 지운다. 사용자가 확인한 스냅샷의 기록만 대상이다.
+    @discardableResult
+    func deleteCurrentDayRecords() async throws -> Int {
+        guard let service, let records = snapshot?.records, !records.isEmpty else { return 0 }
+        let result: Result<Int, Error> = await Task.detached { Result { try service.deleteRecords(records) } }.value
+        defer { Task { await reload() } }
+        return try result.get()
+    }
+
     func currentBoundary() -> DayBoundary? {
         (try? service?.settings.load())?.boundary
     }

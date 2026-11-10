@@ -82,24 +82,12 @@ struct DayView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let snap = model.snapshot {
-                        Text(model.presentation.headerTitle(for: snap.interval.day))
-                            .font(.title2.weight(.medium))
-                            .foregroundStyle(Theme.text)
-                            .accessibilityAddTraits(.isHeader)
-                        Text(model.presentation.rangeText(for: snap.interval))
-                            .font(.footnote.monospacedDigit())
-                            .foregroundStyle(Theme.secondaryText)
-                            .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
-                    } else {
-                        Text("TokTok")
-                            .font(.title2.weight(.medium))
-                            .foregroundStyle(Theme.text)
-                    }
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
+                Text(model.snapshot.map { model.presentation.headerTitle(for: $0.interval.day) } ?? "TokTok")
+                    .font(.title2.weight(.medium))
+                    .foregroundStyle(Theme.text)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: 0)
                 Button {
                     showingSettings = true
@@ -114,13 +102,39 @@ struct DayView: View {
                 .accessibilityLabel("설정")
             }
             if let snap = model.snapshot {
-                DayRulerView(interval: snap.interval,
-                             records: snap.records.sorted(by: TimeRecord.chronological).map(\.occurredAt),
-                             timeZone: snap.timeZone)
+                HStack(alignment: .center, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("구간")
+                                .font(.caption)
+                                .foregroundStyle(Theme.mutedText)
+                            Text(model.presentation.rangeText(for: snap.interval))
+                                .font(.footnote.monospacedDigit())
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("기록")
+                                .font(.caption)
+                                .foregroundStyle(Theme.mutedText)
+                            Text("\(snap.records.count)개")
+                                .font(.footnote.monospacedDigit())
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("오늘 기록 \(snap.records.count)개")
+                    }
+                    Spacer(minLength: 0)
+                    DayDialView(interval: snap.interval,
+                                records: snap.records.sorted(by: TimeRecord.chronological).map(\.occurredAt),
+                                timeZone: snap.timeZone)
+                        .frame(width: 136, height: 136)
+                }
             }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 12)
+        .padding(.top, 8)
         .padding(.bottom, 16)
     }
 
@@ -236,19 +250,9 @@ struct DayView: View {
     private var bottomBar: some View {
         VStack(spacing: 12) {
             feedbackView
-            Button {
+            RecordKeyButton(saving: model.inFlight > 0) {
                 model.recordTapped()
-            } label: {
-                HStack(spacing: 8) {
-                    if model.inFlight > 0 {
-                        ProgressView().tint(Theme.onAccent)
-                    }
-                    Text(model.inFlight > 0 ? "저장 중…" : "현재 시간 기록")
-                }
             }
-            .buttonStyle(PrimaryButtonStyle())
-            .accessibilityLabel("현재 시간 기록")
-            .accessibilityHint("지금 이 순간의 시각을 저장합니다")
             .disabled(model.state == .loading && model.snapshot == nil)
         }
         .padding(.horizontal, 20)

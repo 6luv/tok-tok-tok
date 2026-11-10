@@ -84,18 +84,16 @@ struct DayView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HStack(alignment: .top, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     if let snap = model.snapshot {
+                        // 구간은 아래 하루 눈금 양끝에 표시한다. VoiceOver에는 제목과 함께 읽힌다.
                         Text(model.presentation.headerTitle(for: snap.interval.day))
                             .font(.title2)
                             .foregroundStyle(Theme.text)
                             .accessibilityAddTraits(.isHeader)
-                        Text(model.presentation.rangeText(for: snap.interval))
-                            .font(.footnote.monospacedDigit())
-                            .foregroundStyle(Theme.secondaryText)
-                            .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
+                            .accessibilityLabel("\(model.presentation.headerTitle(for: snap.interval.day)), 기록 구간 \(model.presentation.rangeText(for: snap.interval))")
                     } else {
                         Text("TokTok")
                             .font(.title2)

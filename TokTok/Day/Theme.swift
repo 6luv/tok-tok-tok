@@ -136,12 +136,12 @@ struct SecondaryButtonStyle: ButtonStyle {
     }
 }
 
-/// 주 버튼: 큰 튀어나온 알약. 누르면 파인다. 색을 채우지 않는다.
+/// 주 버튼: 큰 튀어나온 둥근 사각형(모서리 20, 헤더 카드와 같은 계열). 누르면 파인다. 색을 채우지 않는다.
 struct PrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
-        let shape = Capsule(style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
         return configuration.label
             .font(.body.weight(.medium))
             .foregroundStyle(Theme.text)

@@ -87,18 +87,18 @@ struct DayRulerView: View {
 
     // MARK: 라벨
 
+    /// 양끝은 날짜와 시각(구간 시작·끝), 가운데는 구간 절반 시각.
+    /// 헤더의 구간 문구를 대신하므로 시작·끝은 보조색으로 조금 더 진하게 둔다.
     private var labelDates: [(CGFloat, String)] {
-        let hours = Int((interval.duration / 3600).rounded())
-        guard hours > 0 else { return [] }
+        guard interval.duration > 0 else { return [] }
+        let p = DayPresentation(timeZone: timeZone)
         let f = DateFormatter()
         f.calendar = Calendar(identifier: .gregorian)
         f.locale = Locale(identifier: "ko_KR")
         f.timeZone = timeZone
         f.dateFormat = "HH:mm"
-        return stride(from: 0, through: hours, by: 6).map { h in
-            let date = interval.start.addingTimeInterval(Double(h) * 3600)
-            return (CGFloat(h) / CGFloat(hours), f.string(from: date))
-        }
+        let mid = interval.start.addingTimeInterval(interval.duration / 2)
+        return [(0, p.edgeText(interval.start)), (0.5, f.string(from: mid)), (1, p.edgeText(interval.end))]
     }
 
     private var labels: some View {
@@ -108,9 +108,9 @@ struct DayRulerView: View {
                 let alignment: Alignment = index == 0 ? .leading : (item.0 >= 0.999 ? .trailing : .center)
                 Text(item.1)
                     .font(.system(size: 11, weight: .medium, design: .rounded).monospacedDigit())
-                    .foregroundStyle(Theme.mutedText)
+                    .foregroundStyle(alignment == .center ? Theme.mutedText : Theme.secondaryText)
                     .fixedSize()
-                    .frame(width: 60, alignment: alignment)
+                    .frame(width: 100, alignment: alignment)
                     .position(x: labelX(item.0, width: geo.size.width, alignment: alignment), y: geo.size.height / 2)
             }
         }
@@ -119,8 +119,8 @@ struct DayRulerView: View {
 
     private func labelX(_ f: CGFloat, width: CGFloat, alignment: Alignment) -> CGFloat {
         switch alignment {
-        case .leading: return 30
-        case .trailing: return width - 30
+        case .leading: return 50
+        case .trailing: return width - 50
         default: return width * f
         }
     }

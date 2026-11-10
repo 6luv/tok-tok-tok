@@ -7,6 +7,10 @@ public struct RecordBlock: Identifiable, Equatable, Sendable {
     public let timeText: String
     /// 기록의 실제 달력 날짜 "11월 1일" (기록일 헤더와 다를 수 있음)
     public let dateText: String
+    /// 블록 오른쪽 큰 날짜 "1일"
+    public let dayText: String
+    /// 블록 오른쪽 작은 줄 "11월 · 토"
+    public let monthWeekdayText: String
     /// "11월 1일 오전 3시 15분 8초, 시간 기록"
     public let accessibilityLabel: String
 }
@@ -36,10 +40,14 @@ public struct DayPresentation: Sendable {
         let time = formatter("HH:mm:ss")
         let date = formatter("M월 d일")
         let spoken = formatter("M월 d일 a h시 m분 s초")
+        let day = formatter("d일")
+        let monthWeekday = formatter("M월 · E")
         return records.sorted(by: TimeRecord.chronological).reversed().map { r in
             RecordBlock(id: r.id,
                         timeText: time.string(from: r.occurredAt),
                         dateText: date.string(from: r.occurredAt),
+                        dayText: day.string(from: r.occurredAt),
+                        monthWeekdayText: monthWeekday.string(from: r.occurredAt),
                         accessibilityLabel: spoken.string(from: r.occurredAt) + ", 시간 기록")
         }
     }
@@ -47,6 +55,11 @@ public struct DayPresentation: Sendable {
     /// "10월 31일 기록" — 기록일은 경계가 시작되는 달력 날짜.
     public func headerTitle(for day: RecordDay) -> String {
         "\(day.month)월 \(day.day)일 기록"
+    }
+
+    /// 하루 눈금 양끝 라벨 "10/31 23:00"
+    public func edgeText(_ date: Date) -> String {
+        formatter("MM/dd HH:mm").string(from: date)
     }
 
     /// "10/31 23:00 – 11/01 23:00"

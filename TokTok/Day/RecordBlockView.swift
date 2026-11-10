@@ -25,9 +25,7 @@ struct RecordBlockView: View {
                 .padding(.vertical, 10)
                 .modifier(Well(raised: isNewest, shape: shape))
             if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
-            Text(block.dateText)
-                .font(.footnote)
-                .foregroundStyle(Theme.secondaryText)
+            date
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
@@ -43,6 +41,19 @@ struct RecordBlockView: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(block.accessibilityLabel)
+    }
+
+    /// 오른쪽 날짜: "10일" 크게, "11월 · 화" 작게. 기록일과 실제 날짜가 다를 수 있어 늘 표시한다.
+    private var date: some View {
+        VStack(alignment: dynamicTypeSize.isAccessibilitySize ? .leading : .trailing, spacing: 2) {
+            Text(block.dayText)
+                .font(.title3)
+                .foregroundStyle(Theme.text)
+            Text(block.monthWeekdayText)
+                .font(.caption)
+                .foregroundStyle(Theme.mutedText)
+        }
+        .monospacedDigit()
     }
 
     private var time: some View {

@@ -75,7 +75,7 @@ struct DayRulerView: View {
             guard f >= 0, f <= 1 else { continue }
             let newest = i == records.count - 1
             let x = min(max(w * f, 1), w - 1)
-            line(x, from: baseY, to: 2, newest ? Theme.accent : Theme.text.opacity(0.75), newest ? 2 : 1.5)
+            line(x, from: baseY, to: 2, newest ? Theme.tick : Theme.text.opacity(0.75), newest ? 2 : 1.5)
         }
 
         // 지금 위치
@@ -107,7 +107,7 @@ struct DayRulerView: View {
             ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                 let alignment: Alignment = index == 0 ? .leading : (item.0 >= 0.999 ? .trailing : .center)
                 Text(item.1)
-                    .font(.system(size: 11, design: .monospaced))
+                    .font(.system(size: 11, weight: .medium, design: .rounded).monospacedDigit())
                     .foregroundStyle(Theme.mutedText)
                     .fixedSize()
                     .frame(width: 60, alignment: alignment)

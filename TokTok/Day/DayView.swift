@@ -55,6 +55,7 @@ struct DayView: View {
         .sheet(isPresented: $showingSettings) {
             SettingsView(model: model)
                 .tint(Theme.accent)
+                .tokTokFont()
                 .preferredColorScheme(appearance.colorScheme)
         }
         .sheet(isPresented: $showingBackTapGuide) {
@@ -68,6 +69,7 @@ struct DayView: View {
             }
             .preferredColorScheme(appearance.colorScheme)
             .tint(Theme.accent)
+            .tokTokFont()
         }
     }
 
@@ -87,7 +89,7 @@ struct DayView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     if let snap = model.snapshot {
                         Text(model.presentation.headerTitle(for: snap.interval.day))
-                            .font(.title2.weight(.medium).width(.expanded))
+                            .font(.title2)
                             .foregroundStyle(Theme.text)
                             .accessibilityAddTraits(.isHeader)
                         Text(model.presentation.rangeText(for: snap.interval))
@@ -96,7 +98,7 @@ struct DayView: View {
                             .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
                     } else {
                         Text("TokTok")
-                            .font(.title2.weight(.medium).width(.expanded))
+                            .font(.title2)
                             .foregroundStyle(Theme.text)
                     }
                 }
@@ -113,15 +115,17 @@ struct DayView: View {
                 DayRulerView(interval: snap.interval,
                              records: snap.records.sorted(by: TimeRecord.chronological).map(\.occurredAt),
                              timeZone: snap.timeZone)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)
                     .padding(.top, 12)
                     .padding(.bottom, 8)
-                    .inset(RoundedRectangle(cornerRadius: 16, style: .continuous), depth: 3)
+                    // 카드 모서리 24 − 안쪽 여백 12 = 12
+                    .inset(RoundedRectangle(cornerRadius: 12, style: .continuous), depth: 3)
             }
         }
-        .padding(20)
-        .extruded(RoundedRectangle(cornerRadius: Theme.boxRadius + 4, style: .continuous))
-        .padding(.horizontal, 16)
+        .padding(12)
+        .extruded(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous))
+        // 바깥 8 + 안쪽 12 = 20: 기록 창과 같은 시작선
+        .padding(.horizontal, 8)
         .padding(.top, 8)
         .padding(.bottom, 20)
     }
@@ -141,7 +145,7 @@ struct DayView: View {
                         Spacer(minLength: 0)
                         statusArea
                         ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                            if index > 0 { EngravedLine() }
+                            if index > 0 { Color.clear.frame(height: 4) }
                             RecordBlockView(block: block, isNewest: index == 0)
                                 .id(block.id)
                                 .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
@@ -308,18 +312,6 @@ struct DayView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .extruded(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous), depth: 5)
-    }
-}
-
-/// 새긴 듯한 구분선: 어두운 1pt + 밝은 1pt.
-private struct EngravedLine: View {
-    var body: some View {
-        VStack(spacing: 0) {
-            Theme.shadowDark.opacity(0.5).frame(height: 1)
-            Theme.shadowLight.opacity(0.8).frame(height: 1)
-        }
-        .padding(.horizontal, 20)
-        .accessibilityHidden(true)
     }
 }
 

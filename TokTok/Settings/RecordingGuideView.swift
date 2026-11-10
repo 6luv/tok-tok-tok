@@ -19,15 +19,14 @@ struct RecordingGuideView: View {
     @State private var checkedAt: Date?
 
     var body: some View {
-        List {
-            Section {
+        NeuPage {
+            NeuSection {
                 Text("뒷면을 두 번 또는 세 번 톡톡 치면 지금 시각이 TokTok에 기록되도록 연결해요. iPhone 설정에서 직접 골라야 하는 부분이 있어서, 아래 순서대로 한 번만 따라 해 주세요.")
                     .font(.subheadline)
                     .foregroundStyle(Theme.secondaryText)
             }
-            .listRowBackground(Theme.raised)
 
-            Section {
+            NeuSection {
                 stepRow(1, "단축어 앱에서 ‘TokTok 기록’ 단축어 만들기")
                 Text("아래 버튼으로 새 단축어 편집기를 열고 ‘동작 추가’에서 TokTok → ‘현재 시간 기록’을 넣은 뒤, 이름을 ‘\(Self.suggestedShortcutName)’로 저장해요.")
                     .font(.footnote)
@@ -48,11 +47,10 @@ struct RecordingGuideView: View {
                 }
                 .padding(.vertical, 4)
             } header: {
-                Text("1. 단축어 만들기").textCase(nil)
+                Text("1. 단축어 만들기")
             }
-            .listRowBackground(Theme.raised)
 
-            Section {
+            NeuSection {
                 stepRow(2, "설정 앱 → 손쉬운 사용 → 터치 → 뒷면 탭")
                 stepRow(3, "‘두 번 탭’ 또는 ‘세 번 탭’ 선택")
                 stepRow(4, "단축어 목록에서 ‘\(Self.suggestedShortcutName)’ 선택")
@@ -60,34 +58,30 @@ struct RecordingGuideView: View {
                     .font(.footnote)
                     .foregroundStyle(Theme.secondaryText)
             } header: {
-                Text("2. 뒷면 탭에 연결").textCase(nil)
+                Text("2. 뒷면 탭에 연결")
             }
-            .listRowBackground(Theme.raised)
 
-            Section {
+            NeuSection {
                 stepRow(5, "뒷면을 톡톡 쳐 본 뒤 이 화면으로 돌아오기")
                 verification
             } header: {
-                Text("3. 연결 확인").textCase(nil)
+                Text("3. 연결 확인")
             } footer: {
                 Text("단축어·뒷면 탭·Siri로 실행한 기록은 앱에서 구분할 수 없어 모두 ‘단축어 기록’으로 보여요")
             }
-            .listRowBackground(Theme.raised)
 
-            Section {
+            NeuSection {
                 Text("기록 시각은 단축어가 TokTok을 실행한 순간이에요. 손가락으로 탭한 정확한 순간과 조금 차이가 날 수 있어요.")
                 Text("단축어가 실행되면 화면 위에 짧은 알림이 보일 수 있어요. 이 알림은 iOS가 표시하며 TokTok이 끌 수 없어요.")
                 Text("화면이 꺼져 있으면 iPhone이 뒷면 탭을 인식하지 않을 수 있어요. 실제 기기에서 화면이 꺼진 상태로는 기록되지 않는 것을 확인했어요. 이 동작은 iOS가 정하며 TokTok이 바꿀 수 없어요.")
                 Text("화면을 끈 채로 기록하려면 Siri에게 “TokTok 기록”이라고 말해 보세요. 잠금 상태에서의 동작은 기기와 iOS 버전에 따라 다를 수 있으니, 중요한 기록은 하루 화면에서 저장됐는지 확인해 주세요.")
                 Text("앱 안의 ‘현재 시간 기록’ 버튼은 연결 없이도 언제든 쓸 수 있어요.")
             } header: {
-                Text("알아 두세요").textCase(nil)
+                Text("알아 두세요")
             }
             .font(.subheadline)
             .foregroundStyle(Theme.secondaryText)
-            .listRowBackground(Theme.raised)
         }
-        .tokTokListStyle()
         .navigationTitle("뒷면 탭 연결")
         .navigationBarTitleDisplayMode(.inline)
         .task { await refresh() }
@@ -150,7 +144,7 @@ struct RecordingGuideView: View {
     private func stepRow(_ n: Int, _ text: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text("\(n)")
-                .font(.subheadline.monospaced())
+                .font(.subheadline.monospacedDigit())
                 .foregroundStyle(Theme.mutedText)
                 .frame(minWidth: 16, alignment: .leading)
                 .accessibilityHidden(true)

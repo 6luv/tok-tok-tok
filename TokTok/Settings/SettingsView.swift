@@ -14,8 +14,8 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
+            NeuPage {
+                NeuSection {
                     BoundaryPicker(hour: $hour, minute: $minute)
                     if let original {
                         LabeledContent("현재 설정") {
@@ -37,30 +37,26 @@ struct SettingsView: View {
                             .foregroundStyle(Theme.text)
                     }
                 } header: {
-                    Text("하루 시작 시간").textCase(nil)
+                    Text("하루 시작 시간")
                 }
-                .listRowBackground(Theme.raised)
 
-                Section {
+                NeuSection {
                     Picker("화면 모드", selection: $appearance) {
                         ForEach(AppAppearance.allCases) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.segmented)
-                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
                 } header: {
-                    Text("화면 모드").textCase(nil)
+                    Text("화면 모드")
                 } footer: {
                     Text("바로 적용돼요. 기록에는 영향을 주지 않아요.")
                 }
-                .listRowBackground(Theme.raised)
 
-                Section {
-                    NavigationLink("뒷면 탭 연결") { RecordingGuideView() }
-                    NavigationLink("개인정보와 데이터") { PrivacyInfoView() }
+                NeuSection {
+                    NeuLinkRow(title: "뒷면 탭 연결") { RecordingGuideView() }
+                    Theme.hairline.frame(height: 1)
+                    NeuLinkRow(title: "개인정보와 데이터") { PrivacyInfoView() }
                 }
-                .listRowBackground(Theme.raised)
             }
-            .tokTokListStyle()
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

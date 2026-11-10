@@ -1,16 +1,16 @@
 import SwiftUI
 import TokTokCore
 
-/// 전체 콘텐츠 폭 블록. 내부 여백 좌우 20pt·상하 12pt, 고정 높이 없음(Dynamic Type).
+/// 전체 콘텐츠 폭 블록. 내부 여백 좌우 20pt·상하 12pt, 블록 사이 4pt, 고정 높이 없음(Dynamic Type).
 ///
-/// 시각은 바탕에 파인 홈(inset) 안에 넓은 글꼴(SF Pro Expanded)로 새긴다.
+/// 시각은 바탕에 파인 홈(inset) 안에 얇은 둥근 글꼴(SF Pro Rounded 300)로 새긴다.
 /// 초는 보조색으로 낮춰 시·분이 먼저 읽히게 한다.
 /// 가장 최근 블록은 홈이 파이지 않고 튀어나오며(extruded), 왼쪽에 호박색 눈금이 있다.
 struct RecordBlockView: View {
     let block: RecordBlock
     var isNewest = false
 
-    @ScaledMetric(relativeTo: .largeTitle) private var digitSize: CGFloat = 28
+    @ScaledMetric(relativeTo: .largeTitle) private var digitSize: CGFloat = 32
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
@@ -36,7 +36,7 @@ struct RecordBlockView: View {
         .overlay(alignment: .leading) {
             if isNewest {
                 Capsule()
-                    .fill(Theme.accent)
+                    .fill(Theme.tick)
                     .frame(width: 3)
                     .padding(.vertical, 20)
             }
@@ -47,8 +47,8 @@ struct RecordBlockView: View {
 
     private var time: some View {
         let parts = Self.split(block.timeText)
-        let font = Font.system(size: digitSize, weight: .medium).width(.expanded).monospacedDigit()
-        // 넓은 글꼴은 숫자 폭이 조금씩 달라 가장 넓은 자리표시로 홈 폭을 맞춘다
+        let font = Font.system(size: digitSize, weight: .light, design: .rounded).monospacedDigit()
+        // 숫자 폭이 같아도 콜론·글꼴 대체로 달라질 수 있어 자리표시로 창 폭을 맞춘다
         return ZStack(alignment: .leading) {
             Text("00:00:00").font(font).hidden()
             (Text(parts.main).foregroundStyle(Theme.text)

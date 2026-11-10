@@ -10,14 +10,40 @@ struct SettingsView: View {
     @State private var original: DayBoundary?
     @State private var saving = false
     @State private var errorText: String?
+    @State private var confirmingDelete = false
+    @State private var deleting = false
+    @State private var deleteMessage: String?
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
     @AppStorage(AppAccent.storageKey) private var accent: AppAccent = .amber
 
     var body: some View {
         NavigationStack {
-            NeuPage {
+            VStack(spacing: 0) {
+                // 취소 · 설정 · 적용은 스크롤해도 위에 고정한다(사용자 요청 2026-11-10)
                 header
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 8)
+                    .background(Theme.background)
+                    .zIndex(1)
+                settingsList
+            }
+            .background(Theme.background)
+            .navigationTitle("설정")
+            .navigationBarTitleDisplayMode(.inline)
+            // 시스템 막대 대신 화면 안의 뉴모피즘 버튼을 쓴다. 하위 화면(뒷면 탭 연결 등)은 시스템 뒤로 가기를 유지한다.
+            .toolbar(.hidden, for: .navigationBar)
+            .onAppear(perform: loadCurrent)
+            .confirmationDialog(deleteTitle, isPresented: $confirmingDelete, titleVisibility: .visible) {
+                Button("\(dayRecordCount)개 지우기", role: .destructive) { deleteToday() }
+                Button("취소", role: .cancel) {}
+            } message: {
+                Text("지운 기록은 되돌릴 수 없어요")
+            }
+        }
+    }
 
+    private var settingsList: some View {
+            NeuPage {
                 NeuSection {
                     BoundaryPicker(hour: $hour, minute: $minute, showsExample: false)
                     if let errorText {
@@ -46,12 +72,59 @@ struct SettingsView: View {
                     Theme.hairline.frame(height: 1)
                     NeuLinkRow(title: "개인정보와 데이터") { PrivacyInfoView() }
                 }
+
+                NeuSection {
+                    Button {
+                        confirmingDelete = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            if deleting { ProgressView().tint(Theme.secondaryText) }
+                            Label(deleting ? "지우는 중…" : "오늘 기록 지우기", systemImage: "trash")
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(dayRecordCount > 0 ? Theme.text : Theme.mutedText)
+                    .font(.body.weight(.medium))
+                    .disabled(dayRecordCount == 0 || deleting)
+                    .accessibilityHint("\(dayTitle)의 기록 \(dayRecordCount)개를 지워요")
+                    if let deleteMessage {
+                        Label(deleteMessage, systemImage: "exclamationmark.triangle")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.text)
+                    }
+                } header: {
+                    Text("기록")
+                } footer: {
+                    Text(dayRecordCount > 0
+                         ? "\(dayTitle) 기록 \(dayRecordCount)개만 지워요. 다른 날 기록은 그대로예요"
+                         : "\(dayTitle)에는 지울 기록이 없어요")
+                }
             }
-            .navigationTitle("설정")
-            .navigationBarTitleDisplayMode(.inline)
-            // 시스템 막대 대신 화면 안의 뉴모피즘 버튼을 쓴다. 하위 화면(뒷면 탭 연결 등)은 시스템 뒤로 가기를 유지한다.
-            .toolbar(.hidden, for: .navigationBar)
-            .onAppear(perform: loadCurrent)
+    }
+
+    private var dayRecordCount: Int { model.snapshot?.records.count ?? 0 }
+
+    /// "11월 10일" — 하루 시작 시간 기준 기록일
+    private var dayTitle: String {
+        guard let day = model.snapshot?.interval.day else { return "오늘" }
+        return "\(day.month)월 \(day.day)일"
+    }
+
+    private var deleteTitle: String { "\(dayTitle) 기록 \(dayRecordCount)개를 지울까요?" }
+
+    private func deleteToday() {
+        deleting = true
+        deleteMessage = nil
+        Task {
+            do {
+                try await model.deleteCurrentDayRecords()
+            } catch {
+                // 일부만 지워졌을 수 있다. 남은 기록은 다시 불러온 목록에 그대로 보인다.
+                deleteMessage = "기록을 지우지 못했어요. 남은 기록은 그대로예요."
+            }
+            deleting = false
         }
     }
 

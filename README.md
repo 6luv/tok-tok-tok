@@ -1,76 +1,108 @@
-# 시간 기록 앱 — 복사 가능한 개발 문서 세트
+# TokTokTok
 
-문서 작성 완료, 앱 구현 전 상태이다. 이 폴더의 Markdown 파일들을 새 앱 저장소 루트에 복사해 사용한다. 이 README.md를 시작점으로 삼는다. 지침 파일을 읽는 도구의 설정과 실제 선택 모델은 별도로 확인한다. 문서만으로 모델 실행이나 에이전트 간 자동 인계가 설정되지는 않는다.
+iPhone 뒷면을 톡톡 치거나 버튼 한 번으로 **지금 이 순간의 시각**을 남기는 개인 기록 앱입니다. 새벽에 잠깐 깬 순간, 버스에 탄 순간처럼 화면을 오래 보지 않고 남긴 시각을, 내가 정한 하루 시작 시간 기준으로 묶어 보여 줍니다.
 
-## 파일 역할
+- 계정·서버·광고·분석 도구 없음. 기록은 기기 안에만 저장됩니다.
+- iOS 17 이상, SwiftUI, 한국어 우선
 
-| 파일 | 용도 |
+## 주요 기능
+
+| 기능 | 설명 |
 |---|---|
-| PRD.md | 요구사항·데이터·하루 경계·iOS 제약 |
-| DESIGN.md | 다크 화면·한 판 기록 목록·위쪽 쌓기·접근성 |
-| CLAUDE.md | Claude 구현 규칙·순서·인계 |
-| AGENTS.md | 공통 제약·Codex 독립 검증 |
-| QUESTIONS.md | 미결정 제품 질문과 잠정 처리 |
-| TEST_PLAN.md | 자동·UI·실기기 테스트 및 출시 게이트 |
-| TEST_RESULTS.md | 실제 실행 증거와 통과/미실행 기록 |
-| TROUBLESHOOTING.md | 재현·원인·수정·회귀 검증 기록 |
-| SOURCES.md | Apple 공식 근거 |
+| 현재 시간 기록 | 앱 안 버튼, 단축어, Siri(“TokTokTok 기록”)로 입력 없이 지금 시각을 저장 |
+| 뒷면 탭 연결 | 단축어를 만들고 손쉬운 사용 › 뒷면 탭에 연결하는 과정을 앱 안에서 안내 |
+| 사용자 지정 하루 | 하루 시작 시간을 직접 정함(예: 04:00). 자정이 아니라 그 시각에 하루가 바뀜 |
+| 하루 화면 | 현재 기록일의 기록 목록과 경계부터 경계까지의 하루 눈금 |
+| 화면 모드·메인 색 | 다크(기본)·라이트, 메인 색 5가지(호박·산호·세이지·하늘·라벤더) |
 
-하루 경계는 사용자 지정이다. 06:00·23:00 고정값을 적용하지 않는다. 최초 설정 방식·과거 재분류·시간대·쌓기 순서는 QUESTIONS.md에서 확인한다.
+> [!NOTE]
+> 기록 시각은 단축어가 앱을 실행한 순간이라 손가락으로 탭한 순간과 조금 다를 수 있습니다. 화면이 꺼진 상태에서는 iPhone이 뒷면 탭을 인식하지 않았습니다(실기기 확인, TS-007). 이때는 Siri를 쓸 수 있습니다.
 
-## 환경 기록 — 프로젝트 생성 후 채우기
+## 시작하기
+
+### 요구 사항
+
+- Xcode 16 이상(확인한 버전: Xcode 26.5), iOS 17 이상 기기 또는 시뮬레이터
+- 실기기 설치 시 Apple Developer 계정
+
+### 설치
+
+```sh
+git clone https://github.com/6luv/tok-tok-tok.git
+cd tok-tok-tok
+cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig
+```
+
+`Config/Signing.local.xcconfig`에 내 번들 ID와 Team ID를 넣은 뒤 `TokTok.xcodeproj`를 열고 실행합니다.
+
+> [!IMPORTANT]
+> `Config/Signing.local.xcconfig`는 `.gitignore`에 있어 커밋되지 않습니다. 번들 ID·Team ID·기기 정보는 저장소와 문서에 올리지 않습니다. 이미 설치한 앱의 기록을 유지하려면 그때 쓰던 번들 ID를 그대로 사용하세요.
+
+### 테스트
+
+```sh
+# 도메인 로직(하루 경계·저장소·표시 규칙)
+cd TokTokCore && swift test
+
+# 앱 타깃(시뮬레이터 UDID는 xcrun simctl list devices 로 확인)
+xcodebuild test -project TokTok.xcodeproj -scheme TokTok \
+  -destination 'platform=iOS Simulator,id=<시뮬레이터 UDID>'
+```
+
+빌드 성공만으로 완료로 보지 않습니다. 실제 실행 결과는 [TEST_RESULTS.md](TEST_RESULTS.md)에 PASS / NOT RUN으로 구분해 기록합니다.
+
+## 프로젝트 구조
+
+```text
+TokTok/            앱(SwiftUI)
+  Day/             하루 화면, 기록 블록, 하루 눈금, 디자인 토큰(Theme)
+  Settings/        첫 실행 경계 설정, 설정, 뒷면 탭 연결, 개인정보 안내
+  Intents/         App Intent ‘현재 시간 기록’, App Shortcut
+TokTokCore/        도메인 Swift 패키지: 하루 경계 계산, 파일 저장소, 기록 서비스
+TokTokTests/       앱 타깃 테스트
+Config/            서명 설정(로컬 값은 커밋하지 않음)
+```
+
+화면·도메인·저장소·Intent를 나눠, 앱 화면을 열지 않고 Intent만 실행돼도 저장할 수 있게 했습니다.
+
+## 문서
+
+| 문서 | 내용 |
+|---|---|
+| [PRD.md](PRD.md) | 요구사항(R01~R10), 데이터, 하루 경계, iOS 제약 |
+| [DESIGN.md](DESIGN.md) | 화면 구조, 디자인 토큰, 상태별 표현, 접근성 |
+| [QUESTIONS.md](QUESTIONS.md) | 제품 결정과 잠정 정책 |
+| [TEST_PLAN.md](TEST_PLAN.md) | 자동·UI·실기기 테스트와 출시 게이트 |
+| [TEST_RESULTS.md](TEST_RESULTS.md) | 실제 실행 증거 |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | 이슈 재현·원인·수정 기록 |
+| [SOURCES.md](SOURCES.md) | Apple 공식 근거 |
+| [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md) | 구현·검증 담당 규칙, 브랜치 규칙 |
+| [HANDOFF.md](HANDOFF.md) | 기능별 인계 |
+
+## 개발 환경 기록
 
 | 항목 | 값 |
 |---|---|
-| 앱 이름 / Bundle ID | TokTokTok / 저장소 기본값 `com.example.TokTokTok`. 실제 번들 ID·Team ID는 커밋하지 않는 `Config/Signing.local.xcconfig`에 둔다(예시: `Config/Signing.local.xcconfig.example`) |
-| Xcode / Swift / SDK | 사용자 Mac에서 확인 필요(이 세션에서 Xcode 실행 불가, TS-001). 프로젝트 형식은 objectVersion 77이라 Xcode 16 이상 필요. 도메인 테스트: Swift 6.4.1 Linux |
-| 최소 iOS | 17.0 (Q09 잠정 제안 채택, 미확정) |
-| project 또는 workspace / shared scheme | `TokTok.xcodeproj` / shared scheme `TokTok` (앱 + `TokTokTests`). 도메인 패키지 `TokTokCore` (로컬 Swift 패키지) |
-| 테스트 simulator ID / 실기기 기종·OS | 시뮬레이터 사용 안 함(사용자 결정, 저장공간). 실기기 기종·OS는 사용자 확인 후 기록 |
-| 구현 모델 | 요청 명칭 Claude Opus 5.5; 세션 구성 모델 ID `claude-opus-5-5` (실제 응답 모델은 런타임에 따라 다를 수 있음) |
-| 검증 모델 | 요청 명칭 Codex Astra; 실제 제공 ID 확인 필요 |
+| 앱 이름 / 번들 ID | TokTokTok / 저장소 기본값 `com.example.TokTokTok`(실제 값은 로컬 설정 파일) |
+| Xcode / Swift | Xcode 26.5(17F42), Apple Swift 6.3.2 (macOS 26.3.1) |
+| 최소 iOS | 17.0 (Q09) |
+| 프로젝트 / scheme | `TokTok.xcodeproj` / shared scheme `TokTok`(앱 + `TokTokTests`), 로컬 패키지 `TokTokCore` |
+| 테스트 시뮬레이터 | iPhone 17 Pro(iOS 26.5). 실기기 기종·OS는 TEST_RESULTS.md에 실행별로 기록 |
+| 구현 모델 | Claude Opus 5.5(`claude-opus-5-5`) |
+| 검증 모델 | Codex Astra(요청 명칭). 현재 설정 모델 사용 불가로 미실행 |
 
-## 실행 하네스
+<details>
+<summary>구현·검증 인계 프롬프트</summary>
 
-프로젝트 생성 후 실제 파일명·scheme·destination으로 다음 템플릿을 채운다. 꺾쇠 자리표시자를 그대로 실행하지 않는다. workspace를 만들었다면 -project 대신 -workspace를 사용한다.
-
-도메인 로직(Mac 터미널 또는 Linux):
-
-```sh
-cd TokTokCore && swift test
-```
-
-실기기(사용자 iPhone) 대상 앱 빌드·테스트:
-
-```sh
-xcodebuild -version
-xcodebuild -list -project TokTok.xcodeproj
-xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'generic/platform=iOS' build
-xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'platform=iOS,id=<연결한 iPhone UDID>' -resultBundlePath build/TokTok-device.xcresult test
-```
-
-참고용 원래 템플릿:
-
-```sh
-xcodebuild -version
-xcodebuild -list -project '<실제 프로젝트>.xcodeproj'
-xcodebuild -showdestinations -project '<실제 프로젝트>.xcodeproj' -scheme '<공유 scheme>'
-xcodebuild -project '<실제 프로젝트>.xcodeproj' -scheme '<공유 scheme>' -destination 'platform=iOS Simulator,id=<실제 UUID>' -resultBundlePath '<새 결과 경로>.xcresult' test
-```
-
-CI를 구성한다면 동일한 공유 scheme과 사용 가능한 simulator를 지정하고 SDK·Xcode 버전을 기록한다. 결과 bundle과 요약을 보관하되 개인 데이터·서명 정보는 제외한다. 자동 테스트 CI와 실기기 수동 검증을 별도 게이트로 둔다. 앱 프로젝트가 없으므로 실행 스크립트나 CI 성공 결과는 이 세트에 포함하지 않았다.
-
-## 구현 시작 프롬프트
+구현:
 
 ```text
 CLAUDE.md, AGENTS.md 및 연결 문서를 읽고 PRD의 요구사항 ID별로 구현해 주세요.
-하루 경계는 사용자가 지정하며 최초 기본값은 미정입니다.
 QUESTIONS.md의 잠정 정책을 확정사항으로 바꾸지 말고, 독립적으로 가능한 작업부터 진행해 주세요.
-우선 시간 경계 계산·로컬 저장·App Intent의 실기기 실행 가능성을 검증해 주세요.
 모델과 도구 버전, 변경 파일, 실제 테스트 결과, 알려진 제약을 남기고 Codex 검증에 인계해 주세요.
 ```
 
-## 독립 검증 프롬프트
+독립 검증:
 
 ```text
 AGENTS.md에 따라 현재 변경을 독립 검증해 주세요. 제품 코드는 우선 수정하지 마세요.
@@ -79,3 +111,5 @@ PRD R01~R10, DESIGN.md, TEST_PLAN.md를 구현 및 실제 실행 결과와 대�
 실기기가 없으면 관련 항목은 NOT RUN 또는 BLOCKED로 남겨 주세요.
 TEST_RESULTS.md와 TROUBLESHOOTING.md에 증거·재현·심각도·출시 차단 여부를 기록해 주세요.
 ```
+
+</details>

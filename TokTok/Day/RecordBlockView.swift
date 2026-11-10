@@ -10,6 +10,7 @@ import TokTokCore
 struct RecordBlockView: View {
     let block: RecordBlock
     var isNewest = false
+    @Environment(\.tokTokAccent) private var accent
 
     @ScaledMetric(relativeTo: .largeTitle) private var digitSize: CGFloat = 32
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -38,7 +39,7 @@ struct RecordBlockView: View {
         .overlay(alignment: .leading) {
             if isNewest {
                 Capsule()
-                    .fill(Theme.tick)
+                    .fill(accent.tick)
                     .frame(width: 3)
                     .padding(.vertical, 18)
                     .padding(.leading, 10)

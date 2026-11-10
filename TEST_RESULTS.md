@@ -216,3 +216,16 @@
 | 앱 테스트(TokTokTests) | 디스크 여유 703MB로 시뮬레이터 빌드 생략, 실기기 테스트는 개인 기록 영향을 피해 미실행 | NOT RUN |
 | 하루 화면 모양(판·최신 행·위쪽 정렬·자정 넘김 날짜) | HTML 시안으로만 확인, 앱 화면은 사용자 실기기 캡처 대기 | NOT RUN |
 | 큰 글씨(AX)·VoiceOver·라이트 모드 실기기 | | NOT RUN |
+
+## R-013 설정 메인 색·설정 문구 정리·README 재작성 (feature/settings-accent, feature/day-list-panel 기반)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 변경: 설정 ‘메인 색’(호박·산호·세이지·하늘·라벤더, `toktok.accent`), 설정에서 ‘현재 설정’·‘지금 구간’ 예시·꼬리말 제거, README를 create-readme 스킬로 재작성
+- 명령: `cd TokTokCore && swift test` → 33 tests, 0 failures / `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 메인 색 대비(계산값) | 5색 모두 라이트 tint/바탕 ≥ 5.13, 라이트 tick/홈 ≥ 3.05, 다크/바탕 ≥ 7.30 (DESIGN.md 메인 색 표) | PASS (WCAG 계산) |
+| 하루 화면 메인 색 반영 | `defaults write … toktok.accent sky`(라이트)·`coral`(다크) 후 스크린숏, 눈금 색 변경 확인 | PASS (시각 확인, 시뮬레이터) |
+| 설정 화면 메인 색 견본·선택 전환·문구 제거 | 컴파일만 확인(시뮬레이터에서 설정 화면 진입 불가) | NOT RUN |
+| VoiceOver 선택됨 낭독, 큰 글씨, 실기기 | | NOT RUN |

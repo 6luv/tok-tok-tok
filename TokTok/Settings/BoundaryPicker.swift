@@ -5,6 +5,8 @@ import TokTokCore
 struct BoundaryPicker: View {
     @Binding var hour: Int
     @Binding var minute: Int
+    /// 첫 실행 화면에서만 구간 예시를 보인다(설정에서는 숨김, 사용자 요청 2026-11-10).
+    var showsExample = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -22,7 +24,7 @@ struct BoundaryPicker: View {
             }
             .frame(maxHeight: 180)
 
-            if let boundary = DayBoundary(hour: hour, minute: minute) {
+            if showsExample, let boundary = DayBoundary(hour: hour, minute: minute) {
                 Text(BoundaryExample.text(for: boundary))
                     .font(.footnote)
                     .foregroundStyle(Theme.secondaryText)

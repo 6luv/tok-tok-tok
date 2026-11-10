@@ -12,6 +12,7 @@ struct DayView: View {
     @State private var showingSettings = false
     @State private var showingBackTapGuide = false
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
+    @AppStorage(AppAccent.storageKey) private var accent: AppAccent = .amber
 
     private let topSentinelID = "toktok.top"
 
@@ -54,7 +55,7 @@ struct DayView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView(model: model)
-                .tint(Theme.accent)
+                .tokTokAccent(accent)
                 .tokTokFont()
                 .preferredColorScheme(appearance.colorScheme)
         }
@@ -68,7 +69,7 @@ struct DayView: View {
                     }
             }
             .preferredColorScheme(appearance.colorScheme)
-            .tint(Theme.accent)
+            .tokTokAccent(accent)
             .tokTokFont()
         }
     }

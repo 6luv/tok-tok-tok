@@ -10,6 +10,7 @@ struct SettingsView: View {
     @State private var original: DayBoundary?
     @State private var saving = false
     @State private var errorText: String?
+    @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
 
     var body: some View {
         NavigationStack {
@@ -38,13 +39,26 @@ struct SettingsView: View {
                 } header: {
                     Text("하루 시작 시간").textCase(nil)
                 }
-                .listRowBackground(Theme.surface)
+                .listRowBackground(Theme.raised)
+
+                Section {
+                    Picker("화면 모드", selection: $appearance) {
+                        ForEach(AppAppearance.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                } header: {
+                    Text("화면 모드").textCase(nil)
+                } footer: {
+                    Text("바로 적용돼요. 기록에는 영향을 주지 않아요.")
+                }
+                .listRowBackground(Theme.raised)
 
                 Section {
                     NavigationLink("뒷면 탭 연결") { RecordingGuideView() }
                     NavigationLink("개인정보와 데이터") { PrivacyInfoView() }
                 }
-                .listRowBackground(Theme.surface)
+                .listRowBackground(Theme.raised)
             }
             .tokTokListStyle()
             .navigationTitle("설정")
@@ -60,7 +74,6 @@ struct SettingsView: View {
             }
             .onAppear(perform: loadCurrent)
         }
-        .preferredColorScheme(.dark)
     }
 
     private var hasChanges: Bool {

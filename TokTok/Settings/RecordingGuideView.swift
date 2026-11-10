@@ -25,7 +25,7 @@ struct RecordingGuideView: View {
                     .font(.subheadline)
                     .foregroundStyle(Theme.secondaryText)
             }
-            .listRowBackground(Theme.surface)
+            .listRowBackground(Theme.raised)
 
             Section {
                 stepRow(1, "단축어 앱에서 ‘TokTok 기록’ 단축어 만들기")
@@ -50,7 +50,7 @@ struct RecordingGuideView: View {
             } header: {
                 Text("1. 단축어 만들기").textCase(nil)
             }
-            .listRowBackground(Theme.surface)
+            .listRowBackground(Theme.raised)
 
             Section {
                 stepRow(2, "설정 앱 → 손쉬운 사용 → 터치 → 뒷면 탭")
@@ -62,7 +62,7 @@ struct RecordingGuideView: View {
             } header: {
                 Text("2. 뒷면 탭에 연결").textCase(nil)
             }
-            .listRowBackground(Theme.surface)
+            .listRowBackground(Theme.raised)
 
             Section {
                 stepRow(5, "뒷면을 톡톡 쳐 본 뒤 이 화면으로 돌아오기")
@@ -72,7 +72,7 @@ struct RecordingGuideView: View {
             } footer: {
                 Text("단축어·뒷면 탭·Siri로 실행한 기록은 앱에서 구분할 수 없어 모두 ‘단축어 기록’으로 보여요")
             }
-            .listRowBackground(Theme.surface)
+            .listRowBackground(Theme.raised)
 
             Section {
                 Text("기록 시각은 단축어가 TokTok을 실행한 순간이에요. 손가락으로 탭한 정확한 순간과 조금 차이가 날 수 있어요.")
@@ -85,7 +85,7 @@ struct RecordingGuideView: View {
             }
             .font(.subheadline)
             .foregroundStyle(Theme.secondaryText)
-            .listRowBackground(Theme.surface)
+            .listRowBackground(Theme.raised)
         }
         .tokTokListStyle()
         .navigationTitle("뒷면 탭 연결")

@@ -2,10 +2,13 @@ import SwiftUI
 
 @main
 struct TokTokApp: App {
+    /// Q11 결정(2026-11-10): 설정에서 다크·라이트 선택, 기본 다크
+    @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
+
     var body: some Scene {
         WindowGroup {
             RootView()
-                .preferredColorScheme(.dark) // Q11 잠정: 다크 기본, 테마 선택 없음
+                .preferredColorScheme(appearance.colorScheme)
                 .tint(Theme.accent)
         }
     }

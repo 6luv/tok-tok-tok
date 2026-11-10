@@ -146,3 +146,19 @@
 | 화면 켜짐(잠금 해제 여부 미기록) | 기록됨 | PASS (사용자 보고, 반복 횟수 미기록) |
 | 화면 꺼짐 | 기록 안 됨 | FAIL (사용자 보고) → TS-007 |
 | 화면 켜짐 + 잠금, 재부팅 후 최초 해제 전, 강제 종료, Siri 화면 꺼짐 | — | NOT RUN |
+
+## R-008 화면 전면 개편 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2, macOS 26.3.1
+- 명령: `cd TokTokCore && swift test` → 32 tests, 0 failures / `xcodebuild test -project TokTok.xcodeproj -scheme TokTok -destination 'platform=iOS Simulator,id=<iPhone 17 Pro, iOS 26.5>'` → TokTokTests 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 빌드·앱 타깃 테스트 | 시뮬레이터 iPhone 17 Pro(iOS 26.5) | PASS (시뮬레이터) |
+| 첫 실행 경계 설정 화면 | 시뮬레이터 스크린숏으로 배치·색 확인 | PASS (시각 확인, 시뮬레이터) |
+| 하루 화면(기록 5건, 경계 04:00) | 예시 데이터를 시뮬레이터 앱 컨테이너에 넣고 스크린숏 확인: 하루 눈금·최신 블록 눈금·초 보조색·바닥 쌓기 | PASS (시각 확인, 시뮬레이터. 개인 기록 아님) |
+| 색상 대비(토큰 계산값) | 본문/바탕 16.36, 본문/면 15.00, 보조/바탕 7.45, 보조/면 6.82, 흐린/바탕 5.22, 흐린/면 4.79, 강조/면 9.51, 버튼 글자/강조 9.98 | PASS (WCAG 공식 계산. 실제 렌더링 측정 NOT RUN) |
+| 구분선/면 대비 | 1.23:1(이전 1.37:1). 면과 바탕의 단계 차이로 블록 경계를 보완 | 관찰(TS-004) |
+| 설정·뒷면 탭 연결·개인정보 화면, 저장 실패 알림, ‘새 기록 N개’ | 컴파일만 확인 | NOT RUN (화면 확인 안 함) |
+| 큰 글씨(AX) 세로 배치, VoiceOver, 모션 감소 | | NOT RUN |
+| 실기기 | | NOT RUN |

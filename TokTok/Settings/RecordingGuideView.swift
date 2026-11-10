@@ -11,7 +11,7 @@ import TokTokCore
 /// 앱이 할 수 없는 것: 손쉬운 사용 > 뒷면 탭 설정 화면을 열거나 값을 바꾸기, 연결 여부 자동 확인.
 /// 공개되지 않은 설정 URL은 사용하지 않는다.
 struct RecordingGuideView: View {
-    static let suggestedShortcutName = "TokTok 기록"
+    static let suggestedShortcutName = "TokTokTok 기록"
 
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
@@ -27,8 +27,8 @@ struct RecordingGuideView: View {
             }
 
             NeuSection {
-                stepRow(1, "단축어 앱에서 ‘TokTok 기록’ 단축어 만들기")
-                Text("동작 추가 → TokTok → ‘현재 시간 기록’을 넣고 저장해요")
+                stepRow(1, "단축어 앱에서 ‘TokTokTok 기록’ 단축어 만들기")
+                Text("동작 추가 → TokTokTok → ‘현재 시간 기록’을 넣고 저장해요")
                     .font(.footnote)
                     .foregroundStyle(Theme.secondaryText)
                 Button {
@@ -40,7 +40,7 @@ struct RecordingGuideView: View {
                 .foregroundStyle(Theme.accent)
                 .font(.body.weight(.medium))
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("TokTok 동작 미리 보기")
+                    Text("TokTokTok 동작 미리 보기")
                         .font(.footnote)
                         .foregroundStyle(Theme.secondaryText)
                     ShortcutsLink()
@@ -74,7 +74,7 @@ struct RecordingGuideView: View {
                 Text("기록 시각은 단축어가 실행된 순간이라 탭한 순간과 조금 다를 수 있어요")
                 Text("실행할 때 iOS가 화면 위에 짧은 알림을 띄울 수 있어요")
                 Text("화면이 꺼져 있으면 뒷면 탭이 인식되지 않아요(실기기 확인)")
-                Text("화면이 꺼졌을 때는 Siri에게 “TokTok 기록”이라고 말해 보세요. 잠금 상태 동작은 기기마다 다를 수 있어요.")
+                Text("화면이 꺼졌을 때는 Siri에게 “TokTokTok 기록”이라고 말해 보세요. 잠금 상태 동작은 기기마다 다를 수 있어요.")
                 Text("앱 안 ‘현재 시간 기록’ 버튼은 연결 없이 언제든 쓸 수 있어요")
             } header: {
                 Text("알아 두세요")

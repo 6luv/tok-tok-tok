@@ -12,7 +12,7 @@ import TokTokCore
 /// - 단축어·Siri·뒷면 탭 중 어느 경로인지 추정하지 않고 source = .intent로 저장한다.
 struct RecordNowIntent: AppIntent {
     static var title: LocalizedStringResource = "현재 시간 기록"
-    static var description = IntentDescription("지금 이 순간의 시각을 TokTok에 기록합니다. 입력할 값은 없습니다.")
+    static var description = IntentDescription("지금 이 순간의 시각을 TokTokTok에 기록합니다. 입력할 값은 없습니다.")
     static var authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     init() {}
@@ -47,7 +47,7 @@ enum RecordIntentError: Error, CustomLocalizedStringResourceConvertible {
     var localizedStringResource: LocalizedStringResource {
         switch self {
         case .boundaryNotConfigured:
-            return "아직 하루 시작 시간을 정하지 않았어요. TokTok 앱을 열어 초기 설정을 마친 뒤 다시 실행해 주세요. 이번 실행은 기록되지 않았어요."
+            return "아직 하루 시작 시간을 정하지 않았어요. TokTokTok 앱을 열어 초기 설정을 마친 뒤 다시 실행해 주세요. 이번 실행은 기록되지 않았어요."
         case .saveFailed:
             return "기록을 저장하지 못했어요. 이번 실행은 기록되지 않았어요. 다시 실행해 주세요."
         case .storageUnavailable:

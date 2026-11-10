@@ -6,3 +6,6 @@ DerivedData/
 xcuserdata/
 *.xcuserstate
 .handoff-tmp/
+
+# 로컬 서명 값(번들 ID·Team ID)
+Config/Signing.local.xcconfig

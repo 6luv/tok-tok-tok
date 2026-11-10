@@ -32,11 +32,6 @@ enum Theme {
     /// 눈금 라벨·부가 정보 전용
     static let mutedText = dynamic(light: 0x5E5E64, dark: 0x8C8C92)
 
-    // MARK: 강조
-    /// 앱 tint(동작 글자). 라이트에서는 글자 대비 4.5:1을 위해 진하게 둔다.
-    static let accent = dynamic(light: 0x8A5200, dark: 0xF0B45A)
-    /// 최신 기록 눈금 전용(글자가 아님). 라이트에서도 호박색으로 보이게 밝게 둔다.
-    static let tick = dynamic(light: 0xC98A1E, dark: 0xF0B45A)
     static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x141415)
 
     // MARK: 모서리·모션
@@ -48,7 +43,7 @@ enum Theme {
         .timingCurve(0.22, 1, 0.36, 1, duration: duration)
     }
 
-    private static func dynamic(light: UInt32, dark: UInt32, alpha: CGFloat = 1) -> Color {
+    static func dynamic(light: UInt32, dark: UInt32, alpha: CGFloat = 1) -> Color {
         dynamic(light: light, dark: dark, lightAlpha: alpha, darkAlpha: alpha)
     }
 
@@ -68,6 +63,63 @@ enum Theme {
                 blue: CGFloat(v & 0xFF) / 255, alpha: alpha)
     }
     #endif
+}
+
+// MARK: 메인 색
+
+/// 설정의 ‘메인 색’. 기본은 호박색(사용자 요청 2026-11-10).
+/// 색은 면을 채우지 않고 앱 tint(동작 글자·시스템 버튼)와 최신 기록 눈금에만 쓴다.
+/// - tint: 글자로 쓰이므로 라이트·다크 모두 바탕 대비 4.5:1 이상
+/// - tick: 그래픽 요소라 라이트에서 파인 홈 대비 3:1 이상
+enum AppAccent: String, CaseIterable, Identifiable {
+    case amber, coral, sage, sky, lavender
+
+    static let storageKey = "toktok.accent"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .amber: "호박"
+        case .coral: "산호"
+        case .sage: "세이지"
+        case .sky: "하늘"
+        case .lavender: "라벤더"
+        }
+    }
+
+    private var values: (dark: UInt32, lightText: UInt32, lightTick: UInt32) {
+        switch self {
+        case .amber: (0xF0B45A, 0x8A5200, 0xA67218)
+        case .coral: (0xFF8F73, 0xA8361C, 0xCE5839)
+        case .sage: (0x8FCB9B, 0x2E6B3B, 0x4F885C)
+        case .sky: (0x82BDF2, 0x1D5C96, 0x4280BB)
+        case .lavender: (0xB9A6F2, 0x5A42A8, 0x836CCF)
+        }
+    }
+
+    /// 앱 tint(동작 글자)
+    var tint: Color { Theme.dynamic(light: values.lightText, dark: values.dark) }
+    /// 최신 기록 눈금
+    var tick: Color { Theme.dynamic(light: values.lightTick, dark: values.dark) }
+}
+
+private struct TokTokAccentKey: EnvironmentKey {
+    static let defaultValue: AppAccent = .amber
+}
+
+extension EnvironmentValues {
+    var tokTokAccent: AppAccent {
+        get { self[TokTokAccentKey.self] }
+        set { self[TokTokAccentKey.self] = newValue }
+    }
+}
+
+extension View {
+    /// 메인 색을 tint와 환경 값으로 함께 내려 준다.
+    func tokTokAccent(_ accent: AppAccent) -> some View {
+        tint(accent.tint).environment(\.tokTokAccent, accent)
+    }
 }
 
 // MARK: 화면 모드

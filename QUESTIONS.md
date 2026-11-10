@@ -34,7 +34,7 @@
 | Q08 | 경과 시간 표시 없음 | — |
 | Q09 | 이름 TokTokTok(사용자 지정, 2026-11-10 TokTok에서 변경), iOS 17 이상, 한국어 우선, 번들 ID는 로컬 설정 파일에만 둠(저장소에는 자리표시), 가격 미정 | `project.pbxproj`, `Config/Signing.xcconfig` |
 | Q10 | 미정. 2026-10-31 사용자 실기기에서 화면 꺼짐 뒷면 탭 기록 실패(TS-007). 앱 안내에 화면 꺼짐 제약과 Siri 대안을 표기. 지원 범위·대체 수단(잠금 화면 컨트롤 등)은 사용자 결정 대기 | `RecordingGuideView` |
-| Q11 | 사용자 결정(2026-11-10): 설정 ‘화면 모드’에서 다크·라이트 선택, 기본 다크. Info.plist 다크 고정 제거 | `TokTokApp`, `SettingsView`, `Theme.AppAppearance` |
+| Q11 | 사용자 결정(2026-11-10): 설정 ‘화면 모드’에서 다크·라이트 선택, 기본 다크. Info.plist 다크 고정 제거. 같은 날 ‘메인 색’ 5가지 선택 추가(기본 호박) | `TokTokApp`, `SettingsView`, `Theme.AppAppearance` |
 
 추가 잠정 결정(구현 중 발생):
 

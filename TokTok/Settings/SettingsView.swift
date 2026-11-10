@@ -11,20 +11,13 @@ struct SettingsView: View {
     @State private var saving = false
     @State private var errorText: String?
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
+    @AppStorage(AppAccent.storageKey) private var accent: AppAccent = .amber
 
     var body: some View {
         NavigationStack {
             NeuPage {
                 NeuSection {
-                    BoundaryPicker(hour: $hour, minute: $minute)
-                    if let original {
-                        LabeledContent("현재 설정") {
-                            Text(DayPresentation.boundaryText(original))
-                                .monospacedDigit()
-                                .foregroundStyle(Theme.secondaryText)
-                        }
-                        .foregroundStyle(Theme.text)
-                    }
+                    BoundaryPicker(hour: $hour, minute: $minute, showsExample: false)
                     if let errorText {
                         Label(errorText, systemImage: "exclamationmark.triangle")
                             .font(.subheadline)
@@ -32,8 +25,6 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("하루 시작 시간")
-                } footer: {
-                    Text("바꿔도 기록된 시각은 그대로예요")
                 }
 
                 NeuSection {
@@ -45,6 +36,12 @@ struct SettingsView: View {
                     Text("화면 모드")
                 } footer: {
                     Text("바로 적용돼요")
+                }
+
+                NeuSection {
+                    AccentPicker(selection: $accent)
+                } header: {
+                    Text("메인 색")
                 }
 
                 NeuSection {
@@ -93,6 +90,50 @@ struct SettingsView: View {
                 errorText = "저장하지 못했어요. 이전 설정이 그대로 유지돼요."
             }
             saving = false
+        }
+    }
+}
+
+/// 메인 색 후보: 튀어나온 원형 견본. 고른 색은 파인 원 안에 들어가 눌린 것처럼 보인다.
+private struct AccentPicker: View {
+    @Binding var selection: AppAccent
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(AppAccent.allCases) { option in
+                let selected = option == selection
+                Button {
+                    selection = option
+                } label: {
+                    VStack(spacing: 8) {
+                        Circle()
+                            .fill(option.tick)
+                            .frame(width: 24, height: 24)
+                            .padding(10)
+                            .modifier(SwatchDepth(selected: selected))
+                        Text(option.title)
+                            .font(.caption)
+                            .foregroundStyle(selected ? Theme.text : Theme.secondaryText)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(option.title)
+                .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+            }
+        }
+    }
+}
+
+private struct SwatchDepth: ViewModifier {
+    let selected: Bool
+
+    func body(content: Content) -> some View {
+        if selected {
+            content.inset(Circle(), depth: 3)
+        } else {
+            content.extruded(Circle(), depth: 3)
         }
     }
 }

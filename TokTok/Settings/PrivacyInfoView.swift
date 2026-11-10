@@ -11,9 +11,12 @@ struct PrivacyInfoView: View {
                 Text("다만 iCloud 백업이나 컴퓨터 백업을 켜 두었다면 기기 백업에 함께 포함될 수 있어요.")
                 Text("앱을 삭제하면 이 기기에 있는 기록도 함께 삭제돼요.")
             }
+            .font(.subheadline)
+            .foregroundStyle(Theme.text)
+            .listRowBackground(Theme.surface)
         }
-        .scrollContentBackground(.hidden)
-        .background(Theme.background)
+        .tokTokListStyle()
         .navigationTitle("개인정보와 데이터")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

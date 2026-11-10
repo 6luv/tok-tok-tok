@@ -53,6 +53,7 @@ struct DayView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView(model: model)
+                .tint(Theme.accent)
         }
         .sheet(isPresented: $showingBackTapGuide) {
             NavigationStack {
@@ -64,6 +65,7 @@ struct DayView: View {
                     }
             }
             .preferredColorScheme(.dark)
+            .tint(Theme.accent)
         }
     }
 
@@ -72,43 +74,54 @@ struct DayView: View {
     private var dayContent: some View {
         VStack(spacing: 0) {
             header
-            Divider().overlay(Theme.separator)
+            Theme.hairline.frame(height: 1)
             recordList
+            Theme.hairline.frame(height: 1)
             bottomBar
         }
     }
 
     private var header: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                if let snap = model.snapshot {
-                    Text(model.presentation.headerTitle(for: snap.interval.day))
-                        .font(.title2.bold())
-                        .foregroundStyle(Theme.text)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(model.presentation.rangeText(for: snap.interval))
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(Theme.secondaryText)
-                        .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
-                } else {
-                    Text("TokTok")
-                        .font(.title2.bold())
-                        .foregroundStyle(Theme.text)
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let snap = model.snapshot {
+                        Text(model.presentation.headerTitle(for: snap.interval.day))
+                            .font(.title2.weight(.medium))
+                            .foregroundStyle(Theme.text)
+                            .accessibilityAddTraits(.isHeader)
+                        Text(model.presentation.rangeText(for: snap.interval))
+                            .font(.footnote.monospacedDigit())
+                            .foregroundStyle(Theme.secondaryText)
+                            .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
+                    } else {
+                        Text("TokTok")
+                            .font(.title2.weight(.medium))
+                            .foregroundStyle(Theme.text)
+                    }
                 }
+                Spacer(minLength: 0)
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 18, weight: .regular))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .foregroundStyle(Theme.secondaryText)
+                .padding(.trailing, -12)
+                .accessibilityLabel("설정")
             }
-            Spacer()
-            Button {
-                showingSettings = true
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(.title3)
-                    .frame(minWidth: 44, minHeight: 44)
+            if let snap = model.snapshot {
+                DayRulerView(interval: snap.interval,
+                             records: snap.records.sorted(by: TimeRecord.chronological).map(\.occurredAt),
+                             timeZone: snap.timeZone)
             }
-            .foregroundStyle(Theme.text)
-            .accessibilityLabel("설정")
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
     }
 
     @ViewBuilder
@@ -125,9 +138,12 @@ struct DayView: View {
                             })
                         Spacer(minLength: 0)
                         statusArea
+                        if !model.blocks.isEmpty {
+                            Theme.hairline.frame(height: 1)
+                        }
                         ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                            if index > 0 { Theme.separator.frame(height: 1) }
-                            RecordBlockView(block: block)
+                            if index > 0 { Theme.hairline.frame(height: 1).background(Theme.surface) }
+                            RecordBlockView(block: block, isNewest: index == 0)
                                 .id(block.id)
                                 .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
                         }
@@ -146,7 +162,7 @@ struct DayView: View {
                     if reduceMotion {
                         proxy.scrollTo(target, anchor: .top)
                     } else {
-                        withAnimation(.easeOut(duration: 0.25)) { proxy.scrollTo(target, anchor: .top) }
+                        withAnimation(Theme.ease(0.35)) { proxy.scrollTo(target, anchor: .top) }
                     }
                     model.scrollTarget = nil
                 }
@@ -155,14 +171,10 @@ struct DayView: View {
                         Button {
                             model.showNewest()
                         } label: {
-                            Text("새 기록 \(model.unseenCount)개")
-                                .font(.subheadline.weight(.semibold))
-                                .padding(.horizontal, 16)
-                                .frame(minHeight: 44)
-                                .background(Theme.accent, in: Capsule())
-                                .foregroundStyle(Theme.onAccent)
+                            Label("새 기록 \(model.unseenCount)개", systemImage: "arrow.up")
                         }
-                        .padding(.top, 8)
+                        .buttonStyle(SecondaryButtonStyle())
+                        .padding(.top, 12)
                     }
                 }
             }
@@ -175,31 +187,36 @@ struct DayView: View {
         case .loading:
             ProgressView("불러오는 중")
                 .tint(Theme.secondaryText)
+                .font(.subheadline)
                 .foregroundStyle(Theme.secondaryText)
                 .padding(24)
         case .failed(let message):
             VStack(spacing: 8) {
-                Text(message).foregroundStyle(Theme.text)
-                Text("기존 기록이 삭제된 것은 아니에요.")
+                Text(message)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(Theme.text)
+                Text("기존 기록이 삭제된 것은 아니에요")
                     .font(.footnote)
                     .foregroundStyle(Theme.secondaryText)
                 Button("다시 시도") { Task { await model.reload() } }
-                    .frame(minHeight: 44)
-                    .foregroundStyle(Theme.accent)
+                    .buttonStyle(SecondaryButtonStyle())
+                    .padding(.top, 8)
             }
+            .multilineTextAlignment(.center)
             .padding(24)
         case .loaded where model.blocks.isEmpty:
-            VStack(spacing: 12) {
+            VStack(spacing: 16) {
                 Text("기록한 순간이 여기에 쌓여요")
+                    .font(.subheadline)
                     .foregroundStyle(Theme.secondaryText)
                 Button {
                     showingBackTapGuide = true
                 } label: {
                     Label("뒷면 탭으로 기록 연결하기", systemImage: "hand.tap")
-                        .frame(minHeight: 44)
                 }
-                .foregroundStyle(Theme.accent)
+                .buttonStyle(SecondaryButtonStyle())
             }
+            .multilineTextAlignment(.center)
             .padding(24)
         default:
             EmptyView()
@@ -208,6 +225,7 @@ struct DayView: View {
             Text("읽지 못한 기록 파일 \(snap.unreadableCount)개가 있어요. 삭제하지 않고 보관 중이에요.")
                 .font(.footnote)
                 .foregroundStyle(Theme.secondaryText)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
         }
@@ -216,7 +234,7 @@ struct DayView: View {
     // MARK: 하단 기록 버튼
 
     private var bottomBar: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 12) {
             feedbackView
             Button {
                 model.recordTapped()
@@ -226,18 +244,15 @@ struct DayView: View {
                         ProgressView().tint(Theme.onAccent)
                     }
                     Text(model.inFlight > 0 ? "저장 중…" : "현재 시간 기록")
-                        .font(.headline)
                 }
-                .frame(maxWidth: .infinity, minHeight: 56)
-                .background(Theme.accent, in: RoundedRectangle(cornerRadius: 14))
-                .foregroundStyle(Theme.onAccent)
             }
+            .buttonStyle(PrimaryButtonStyle())
             .accessibilityLabel("현재 시간 기록")
             .accessibilityHint("지금 이 순간의 시각을 저장합니다")
             .disabled(model.state == .loading && model.snapshot == nil)
         }
         .padding(.horizontal, 20)
-        .padding(.top, 8)
+        .padding(.top, 12)
         .padding(.bottom, 8)
         .background(Theme.background)
     }
@@ -246,39 +261,50 @@ struct DayView: View {
     private var feedbackView: some View {
         switch model.feedback {
         case .saved(let text):
-            Label(text, systemImage: "checkmark.circle")
-                .font(.subheadline)
-                .foregroundStyle(Theme.text)
+            Label(text, systemImage: "checkmark")
+                .font(.footnote.monospacedDigit())
+                .foregroundStyle(Theme.secondaryText)
         case .saveFailed(let pending):
-            VStack(spacing: 6) {
-                Label("기록을 저장하지 못했어요", systemImage: "exclamationmark.triangle")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.text)
-                Text("\(model.presentation.timeText(pending.occurredAt))에 누른 기록이에요. 다시 시도하면 원래 시각으로 저장해요.")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.secondaryText)
-                    .multilineTextAlignment(.center)
-                HStack {
-                    Button("다시 시도") { model.retry(pending) }
-                        .frame(minHeight: 44)
-                    Button("닫기") { model.dismissFeedback() }
-                        .frame(minHeight: 44)
-                }
-                .foregroundStyle(Theme.accent)
-            }
-        case .error(let message):
-            VStack(spacing: 6) {
-                Label(message, systemImage: "exclamationmark.triangle")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.text)
-                    .multilineTextAlignment(.center)
+            notice(icon: "exclamationmark.triangle",
+                   title: "기록을 저장하지 못했어요",
+                   detail: "\(model.presentation.timeText(pending.occurredAt))에 누른 기록이에요. 다시 시도하면 원래 시각으로 저장해요.") {
+                Button("다시 시도") { model.retry(pending) }
+                    .buttonStyle(SecondaryButtonStyle())
                 Button("닫기") { model.dismissFeedback() }
                     .frame(minHeight: 44)
-                    .foregroundStyle(Theme.accent)
+                    .padding(.horizontal, 12)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+        case .error(let message):
+            notice(icon: "exclamationmark.triangle", title: message, detail: nil) {
+                Button("닫기") { model.dismissFeedback() }
+                    .buttonStyle(SecondaryButtonStyle())
             }
         case nil:
             EmptyView()
         }
+    }
+
+    /// 저장 실패·오류 알림 상자. 색이 아니라 아이콘과 문구로 상태를 전달한다.
+    private func notice<Actions: View>(icon: String, title: String, detail: String?,
+                                       @ViewBuilder actions: () -> Actions) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(title, systemImage: icon)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Theme.text)
+            if let detail {
+                Text(detail)
+                    .font(.footnote)
+                    .foregroundStyle(Theme.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack(spacing: 8) { actions() }
+                .padding(.top, 4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous).strokeBorder(Theme.hairline))
     }
 }
 

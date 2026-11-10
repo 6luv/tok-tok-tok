@@ -17,8 +17,12 @@ struct SettingsView: View {
                 Section {
                     BoundaryPicker(hour: $hour, minute: $minute)
                     if let original {
-                        Text("현재 설정: \(DayPresentation.boundaryText(original))")
-                            .foregroundStyle(Theme.secondaryText)
+                        LabeledContent("현재 설정") {
+                            Text(DayPresentation.boundaryText(original))
+                                .monospacedDigit()
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .foregroundStyle(Theme.text)
                     }
                     Text("바꾸면 지난 기록도 새 기준으로 다시 묶여 보여요. 기록된 원래 시각은 바뀌지 않아요.")
                         .font(.footnote)
@@ -28,18 +32,21 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.secondaryText)
                     if let errorText {
                         Label(errorText, systemImage: "exclamationmark.triangle")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.text)
                     }
                 } header: {
-                    Text("하루 시작 시간")
+                    Text("하루 시작 시간").textCase(nil)
                 }
+                .listRowBackground(Theme.surface)
 
                 Section {
                     NavigationLink("뒷면 탭 연결") { RecordingGuideView() }
                     NavigationLink("개인정보와 데이터") { PrivacyInfoView() }
                 }
+                .listRowBackground(Theme.surface)
             }
-            .scrollContentBackground(.hidden)
-            .background(Theme.background)
+            .tokTokListStyle()
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

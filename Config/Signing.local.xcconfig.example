@@ -1,0 +1,5 @@
+// 이 파일을 Signing.local.xcconfig로 복사한 뒤 내 값으로 바꾼다. 복사본은 커밋되지 않는다.
+// 이미 설치한 앱의 기록을 유지하려면 그때 쓰던 번들 ID를 그대로 넣는다.
+
+TOKTOK_BUNDLE_ID = com.yourname.TokTokTok
+DEVELOPMENT_TEAM = ABCDE12345

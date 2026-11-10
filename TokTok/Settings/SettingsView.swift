@@ -25,12 +25,6 @@ struct SettingsView: View {
                         }
                         .foregroundStyle(Theme.text)
                     }
-                    Text("바꾸면 지난 기록도 새 기준으로 다시 묶여 보여요. 기록된 원래 시각은 바뀌지 않아요.")
-                        .font(.footnote)
-                        .foregroundStyle(Theme.secondaryText)
-                    Text("기록은 지금 기기의 시간대로 표시돼요. 여행 등으로 시간대가 바뀌면 표시 시각과 기록일이 달라질 수 있어요. 기록 당시 시간대 정보는 그대로 보관해요.")
-                        .font(.footnote)
-                        .foregroundStyle(Theme.secondaryText)
                     if let errorText {
                         Label(errorText, systemImage: "exclamationmark.triangle")
                             .font(.subheadline)
@@ -38,6 +32,8 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("하루 시작 시간")
+                } footer: {
+                    Text("바꿔도 기록된 시각은 그대로예요")
                 }
 
                 NeuSection {
@@ -48,7 +44,7 @@ struct SettingsView: View {
                 } header: {
                     Text("화면 모드")
                 } footer: {
-                    Text("바로 적용돼요. 기록에는 영향을 주지 않아요.")
+                    Text("바로 적용돼요")
                 }
 
                 NeuSection {

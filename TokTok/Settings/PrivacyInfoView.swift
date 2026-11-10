@@ -6,10 +6,11 @@ struct PrivacyInfoView: View {
     var body: some View {
         NeuPage {
             NeuSection {
-                Text("TokTok은 계정, 서버, 광고, 분석 도구를 사용하지 않아요.")
-                Text("기록한 시각과 시간대 정보, 하루 시작 시간 설정은 이 기기의 앱 저장 공간에만 저장되고 개발자에게 전송되지 않아요.")
-                Text("다만 iCloud 백업이나 컴퓨터 백업을 켜 두었다면 기기 백업에 함께 포함될 수 있어요.")
-                Text("앱을 삭제하면 이 기기에 있는 기록도 함께 삭제돼요.")
+                Text("계정·서버·광고·분석 도구를 쓰지 않아요")
+                Text("기록과 설정은 이 기기에만 저장되고 개발자에게 보내지 않아요")
+                Text("iCloud·컴퓨터 백업을 켜 두면 백업에 포함될 수 있어요")
+                Text("앱을 지우면 기록도 함께 지워져요")
+                Text("시각은 지금 기기 시간대로 보여요. 기록 당시 시간대도 함께 보관해요.")
             }
             .font(.subheadline)
             .foregroundStyle(Theme.text)

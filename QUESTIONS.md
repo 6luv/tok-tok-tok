@@ -26,7 +26,7 @@
 |---|---|---|
 | Q01 | 첫 실행에서 시·분 선택 후 ‘이 시간으로 시작’을 눌러야 저장. 선택기 처음 위치(현재 시각의 정시)는 미리보기일 뿐 기본값 아님. 미설정 상태의 단축어 실행은 “기록되지 않았어요” 오류 | `BoundarySetupView`, `RecordTimeService.recordNow`, `RecordNowIntent` |
 | Q02 | 경계 변경 시 원본 시각은 그대로, 모든 기록의 표시 그룹을 새 기준으로 재계산 | `RecordTimeService.loadDay`, 테스트 T07 |
-| Q03 | 현재 기기 시간대로 조회·표시, 기록 당시 시간대 ID·오프셋은 보존 | `TimeRecord`, `DayView`, 설정 화면 안내 |
+| Q03 | 현재 기기 시간대로 조회·표시, 기록 당시 시간대 ID·오프셋은 보존 | `TimeRecord`, `DayView`, ‘개인정보와 데이터’ 화면 안내(2026-11-10 설정 화면에서 이동) |
 | Q04 | 첫 기록이 맨 아래, 새 기록이 위(위→아래 = 최신→과거) | `DayPresentation.blocks` |
 | Q05 | 현재 기록일만 표시. 이전 날짜 이동 UI 없음. 데이터는 보존 | `DayView` |
 | Q06 | 삭제·내보내기 없음. 자동 삭제 없음. 읽지 못한 파일도 삭제하지 않음 | `FileRecordRepository` |

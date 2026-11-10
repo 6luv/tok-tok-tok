@@ -189,3 +189,15 @@
 | 대비 | 글자 토큰 값은 R-009와 같음(본문·보조·흐린·accent 모두 4.5:1 이상). `tick`은 글자가 아닌 눈금 | 변경 없음 |
 | 설정·뒷면 탭 연결·개인정보 카드 화면 | 컴파일만 확인(시뮬레이터에서 탭 이동 불가) | NOT RUN |
 | 큰 글씨, VoiceOver(카드 머리글 isHeader), 실기기 | | NOT RUN |
+
+## R-011 헤더 구간·박스 날짜·기록 버튼·설정 글 줄이기 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 변경: 헤더 구간 문구를 하루 눈금 양끝 라벨로 이동, 박스 날짜 두 줄(일 + 월·요일), 기록 버튼 둥근 사각형(20), 설정·안내 문구 축약, 시간대 안내를 개인정보 화면으로 이동
+- 명령: `cd TokTokCore && swift test` → 32 tests, 0 failures(`DayPresentationTests`에 dayText·monthWeekdayText 검증 추가) / `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 하루 화면 라이트·다크 | 시뮬레이터 스크린숏 | PASS (시각 확인, 시뮬레이터) |
+| 설정·안내·개인정보 화면 문구 | 컴파일만 확인 | NOT RUN (화면 확인 안 함) |
+| VoiceOver 제목+구간 낭독, 큰 글씨, 실기기 | | NOT RUN |

@@ -33,15 +33,15 @@ struct BoundaryPicker: View {
 }
 
 enum BoundaryExample {
-    /// "오늘 기준 구간: 10/31 23:00 – 11/01 23:00. 23:00 전의 기록은 전날 기록일에 들어가요."
+    /// "지금 구간 10/31 23:00 – 11/01 23:00\n23:00 전 기록은 전날로 묶여요"
     static func text(for boundary: DayBoundary, now: Date = Date(), timeZone: TimeZone = .current) -> String {
         let calc = DayBoundaryCalculator(boundary: boundary, timeZone: timeZone)
         let interval = calc.interval(for: calc.recordDay(containing: now))
         let p = DayPresentation(timeZone: timeZone)
         let b = DayPresentation.boundaryText(boundary)
         if boundary.minutes == 0 {
-            return "지금 구간: \(p.rangeText(for: interval)). 00:00을 고르면 일반 달력 날짜와 같아요."
+            return "지금 구간 \(p.rangeText(for: interval))\n달력 날짜와 같아요"
         }
-        return "지금 구간: \(p.rangeText(for: interval)). 매일 \(b) 전의 기록은 전날 기록일에 들어가요."
+        return "지금 구간 \(p.rangeText(for: interval))\n\(b) 전 기록은 전날로 묶여요"
     }
 }

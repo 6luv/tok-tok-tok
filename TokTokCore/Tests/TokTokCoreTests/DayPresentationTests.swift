@@ -21,6 +21,8 @@ final class DayPresentationTests: XCTestCase {
         XCTAssertEqual(blocks.map(\.id), [second.id, first.id])
         XCTAssertEqual(blocks[0].timeText, "03:15:08")
         XCTAssertEqual(blocks[0].dateText, "11월 1일")
+        XCTAssertEqual(blocks[0].dayText, "1일")
+        XCTAssertEqual(blocks[0].monthWeekdayText, "11월 · 일")
         XCTAssertEqual(blocks[1].timeText, "23:18:42")
         XCTAssertEqual(blocks[1].dateText, "10월 31일")
         XCTAssertEqual(blocks[0].accessibilityLabel, "11월 1일 오전 3시 15분 8초, 시간 기록")

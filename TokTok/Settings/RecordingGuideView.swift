@@ -33,65 +33,61 @@ struct RecordingGuideView: View {
 
     var body: some View {
         NeuPage {
-            NeuSection {
-                Text("뒷면을 톡톡 치면 지금 시각이 기록되도록 한 번만 연결해요")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryText)
-            }
+            Text("뒷면을 톡톡 치면 지금 시각이 기록되도록 한 번만 연결해요")
+                .font(.subheadline)
+                .foregroundStyle(Theme.secondaryText)
+                .padding(.horizontal, 4)
 
-            NeuSection {
+            stepCard(1, title: Self.sharedShortcutURL == nil ? "단축어 만들기" : "단축어 받기", done: false) {
                 if let shared = Self.sharedShortcutURL {
-                    stepRow(1, "‘\(Self.suggestedShortcutName)’ 단축어 받기")
-                    Text("단축어 앱이 열리면 ‘단축어 추가’를 눌러요")
-                        .font(.footnote)
-                        .foregroundStyle(Theme.secondaryText)
+                    detail("단축어 앱이 열리면 ‘단축어 추가’를 눌러요")
                     Button {
                         openURL(shared)
                     } label: {
                         Label("‘\(Self.suggestedShortcutName)’ 받기", systemImage: "square.and.arrow.down")
-                            .frame(minHeight: 44)
                     }
-                    .foregroundStyle(.tint)
-                    .font(.body.weight(.medium))
+                    .buttonStyle(SecondaryButtonStyle(emphasized: true))
                     .accessibilityHint("단축어 앱에서 \(Self.suggestedShortcutName) 단축어를 추가해요")
                 } else {
-                    manualShortcutSteps
+                    detail("새 단축어 → 동작 추가에서 ‘TokTokTok’을 찾아 ‘현재 시간 기록’을 넣고, 이름을 ‘\(Self.suggestedShortcutName)’로 저장해요")
+                    Button {
+                        if let url = URL(string: "shortcuts://create-shortcut") { openURL(url) }
+                    } label: {
+                        Label("단축어 앱에서 만들기", systemImage: "plus")
+                    }
+                    .buttonStyle(SecondaryButtonStyle(emphasized: true))
+                    HStack(spacing: 8) {
+                        Text("동작 미리 보기")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.mutedText)
+                        ShortcutsLink()
+                    }
                 }
-            } header: {
-                Text("1. 단축어 준비")
             }
 
-            NeuSection {
-                stepRow(2, "설정 앱 → 손쉬운 사용 → 터치 → 뒷면 탭")
-                stepRow(3, "‘두 번 탭’ 또는 ‘세 번 탭’ 선택")
-                stepRow(4, "단축어 목록에서 ‘\(Self.suggestedShortcutName)’ 선택")
-                Text("설정 앱에서 직접 바꿔야 해요. 메뉴 이름은 iOS 버전에 따라 다를 수 있어요.")
+            stepCard(2, title: "뒷면 탭에 연결", done: false) {
+                detail("설정 앱에서 아래 순서로 들어가 ‘\(Self.suggestedShortcutName)’를 골라요. TokTokTok이 대신 열 수는 없어요.")
+                pathChips(["설정", "손쉬운 사용", "터치", "뒷면 탭", "두 번 탭", Self.suggestedShortcutName])
+                Text("메뉴 이름은 iOS 버전에 따라 조금 다를 수 있어요")
                     .font(.footnote)
-                    .foregroundStyle(Theme.secondaryText)
-            } header: {
-                Text("2. 뒷면 탭에 연결")
+                    .foregroundStyle(Theme.mutedText)
             }
 
-            NeuSection {
-                stepRow(5, "뒷면을 톡톡 쳐 본 뒤 이 화면으로 돌아오기")
+            stepCard(3, title: "시험하기", done: latest != nil) {
+                detail("화면이 켜진 상태에서 뒷면을 톡톡 친 뒤 이 화면으로 돌아와요")
                 verification
-            } header: {
-                Text("3. 연결 확인")
-            } footer: {
-                Text("뒷면 탭·Siri 기록도 모두 ‘단축어 기록’으로 보여요")
             }
 
             NeuSection {
-                Text("기록 시각은 단축어가 실행된 순간이라 탭한 순간과 조금 다를 수 있어요")
-                Text("실행할 때 iOS가 화면 위에 짧은 알림을 띄울 수 있어요")
-                Text("화면이 꺼져 있으면 뒷면 탭이 인식되지 않아요(실기기 확인)")
-                Text("화면이 꺼졌을 때는 Siri에게 “TokTokTok 기록”이라고 말해 보세요. 잠금 상태 동작은 기기마다 다를 수 있어요.")
-                Text("앱 안 ‘현재 시간 기록’ 버튼은 연결 없이 언제든 쓸 수 있어요")
+                note("clock", "기록 시각은 단축어가 실행된 순간이라 탭한 순간과 조금 다를 수 있어요")
+                note("rectangle.topthird.inset.filled", "실행할 때 iOS가 화면 위에 실행 중 표시를 띄워요")
+                note("moon", "화면이 꺼져 있으면 뒷면 탭이 인식되지 않아요(실기기 확인). 이때는 Siri에게 “TokTokTok 기록”이라고 말해 보세요.")
+                note("hand.tap", "앱 안 ‘현재 시간 기록’ 버튼은 연결 없이 언제든 쓸 수 있어요")
             } header: {
                 Text("알아 두세요")
+            } footer: {
+                Text("뒷면 탭·Siri 기록은 앱에서 모두 ‘단축어 기록’으로 구분돼요")
             }
-            .font(.subheadline)
-            .foregroundStyle(Theme.secondaryText)
         }
         .navigationTitle("뒷면 탭 연결")
         .navigationBarTitleDisplayMode(.inline)
@@ -105,67 +101,127 @@ struct RecordingGuideView: View {
         }
     }
 
-    /// 공유 링크가 없을 때: 사용자가 단축어 앱에서 직접 만든다.
-    @ViewBuilder
-    private var manualShortcutSteps: some View {
-        stepRow(1, "단축어 앱에서 ‘\(Self.suggestedShortcutName)’ 단축어 만들기")
-        Text("동작 추가 → TokTokTok → ‘현재 시간 기록’을 넣고 저장해요")
-            .font(.footnote)
+    // MARK: 단계 카드
+
+    /// 번호 원(튀어나옴, 완료면 파이고 체크) + 제목 + 내용. 카드는 튀어나온 면.
+    private func stepCard<Content: View>(_ n: Int, title: String, done: Bool,
+                                         @ViewBuilder content: () -> Content) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            ZStack {
+                if done {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.tint)
+                } else {
+                    Text("\(n)")
+                        .font(.subheadline.weight(.medium).monospacedDigit())
+                        .foregroundStyle(Theme.secondaryText)
+                }
+            }
+            .frame(width: 32, height: 32)
+            .modifier(StepBadge(done: done))
+            .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text(title)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(Theme.text)
+                    .frame(minHeight: 32, alignment: .leading)
+                content()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(16)
+        .extruded(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous), depth: 5)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(n)단계. \(title)\(done ? ", 완료" : "")")
+    }
+
+    private func detail(_ text: String) -> some View {
+        Text(text)
+            .font(.subheadline)
             .foregroundStyle(Theme.secondaryText)
-        Button {
-            if let url = URL(string: "shortcuts://create-shortcut") { openURL(url) }
-        } label: {
-            Label("새 단축어 만들기", systemImage: "plus.square.on.square")
-                .frame(minHeight: 44)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    /// 설정 앱 경로를 순서대로 파인 칩으로 보여 준다.
+    private func pathChips(_ items: [String]) -> some View {
+        WrapLayout(spacing: 6, lineSpacing: 8) {
+            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                HStack(spacing: 6) {
+                    Text(item)
+                        .font(.footnote.weight(index == items.count - 1 ? .semibold : .regular))
+                        .foregroundStyle(index == items.count - 1 ? AnyShapeStyle(.tint) : AnyShapeStyle(Theme.text))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .inset(Capsule(style: .continuous), depth: 2)
+                    if index < items.count - 1 {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(Theme.mutedText)
+                    }
+                }
+            }
         }
-        .foregroundStyle(.tint)
-        .font(.body.weight(.medium))
-        VStack(alignment: .leading, spacing: 8) {
-            Text("TokTokTok 동작 미리 보기")
-                .font(.footnote)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(items.joined(separator: ", "))
+    }
+
+    private func note(_ icon: String, _ text: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.mutedText)
+                .frame(width: 20)
+                .accessibilityHidden(true)
+            Text(text)
+                .font(.subheadline)
                 .foregroundStyle(Theme.secondaryText)
-            ShortcutsLink()
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 4)
     }
 
     @ViewBuilder
     private var verification: some View {
-        if let latest {
-            let p = DayPresentation(timeZone: .current)
-            let block = p.blocks(for: [latest])[0]
-            VStack(alignment: .leading, spacing: 4) {
-                Label("마지막 단축어 기록", systemImage: "checkmark")
+        Group {
+            if let latest {
+                let p = DayPresentation(timeZone: .current)
+                let block = p.blocks(for: [latest])[0]
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("마지막 단축어 기록")
+                        .font(.caption)
+                        .foregroundStyle(Theme.mutedText)
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(block.timeText)
+                            .font(.system(.title2, design: .rounded).weight(.light).monospacedDigit())
+                            .foregroundStyle(Theme.text)
+                        Text(block.dateText)
+                            .font(.footnote)
+                            .foregroundStyle(Theme.secondaryText)
+                    }
+                    Text("방금 친 시각과 다르면 2단계를 다시 확인해 주세요")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.mutedText)
+                }
+                .accessibilityElement(children: .combine)
+            } else if checkedAt != nil {
+                Text("아직 단축어 기록이 없어요(최근 2주)")
                     .font(.subheadline)
                     .foregroundStyle(Theme.secondaryText)
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(block.timeText)
-                        .font(.title2.monospacedDigit())
-                        .foregroundStyle(Theme.text)
-                    Text(block.dateText)
-                        .font(.footnote)
-                        .foregroundStyle(Theme.secondaryText)
-                }
-                Text("시각이 그대로라면 2단계를 다시 확인해 주세요")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.secondaryText)
+            } else {
+                ProgressView()
             }
-            .accessibilityElement(children: .combine)
-        } else if checkedAt != nil {
-            Text("최근 2주 동안 단축어 기록이 없어요")
-                .font(.subheadline)
-                .foregroundStyle(Theme.secondaryText)
-        } else {
-            ProgressView()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .inset(RoundedRectangle(cornerRadius: 12, style: .continuous), depth: 3)
+
         Button {
             Task { await refresh() }
         } label: {
             Label("다시 확인", systemImage: "arrow.clockwise")
-                .frame(minHeight: 44)
         }
-        .foregroundStyle(.tint)
-        .font(.body.weight(.medium))
+        .buttonStyle(SecondaryButtonStyle())
     }
 
     private func refresh() async {
@@ -176,17 +232,38 @@ struct RecordingGuideView: View {
         checkedAt = Date()
     }
 
-    private func stepRow(_ n: Int, _ text: String) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text("\(n)")
-                .font(.subheadline.monospacedDigit())
-                .foregroundStyle(Theme.mutedText)
-                .frame(minWidth: 16, alignment: .leading)
-                .accessibilityHidden(true)
-            Text(text)
-                .foregroundStyle(Theme.text)
+}
+
+private struct StepBadge: ViewModifier {
+    let done: Bool
+    func body(content: Content) -> some View {
+        if done { content.inset(Circle(), depth: 2) } else { content.extruded(Circle(), depth: 3) }
+    }
+}
+
+/// 칩을 줄바꿈하며 배치(iOS 16+ Layout).
+private struct WrapLayout: Layout {
+    var spacing: CGFloat
+    var lineSpacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let width = proposal.width ?? .infinity
+        var x: CGFloat = 0, y: CGFloat = 0, lineH: CGFloat = 0, maxX: CGFloat = 0
+        for v in subviews {
+            let s = v.sizeThatFits(.unspecified)
+            if x > 0, x + s.width > width { y += lineH + lineSpacing; x = 0; lineH = 0 }
+            x += s.width + spacing; lineH = max(lineH, s.height); maxX = max(maxX, x - spacing)
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(n)단계. \(text)")
+        return CGSize(width: min(maxX, width), height: y + lineH)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX, y = bounds.minY, lineH: CGFloat = 0
+        for v in subviews {
+            let s = v.sizeThatFits(.unspecified)
+            if x > bounds.minX, x + s.width > bounds.maxX { y += lineH + lineSpacing; x = bounds.minX; lineH = 0 }
+            v.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(s))
+            x += s.width + spacing; lineH = max(lineH, s.height)
+        }
     }
 }

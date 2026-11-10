@@ -287,4 +287,40 @@ final class StorageAndServiceTests: XCTestCase {
         clock.value = clock.value.addingTimeInterval(15 * 86_400)
         XCTAssertNil(try service.latestRecord(source: .intent))
     }
+
+    // MARK: 오늘 기록 지우기(사용자 결정 2026-11-10)
+
+    func testDeleteRemovesOnlyConfirmedRecords() throws {
+        let t = utc("2026-11-10T03:00:00Z")
+        let tick = Counter()
+        let service = try makeService(clock: { t.addingTimeInterval(Double(tick.next())) })
+        let a = try service.recordNow(source: .app)
+        let b = try service.recordNow(source: .intent)
+        let shown = try service.loadDay().records
+        XCTAssertEqual(shown.map(\.id), [a.id, b.id])
+        // 사용자가 확인한 뒤 들어온 기록은 지우지 않는다
+        let late = try service.recordNow(source: .intent)
+        let dir = root.appendingPathComponent("records/2026-11")
+        let bad = dir.appendingPathComponent("broken.json")
+        try Data("{not json".utf8).write(to: bad)
+
+        XCTAssertEqual(try service.deleteRecords(shown), 2)
+
+        let after = try service.loadDay()
+        XCTAssertEqual(after.records.map(\.id), [late.id])
+        XCTAssertEqual(after.unreadableCount, 1)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: bad.path)) // 읽지 못한 파일은 보존
+        // 이미 지운 기록을 다시 지워도 오류 없이 0개
+        XCTAssertEqual(try service.deleteRecords(shown), 0)
+    }
+
+    func testDeleteSkipsFileWhoseContentDiffers() throws {
+        let t = utc("2026-11-10T03:00:00Z")
+        let service = try makeService(clock: { t })
+        let saved = try service.recordNow(source: .app)
+        // 같은 ID지만 내용이 다른 기록을 넘기면 지우지 않는다
+        let other = TimeRecord(id: saved.id, occurredAt: saved.occurredAt.addingTimeInterval(1), timeZone: seoul, source: .app)
+        XCTAssertEqual(try service.deleteRecords([other]), 0)
+        XCTAssertEqual(try service.loadDay().records.map(\.id), [saved.id])
+    }
 }

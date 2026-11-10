@@ -76,12 +76,28 @@ struct DayView: View {
 
     // MARK: 하루 화면
 
+    /// 앱 안 기록 성공 토스트: 위쪽에서 살짝 내려오는 튀어나온 카드. 2초 뒤 사라진다.
+    @ViewBuilder
+    private var recordToast: some View {
+        if case .saved(let date) = model.feedback {
+            RecordToastView(date: date)
+                .extruded(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous), depth: 6)
+                .padding(.horizontal, 20)
+                .padding(.top, 4)
+                .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+                .onTapGesture { model.dismissFeedback() }
+                .accessibilityAddTraits(.isStaticText)
+        }
+    }
+
     private var dayContent: some View {
         VStack(spacing: 0) {
             header
             recordList
             bottomBar
         }
+        .overlay(alignment: .top) { recordToast }
+        .animation(reduceMotion ? nil : Theme.ease(0.3), value: model.feedback)
     }
 
     private var header: some View {
@@ -291,10 +307,9 @@ struct DayView: View {
     @ViewBuilder
     private var feedbackView: some View {
         switch model.feedback {
-        case .saved(let text):
-            Label(text, systemImage: "checkmark")
-                .font(.footnote.monospacedDigit())
-                .foregroundStyle(Theme.secondaryText)
+        case .saved:
+            // 성공은 화면 위쪽 토스트로 보인다(recordToast).
+            EmptyView()
         case .saveFailed(let pending):
             notice(icon: "exclamationmark.triangle",
                    title: "기록을 저장하지 못했어요",

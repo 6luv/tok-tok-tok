@@ -49,7 +49,7 @@ xcodebuild test -project TokTok.xcodeproj -scheme TokTok \
   -destination 'platform=iOS Simulator,id=<시뮬레이터 UDID>'
 ```
 
-빌드 성공만으로 완료로 보지 않습니다. 실제 실행 결과는 [TEST_RESULTS.md](TEST_RESULTS.md)에 PASS / NOT RUN으로 구분해 기록합니다.
+빌드 성공만으로 완료로 보지 않습니다. 실제 실행 결과는 [TEST_RESULTS.md](docs/TEST_RESULTS.md)에 PASS / NOT RUN으로 구분해 기록합니다.
 
 ## 프로젝트 구조
 
@@ -61,23 +61,26 @@ TokTok/            앱(SwiftUI)
 TokTokCore/        도메인 Swift 패키지: 하루 경계 계산, 파일 저장소, 기록 서비스
 TokTokTests/       앱 타깃 테스트
 Config/            서명 설정(로컬 값은 커밋하지 않음)
+docs/              제품·설계·테스트·인계 문서
 ```
 
 화면·도메인·저장소·Intent를 나눠, 앱 화면을 열지 않고 Intent만 실행돼도 저장할 수 있게 했습니다.
 
 ## 문서
 
+제품·설계·테스트 문서는 [`docs/`](docs/)에 있습니다.
+
 | 문서 | 내용 |
 |---|---|
-| [PRD.md](PRD.md) | 요구사항(R01~R10), 데이터, 하루 경계, iOS 제약 |
-| [DESIGN.md](DESIGN.md) | 화면 구조, 디자인 토큰, 상태별 표현, 접근성 |
-| [QUESTIONS.md](QUESTIONS.md) | 제품 결정과 잠정 정책 |
-| [TEST_PLAN.md](TEST_PLAN.md) | 자동·UI·실기기 테스트와 출시 게이트 |
-| [TEST_RESULTS.md](TEST_RESULTS.md) | 실제 실행 증거 |
-| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | 이슈 재현·원인·수정 기록 |
-| [SOURCES.md](SOURCES.md) | Apple 공식 근거 |
-| [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md) | 구현·검증 담당 규칙, 브랜치 규칙 |
-| [HANDOFF.md](HANDOFF.md) | 기능별 인계 |
+| [PRD.md](docs/PRD.md) | 요구사항(R01~R10), 데이터, 하루 경계, iOS 제약 |
+| [DESIGN.md](docs/DESIGN.md) | 화면 구조, 디자인 토큰, 상태별 표현, 접근성 |
+| [QUESTIONS.md](docs/QUESTIONS.md) | 제품 결정과 잠정 정책 |
+| [TEST_PLAN.md](docs/TEST_PLAN.md) | 자동·UI·실기기 테스트와 출시 게이트 |
+| [TEST_RESULTS.md](docs/TEST_RESULTS.md) | 실제 실행 증거 |
+| [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | 이슈 재현·원인·수정 기록 |
+| [SOURCES.md](docs/SOURCES.md) | Apple 공식 근거 |
+| [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md) | 구현·검증 담당 규칙, 브랜치 규칙(도구가 자동으로 읽어 저장소 맨 위에 둠) |
+| [HANDOFF.md](docs/HANDOFF.md) | 기능별 인계 |
 
 ## 개발 환경 기록
 
@@ -87,7 +90,7 @@ Config/            서명 설정(로컬 값은 커밋하지 않음)
 | Xcode / Swift | Xcode 26.5(17F42), Apple Swift 6.3.2 (macOS 26.3.1) |
 | 최소 iOS | 17.0 (Q09) |
 | 프로젝트 / scheme | `TokTok.xcodeproj` / shared scheme `TokTok`(앱 + `TokTokTests`), 로컬 패키지 `TokTokCore` |
-| 테스트 시뮬레이터 | iPhone 17 Pro(iOS 26.5). 실기기 기종·OS는 TEST_RESULTS.md에 실행별로 기록 |
+| 테스트 시뮬레이터 | iPhone 17 Pro(iOS 26.5). 실기기 기종·OS는 docs/TEST_RESULTS.md에 실행별로 기록 |
 | 구현 모델 | Claude Opus 5.5(`claude-opus-5-5`) |
 | 검증 모델 | Codex Astra(요청 명칭). 현재 설정 모델 사용 불가로 미실행 |
 
@@ -98,7 +101,7 @@ Config/            서명 설정(로컬 값은 커밋하지 않음)
 
 ```text
 CLAUDE.md, AGENTS.md 및 연결 문서를 읽고 PRD의 요구사항 ID별로 구현해 주세요.
-QUESTIONS.md의 잠정 정책을 확정사항으로 바꾸지 말고, 독립적으로 가능한 작업부터 진행해 주세요.
+docs/QUESTIONS.md의 잠정 정책을 확정사항으로 바꾸지 말고, 독립적으로 가능한 작업부터 진행해 주세요.
 모델과 도구 버전, 변경 파일, 실제 테스트 결과, 알려진 제약을 남기고 Codex 검증에 인계해 주세요.
 ```
 
@@ -106,10 +109,10 @@ QUESTIONS.md의 잠정 정책을 확정사항으로 바꾸지 말고, 독립적�
 
 ```text
 AGENTS.md에 따라 현재 변경을 독립 검증해 주세요. 제품 코드는 우선 수정하지 마세요.
-PRD R01~R10, DESIGN.md, TEST_PLAN.md를 구현 및 실제 실행 결과와 대조해 주세요.
+docs/PRD.md R01~R10, docs/DESIGN.md, docs/TEST_PLAN.md를 구현 및 실제 실행 결과와 대조해 주세요.
 하루 경계·DST·동시 저장·잠금/화면 꺼짐 실행과 과장된 지원 약속을 중점 확인해 주세요.
 실기기가 없으면 관련 항목은 NOT RUN 또는 BLOCKED로 남겨 주세요.
-TEST_RESULTS.md와 TROUBLESHOOTING.md에 증거·재현·심각도·출시 차단 여부를 기록해 주세요.
+docs/TEST_RESULTS.md와 docs/TROUBLESHOOTING.md에 증거·재현·심각도·출시 차단 여부를 기록해 주세요.
 ```
 
 </details>

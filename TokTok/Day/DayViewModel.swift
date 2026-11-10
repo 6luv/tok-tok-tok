@@ -16,7 +16,7 @@ final class DayViewModel: ObservableObject {
     }
 
     enum Feedback: Equatable {
-        case saved(String)             // "23:18:42 기록됨"
+        case saved(Date)               // 기록된 시각. 화면 위쪽 토스트(RecordToastView)로 보인다
         case saveFailed(TimeRecord)    // 재시도 대상(원래 시각·작업 ID)
         case error(String)             // 재시도할 기록이 없는 실패(새 시각으로 몰래 저장하지 않음)
     }
@@ -121,7 +121,8 @@ final class DayViewModel: ObservableObject {
             scrollTarget = record.id
             unseenCount = 0
             let text = "\(presentation.timeText(record.occurredAt)) 기록됨"
-            showFeedback(.saved(text), autoHide: true)
+            RecordSound.play()
+            showFeedback(.saved(record.occurredAt), autoHide: true)
             announce(text)
         case .failure(RecordError.saveFailed(let pending)):
             showFeedback(.saveFailed(pending), autoHide: false)

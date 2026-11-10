@@ -241,3 +241,17 @@
 | 기록 많을 때 판 모양 | 예시 기록 17건 스크린숏: 판이 기록 버튼 위까지 차고 맨 아래 행이 판의 둥근 모서리로 잘림 | PASS (시각 확인, 시뮬레이터) |
 | 중간 스크롤 시 위쪽 모서리 | 시뮬레이터에서 스크롤 조작 불가. 같은 clipShape가 위쪽에도 적용됨(코드 확인) | NOT RUN (조작 필요) |
 | 설정 취소·적용·화면 모드 버튼 | 컴파일만 확인 | NOT RUN |
+
+## R-015 기록 완료 소리·디자인 토스트 (feature/record-feedback)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 변경: 저장 확인 후 ‘띵’ 한 번(`RecordSound`, System Sound Services), 단축어 결과를 글자 대신 `RecordToastView` 스니펫으로, 앱 안 성공 피드백을 위쪽 토스트(2초 자동 사라짐)로
+- 명령: `cd TokTokCore && swift test` → 33 tests, 0 failures / `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 토스트 디자인 라이트·다크 | 임시 테스트에서 ImageRenderer로 그려 확인(임시 테스트는 커밋 안 함) | PASS (렌더링 확인) |
+| 소리 파일 번들 포함 | 빌드된 앱에 record-ding.wav 포함 확인 | PASS |
+| 무음 모드에서 소리 안 남 / 무음 아닐 때 한 번 | | NOT RUN (실기기 필요) |
+| 뒷면 탭·단축어 실행 시 스니펫 표시·소리 | | NOT RUN (실기기 필요) |
+| 앱 안 버튼 → 위쪽 토스트·2초 뒤 사라짐 | 시뮬레이터 조작 불가 | NOT RUN |

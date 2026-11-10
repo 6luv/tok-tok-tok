@@ -146,3 +146,58 @@
 | 화면 켜짐(잠금 해제 여부 미기록) | 기록됨 | PASS (사용자 보고, 반복 횟수 미기록) |
 | 화면 꺼짐 | 기록 안 됨 | FAIL (사용자 보고) → TS-007 |
 | 화면 켜짐 + 잠금, 재부팅 후 최초 해제 전, 강제 종료, Siri 화면 꺼짐 | — | NOT RUN |
+
+## R-008 화면 전면 개편 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2, macOS 26.3.1
+- 명령: `cd TokTokCore && swift test` → 32 tests, 0 failures / `xcodebuild test -project TokTok.xcodeproj -scheme TokTok -destination 'platform=iOS Simulator,id=<iPhone 17 Pro, iOS 26.5>'` → TokTokTests 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 빌드·앱 타깃 테스트 | 시뮬레이터 iPhone 17 Pro(iOS 26.5) | PASS (시뮬레이터) |
+| 첫 실행 경계 설정 화면 | 시뮬레이터 스크린숏으로 배치·색 확인 | PASS (시각 확인, 시뮬레이터) |
+| 하루 화면(기록 5건, 경계 04:00) | 예시 데이터를 시뮬레이터 앱 컨테이너에 넣고 스크린숏 확인: 하루 눈금·최신 블록 눈금·초 보조색·바닥 쌓기 | PASS (시각 확인, 시뮬레이터. 개인 기록 아님) |
+| 색상 대비(토큰 계산값) | 본문/바탕 16.36, 본문/면 15.00, 보조/바탕 7.45, 보조/면 6.82, 흐린/바탕 5.22, 흐린/면 4.79, 강조/면 9.51, 버튼 글자/강조 9.98 | PASS (WCAG 공식 계산. 실제 렌더링 측정 NOT RUN) |
+| 기록 박스 플립 패널(2차) | 문자판·스누즈 키 버튼 시도는 사용자 요청으로 되돌림(revert a753f8f). 이후 기록 박스만 플립 패널로 바꿔 TokTokTests 6 passed, 시뮬레이터 스크린숏 확인 | PASS (시뮬레이터) |
+| 구분선/면 대비 | 1.23:1(이전 1.37:1). 면과 바탕의 단계 차이로 블록 경계를 보완 | 관찰(TS-004) |
+| 설정·뒷면 탭 연결·개인정보 화면, 저장 실패 알림, ‘새 기록 N개’ | 컴파일만 확인 | NOT RUN (화면 확인 안 함) |
+| 큰 글씨(AX) 세로 배치, VoiceOver, 모션 감소 | | NOT RUN |
+| 실기기 | | NOT RUN |
+
+## R-009 뉴모피즘 개편·다크/라이트 모드 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 명령: `cd TokTokCore && swift test` → 32 tests, 0 failures / `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → TokTokTests 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 하루 화면 다크·라이트 | `defaults write com.example.TokTok toktok.appearance dark/light` 후 시뮬레이터 스크린숏(예시 기록 5건) | PASS (시각 확인, 시뮬레이터) |
+| 색상 대비 라이트(계산값) | 본문/바탕 13.66, 본문/홈 12.56, 보조/바탕 6.53, 보조/홈 6.00, 흐린/바탕 5.17, 흐린/홈 4.75, 강조/바탕 5.13 | PASS (WCAG 계산. 렌더링 측정 NOT RUN) |
+| 색상 대비 다크(계산값) | 본문/바탕 13.88, 본문/홈 14.83, 보조/바탕 6.70, 보조/홈 7.16, 흐린/바탕 4.86, 흐린/홈 5.19, 강조/바탕 8.81 | PASS (WCAG 계산) |
+| 설정 ‘화면 모드’ 전환 UI, 설정·연결 안내 화면의 라이트 모드 | 컴파일만 확인 | NOT RUN |
+| 버튼 누름(튀어나옴→파임), 큰 글씨, VoiceOver, 실기기 | | NOT RUN |
+
+## R-010 unslop 다듬기·글꼴 교체 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 변경: 헤더 시작선 20 정렬, 카드 24·홈 12 모서리, 다크 그림자 강화, 라이트 눈금색 분리(`tick` #C98A1E), 기록 사이 구분선 제거, 설정·안내 화면 카드화, 글꼴 SF Pro Rounded(시각 300)
+- 명령: `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → TokTokTests 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 하루 화면 다크·라이트 | 시뮬레이터 스크린숏: 시작선 정렬, 다크 카드 윤곽, 얇은 둥근 숫자 | PASS (시각 확인, 시뮬레이터) |
+| 대비 | 글자 토큰 값은 R-009와 같음(본문·보조·흐린·accent 모두 4.5:1 이상). `tick`은 글자가 아닌 눈금 | 변경 없음 |
+| 설정·뒷면 탭 연결·개인정보 카드 화면 | 컴파일만 확인(시뮬레이터에서 탭 이동 불가) | NOT RUN |
+| 큰 글씨, VoiceOver(카드 머리글 isHeader), 실기기 | | NOT RUN |
+
+## R-011 헤더 구간·박스 날짜·기록 버튼·설정 글 줄이기 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 변경: 헤더 구간 문구를 하루 눈금 양끝 라벨로 이동, 박스 날짜 두 줄(일 + 월·요일), 기록 버튼 둥근 사각형(20), 설정·안내 문구 축약, 시간대 안내를 개인정보 화면으로 이동
+- 명령: `cd TokTokCore && swift test` → 32 tests, 0 failures(`DayPresentationTests`에 dayText·monthWeekdayText 검증 추가) / `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 하루 화면 라이트·다크 | 시뮬레이터 스크린숏 | PASS (시각 확인, 시뮬레이터) |
+| 설정·안내·개인정보 화면 문구 | 컴파일만 확인 | NOT RUN (화면 확인 안 함) |
+| VoiceOver 제목+구간 낭독, 큰 글씨, 실기기 | | NOT RUN |

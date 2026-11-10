@@ -10,36 +10,49 @@ struct SettingsView: View {
     @State private var original: DayBoundary?
     @State private var saving = false
     @State private var errorText: String?
+    @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
+            NeuPage {
+                NeuSection {
                     BoundaryPicker(hour: $hour, minute: $minute)
                     if let original {
-                        Text("현재 설정: \(DayPresentation.boundaryText(original))")
-                            .foregroundStyle(Theme.secondaryText)
+                        LabeledContent("현재 설정") {
+                            Text(DayPresentation.boundaryText(original))
+                                .monospacedDigit()
+                                .foregroundStyle(Theme.secondaryText)
+                        }
+                        .foregroundStyle(Theme.text)
                     }
-                    Text("바꾸면 지난 기록도 새 기준으로 다시 묶여 보여요. 기록된 원래 시각은 바뀌지 않아요.")
-                        .font(.footnote)
-                        .foregroundStyle(Theme.secondaryText)
-                    Text("기록은 지금 기기의 시간대로 표시돼요. 여행 등으로 시간대가 바뀌면 표시 시각과 기록일이 달라질 수 있어요. 기록 당시 시간대 정보는 그대로 보관해요.")
-                        .font(.footnote)
-                        .foregroundStyle(Theme.secondaryText)
                     if let errorText {
                         Label(errorText, systemImage: "exclamationmark.triangle")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.text)
                     }
                 } header: {
                     Text("하루 시작 시간")
+                } footer: {
+                    Text("바꿔도 기록된 시각은 그대로예요")
                 }
 
-                Section {
-                    NavigationLink("뒷면 탭 연결") { RecordingGuideView() }
-                    NavigationLink("개인정보와 데이터") { PrivacyInfoView() }
+                NeuSection {
+                    Picker("화면 모드", selection: $appearance) {
+                        ForEach(AppAppearance.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                } header: {
+                    Text("화면 모드")
+                } footer: {
+                    Text("바로 적용돼요")
+                }
+
+                NeuSection {
+                    NeuLinkRow(title: "뒷면 탭 연결") { RecordingGuideView() }
+                    Theme.hairline.frame(height: 1)
+                    NeuLinkRow(title: "개인정보와 데이터") { PrivacyInfoView() }
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(Theme.background)
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -53,7 +66,6 @@ struct SettingsView: View {
             }
             .onAppear(perform: loadCurrent)
         }
-        .preferredColorScheme(.dark)
     }
 
     private var hasChanges: Bool {

@@ -35,6 +35,19 @@ main ─┬─ feature/branch-rules
 
 QUESTIONS.md 하단 “MVP 구현에 적용한 잠정 정책” 표 참고(Q01~Q11). 제품 확정사항이 아니다.
 
+## feature/ui-redesign 인계 (2026-11-10)
+
+- 요구사항: R05·R09(DESIGN.md 전면 재작성) / 브랜치 `feature/ui-redesign`(main 050055a 기준) / 원격 푸시 완료
+- 변경: `Theme.swift`(토큰·공통 버튼), 신규 `DayRulerView.swift`(하루 눈금), `DayView`·`RecordBlockView`·첫 실행·설정·뒷면 탭 연결·개인정보 화면, DESIGN.md, TEST_RESULTS R-008, TS-004 갱신
+- 잠정 결정: 하루 눈금은 기존 구간·기록 시각을 그림으로 옮긴 표시 요소(통계 기능 아님, VoiceOver 숨김). 첫 실행 버튼 문구 ‘이 시간으로 시작’은 Q01 기록과 맞춰 유지
+- 도구: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Swift 6.3.2
+- 테스트: `swift test` 32건 PASS, `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) 6건 PASS. 실기기 NOT RUN
+- 화면 확인: 첫 실행·하루 화면만 시뮬레이터 스크린숏으로 확인. 설정·연결 안내·오류 상태·큰 글씨·VoiceOver는 NOT RUN
+- 제외: `project.pbxproj`의 로컬 서명 팀 변경(DEVELOPMENT_TEAM)은 커밋하지 않음
+- Codex 검증: **미실행**. `codex exec`가 설정 모델 `gpt-5.4`를 ChatGPT 계정에서 지원하지 않아 실패. 다른 모델로 대체하지 않음
+- 2차(2026-11-10): 문자판·스누즈 키 시도는 사용자 요청으로 되돌림(a753f8f). 이후 사용자 레퍼런스(뉴모피즘)에 맞춰 전체 개편, 설정에 다크·라이트 ‘화면 모드’ 추가(Q11 사용자 결정, 기본 다크), Info.plist 다크 고정 제거. TEST_RESULTS R-009
+- PR·main 병합: **미완료**. 이 Mac에 `gh`가 없어 PR을 만들지 못함
+
 ## 실기기 확인 절차 (사용자)
 
 1. `git switch main` 후 `TokTok.xcodeproj`를 Xcode 16 이상으로 연다.

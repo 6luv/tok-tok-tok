@@ -95,7 +95,7 @@ struct DayView: View {
                             .accessibilityAddTraits(.isHeader)
                             .accessibilityLabel("\(model.presentation.headerTitle(for: snap.interval.day)), 기록 구간 \(model.presentation.rangeText(for: snap.interval))")
                     } else {
-                        Text("TokTok")
+                        Text("TokTokTok")
                             .font(.title2)
                             .foregroundStyle(Theme.text)
                     }

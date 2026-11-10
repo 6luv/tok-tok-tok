@@ -22,7 +22,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 앱 이름 / Bundle ID | TokTok / `com.example.TokTok` (잠정 — 실제 Apple Developer Team에 맞게 Xcode Signing에서 변경) |
+| 앱 이름 / Bundle ID | TokTokTok / 저장소 기본값 `com.example.TokTokTok`. 실제 번들 ID·Team ID는 커밋하지 않는 `Config/Signing.local.xcconfig`에 둔다(예시: `Config/Signing.local.xcconfig.example`) |
 | Xcode / Swift / SDK | 사용자 Mac에서 확인 필요(이 세션에서 Xcode 실행 불가, TS-001). 프로젝트 형식은 objectVersion 77이라 Xcode 16 이상 필요. 도메인 테스트: Swift 6.4.1 Linux |
 | 최소 iOS | 17.0 (Q09 잠정 제안 채택, 미확정) |
 | project 또는 workspace / shared scheme | `TokTok.xcodeproj` / shared scheme `TokTok` (앱 + `TokTokTests`). 도메인 패키지 `TokTokCore` (로컬 Swift 패키지) |

@@ -37,7 +37,7 @@ struct RecordingGuideView: View {
                     Label("새 단축어 만들기", systemImage: "plus.square.on.square")
                         .frame(minHeight: 44)
                 }
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(.tint)
                 .font(.body.weight(.medium))
                 VStack(alignment: .leading, spacing: 8) {
                     Text("TokTokTok 동작 미리 보기")
@@ -129,7 +129,7 @@ struct RecordingGuideView: View {
             Label("다시 확인", systemImage: "arrow.clockwise")
                 .frame(minHeight: 44)
         }
-        .foregroundStyle(Theme.accent)
+        .foregroundStyle(.tint)
         .font(.body.weight(.medium))
     }
 

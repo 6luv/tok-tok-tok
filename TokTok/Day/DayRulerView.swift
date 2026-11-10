@@ -11,6 +11,7 @@ struct DayRulerView: View {
     /// 시간순(과거 → 최신)
     let records: [Date]
     let timeZone: TimeZone
+    @Environment(\.tokTokAccent) private var accent
 
     private let tickArea: CGFloat = 20
     private let labelGap: CGFloat = 4
@@ -75,7 +76,7 @@ struct DayRulerView: View {
             guard f >= 0, f <= 1 else { continue }
             let newest = i == records.count - 1
             let x = min(max(w * f, 1), w - 1)
-            line(x, from: baseY, to: 2, newest ? Theme.tick : Theme.text.opacity(0.75), newest ? 2 : 1.5)
+            line(x, from: baseY, to: 2, newest ? accent.tick : Theme.text.opacity(0.75), newest ? 2 : 1.5)
         }
 
         // 지금 위치

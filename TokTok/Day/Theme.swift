@@ -23,8 +23,8 @@ enum Theme {
     static let hairline = dynamic(light: 0x1C1C1E, dark: 0xEDEDED, alpha: 0.08)
 
     // MARK: 그림자
-    static let shadowLight = dynamic(light: 0xFFFFFF, dark: 0x2F2F34, alpha: 0.9)
-    static let shadowDark = dynamic(light: 0xA9A9B2, dark: 0x0A0A0B, alpha: 0.75)
+    static let shadowLight = dynamic(light: 0xFFFFFF, dark: 0x34343A, alpha: 0.9)
+    static let shadowDark = dynamic(light: 0xA9A9B2, dark: 0x000000, lightAlpha: 0.75, darkAlpha: 0.8)
 
     // MARK: 글자
     static let text = dynamic(light: 0x1C1C1E, dark: 0xEDEDED)
@@ -33,25 +33,32 @@ enum Theme {
     static let mutedText = dynamic(light: 0x5E5E64, dark: 0x8C8C92)
 
     // MARK: 강조
-    /// 최신 기록 눈금·앱 tint. 면 채우기에는 쓰지 않는다.
+    /// 앱 tint(동작 글자). 라이트에서는 글자 대비 4.5:1을 위해 진하게 둔다.
     static let accent = dynamic(light: 0x8A5200, dark: 0xF0B45A)
+    /// 최신 기록 눈금 전용(글자가 아님). 라이트에서도 호박색으로 보이게 밝게 둔다.
+    static let tick = dynamic(light: 0xC98A1E, dark: 0xF0B45A)
     static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x141415)
 
     // MARK: 모서리·모션
     static let controlRadius: CGFloat = 16
     static let boxRadius: CGFloat = 24
+    static let cardRadius: CGFloat = 20
     /// 앱 전체 하나의 곡선 cubic-bezier(0.22, 1, 0.36, 1)
     static func ease(_ duration: Double) -> Animation {
         .timingCurve(0.22, 1, 0.36, 1, duration: duration)
     }
 
     private static func dynamic(light: UInt32, dark: UInt32, alpha: CGFloat = 1) -> Color {
+        dynamic(light: light, dark: dark, lightAlpha: alpha, darkAlpha: alpha)
+    }
+
+    private static func dynamic(light: UInt32, dark: UInt32, lightAlpha: CGFloat, darkAlpha: CGFloat) -> Color {
         #if canImport(UIKit)
         return Color(UIColor { traits in
-            uiColor(traits.userInterfaceStyle == .light ? light : dark, alpha: alpha)
+            traits.userInterfaceStyle == .light ? uiColor(light, alpha: lightAlpha) : uiColor(dark, alpha: darkAlpha)
         })
         #else
-        return Color(uiColor(dark, alpha: alpha))
+        return Color(uiColor(dark, alpha: darkAlpha))
         #endif
     }
 
@@ -108,12 +115,9 @@ extension View {
         }
     }
 
-    /// 설정·안내 목록의 공통 면 처리.
-    func tokTokListStyle() -> some View {
-        self
-            .scrollContentBackground(.hidden)
-            .background(Theme.background)
-            .listRowSeparatorTint(Theme.hairline)
+    /// 앱 공통 글꼴: SF Pro Rounded(시스템 둥근 글꼴). 한글은 시스템 고딕으로 대체된다.
+    func tokTokFont() -> some View {
+        fontDesign(.rounded)
     }
 }
 
@@ -139,7 +143,7 @@ struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         let shape = Capsule(style: .continuous)
         return configuration.label
-            .font(.body.weight(.semibold))
+            .font(.body.weight(.medium))
             .foregroundStyle(Theme.text)
             .frame(maxWidth: .infinity, minHeight: 64)
             .modifier(NeuPress(pressed: configuration.isPressed, shape: shape, depth: 7))
@@ -174,5 +178,92 @@ private struct NeuPress<S: Shape>: ViewModifier {
         }
         .contentShape(shape)
         .animation(reduceMotion ? nil : Theme.ease(0.15), value: pressed)
+    }
+}
+
+// MARK: 설정·안내 화면
+
+/// 설정·안내 화면의 바탕: 스크롤 + 카드 묶음. 시스템 List 대신 뉴모피즘 카드를 쓴다.
+struct NeuPage<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 28) {
+                content
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 32)
+        }
+        .background(Theme.background)
+    }
+}
+
+/// 머리글·카드·꼬리말 한 묶음. 카드는 튀어나온 면이다.
+struct NeuSection<Content: View, Header: View, Footer: View>: View {
+    let content: Content
+    let header: Header
+    let footer: Footer
+
+    init(@ViewBuilder content: () -> Content,
+         @ViewBuilder header: () -> Header,
+         @ViewBuilder footer: () -> Footer) {
+        self.content = content()
+        self.header = header()
+        self.footer = footer()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            header
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(Theme.secondaryText)
+                .padding(.leading, 4)
+                .accessibilityAddTraits(.isHeader)
+            VStack(alignment: .leading, spacing: 12) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .extruded(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous), depth: 5)
+            footer
+                .font(.footnote)
+                .foregroundStyle(Theme.mutedText)
+                .padding(.horizontal, 4)
+        }
+    }
+}
+
+extension NeuSection where Footer == EmptyView {
+    init(@ViewBuilder content: () -> Content, @ViewBuilder header: () -> Header) {
+        self.init(content: content, header: header, footer: { EmptyView() })
+    }
+}
+
+extension NeuSection where Header == EmptyView, Footer == EmptyView {
+    init(@ViewBuilder content: () -> Content) {
+        self.init(content: content, header: { EmptyView() }, footer: { EmptyView() })
+    }
+}
+
+/// 카드 안의 다음 화면 이동 행.
+struct NeuLinkRow<Destination: View>: View {
+    let title: String
+    @ViewBuilder let destination: () -> Destination
+
+    var body: some View {
+        NavigationLink(destination: destination) {
+            HStack {
+                Text(title).foregroundStyle(Theme.text)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Theme.mutedText)
+            }
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }

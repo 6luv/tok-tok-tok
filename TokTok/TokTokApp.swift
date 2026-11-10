@@ -9,6 +9,7 @@ struct TokTokApp: App {
         WindowGroup {
             RootView()
                 .preferredColorScheme(appearance.colorScheme)
+                .tokTokFont()
                 .tint(Theme.accent)
         }
     }

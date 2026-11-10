@@ -11,6 +11,7 @@ struct DayView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingSettings = false
     @State private var showingBackTapGuide = false
+    @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
 
     private let topSentinelID = "toktok.top"
 
@@ -54,6 +55,7 @@ struct DayView: View {
         .sheet(isPresented: $showingSettings) {
             SettingsView(model: model)
                 .tint(Theme.accent)
+                .preferredColorScheme(appearance.colorScheme)
         }
         .sheet(isPresented: $showingBackTapGuide) {
             NavigationStack {
@@ -64,7 +66,7 @@ struct DayView: View {
                         }
                     }
             }
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(appearance.colorScheme)
             .tint(Theme.accent)
         }
     }
@@ -74,20 +76,18 @@ struct DayView: View {
     private var dayContent: some View {
         VStack(spacing: 0) {
             header
-            Theme.hairline.frame(height: 1)
             recordList
-            Theme.hairline.frame(height: 1)
             bottomBar
         }
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
                     if let snap = model.snapshot {
                         Text(model.presentation.headerTitle(for: snap.interval.day))
-                            .font(.title2.weight(.medium))
+                            .font(.title2.weight(.medium).width(.expanded))
                             .foregroundStyle(Theme.text)
                             .accessibilityAddTraits(.isHeader)
                         Text(model.presentation.rangeText(for: snap.interval))
@@ -96,7 +96,7 @@ struct DayView: View {
                             .accessibilityLabel("기록 구간 \(model.presentation.rangeText(for: snap.interval))")
                     } else {
                         Text("TokTok")
-                            .font(.title2.weight(.medium))
+                            .font(.title2.weight(.medium).width(.expanded))
                             .foregroundStyle(Theme.text)
                     }
                 }
@@ -105,23 +105,25 @@ struct DayView: View {
                     showingSettings = true
                 } label: {
                     Image(systemName: "gearshape")
-                        .font(.system(size: 18, weight: .regular))
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
                 }
-                .foregroundStyle(Theme.secondaryText)
-                .padding(.trailing, -12)
+                .buttonStyle(CircleButtonStyle())
                 .accessibilityLabel("설정")
             }
             if let snap = model.snapshot {
                 DayRulerView(interval: snap.interval,
                              records: snap.records.sorted(by: TimeRecord.chronological).map(\.occurredAt),
                              timeZone: snap.timeZone)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+                    .inset(RoundedRectangle(cornerRadius: 16, style: .continuous), depth: 3)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 16)
+        .padding(20)
+        .extruded(RoundedRectangle(cornerRadius: Theme.boxRadius + 4, style: .continuous))
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, 20)
     }
 
     @ViewBuilder
@@ -138,11 +140,8 @@ struct DayView: View {
                             })
                         Spacer(minLength: 0)
                         statusArea
-                        if !model.blocks.isEmpty {
-                            Theme.hairline.frame(height: 1)
-                        }
                         ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                            if index > 0 { Theme.hairline.frame(height: 1).background(Theme.surface) }
+                            if index > 0 { EngravedLine() }
                             RecordBlockView(block: block, isNewest: index == 0)
                                 .id(block.id)
                                 .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
@@ -241,7 +240,12 @@ struct DayView: View {
             } label: {
                 HStack(spacing: 8) {
                     if model.inFlight > 0 {
-                        ProgressView().tint(Theme.onAccent)
+                        ProgressView().tint(Theme.secondaryText)
+                    }
+                    if model.inFlight == 0 {
+                        Image(systemName: "hand.tap")
+                            .font(.system(size: 18, weight: .regular))
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     Text(model.inFlight > 0 ? "저장 중…" : "현재 시간 기록")
                 }
@@ -252,7 +256,7 @@ struct DayView: View {
             .disabled(model.state == .loading && model.snapshot == nil)
         }
         .padding(.horizontal, 20)
-        .padding(.top, 12)
+        .padding(.top, 16)
         .padding(.bottom, 8)
         .background(Theme.background)
     }
@@ -302,9 +306,20 @@ struct DayView: View {
                 .padding(.top, 4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous).strokeBorder(Theme.hairline))
+        .padding(20)
+        .extruded(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous), depth: 5)
+    }
+}
+
+/// 새긴 듯한 구분선: 어두운 1pt + 밝은 1pt.
+private struct EngravedLine: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            Theme.shadowDark.opacity(0.5).frame(height: 1)
+            Theme.shadowLight.opacity(0.8).frame(height: 1)
+        }
+        .padding(.horizontal, 20)
+        .accessibilityHidden(true)
     }
 }
 

@@ -163,3 +163,16 @@
 | 설정·뒷면 탭 연결·개인정보 화면, 저장 실패 알림, ‘새 기록 N개’ | 컴파일만 확인 | NOT RUN (화면 확인 안 함) |
 | 큰 글씨(AX) 세로 배치, VoiceOver, 모션 감소 | | NOT RUN |
 | 실기기 | | NOT RUN |
+
+## R-009 뉴모피즘 개편·다크/라이트 모드 (feature/ui-redesign)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 명령: `cd TokTokCore && swift test` → 32 tests, 0 failures / `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → TokTokTests 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 하루 화면 다크·라이트 | `defaults write com.example.TokTok toktok.appearance dark/light` 후 시뮬레이터 스크린숏(예시 기록 5건) | PASS (시각 확인, 시뮬레이터) |
+| 색상 대비 라이트(계산값) | 본문/바탕 13.66, 본문/홈 12.56, 보조/바탕 6.53, 보조/홈 6.00, 흐린/바탕 5.17, 흐린/홈 4.75, 강조/바탕 5.13 | PASS (WCAG 계산. 렌더링 측정 NOT RUN) |
+| 색상 대비 다크(계산값) | 본문/바탕 13.88, 본문/홈 14.83, 보조/바탕 6.70, 보조/홈 7.16, 흐린/바탕 4.86, 흐린/홈 5.19, 강조/바탕 8.81 | PASS (WCAG 계산) |
+| 설정 ‘화면 모드’ 전환 UI, 설정·연결 안내 화면의 라이트 모드 | 컴파일만 확인 | NOT RUN |
+| 버튼 누름(튀어나옴→파임), 큰 글씨, VoiceOver, 실기기 | | NOT RUN |

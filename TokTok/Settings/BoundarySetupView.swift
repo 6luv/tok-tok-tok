@@ -17,7 +17,7 @@ struct BoundarySetupView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("하루가 시작되는 시간을 정해 주세요")
-                            .font(.title2.weight(.medium))
+                            .font(.title2.weight(.medium).width(.expanded))
                             .foregroundStyle(Theme.text)
                             .accessibilityAddTraits(.isHeader)
                         Text("TokTok은 이 시간을 기준으로 하루치 기록을 묶어 보여줘요. 예를 들어 늦게 자는 편이라면 새벽 기록이 전날에 함께 보이도록 정할 수 있어요. 나중에 설정에서 바꿀 수 있어요.")
@@ -28,9 +28,8 @@ struct BoundarySetupView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         BoundaryPicker(hour: $hour, minute: $minute)
                     }
-                    .padding(16)
-                    .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous).strokeBorder(Theme.hairline))
+                    .padding(20)
+                    .extruded(RoundedRectangle(cornerRadius: Theme.boxRadius + 4, style: .continuous))
                     if let errorText {
                         Label(errorText, systemImage: "exclamationmark.triangle")
                             .font(.subheadline)
@@ -41,8 +40,7 @@ struct BoundarySetupView: View {
                 .padding(.top, 32)
                 .padding(.bottom, 24)
             }
-            Theme.hairline.frame(height: 1)
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
                 Text("값을 고른 뒤 아래 버튼을 눌러야 저장돼요")
                     .font(.footnote)
                     .foregroundStyle(Theme.mutedText)

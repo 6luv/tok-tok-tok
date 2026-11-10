@@ -13,7 +13,7 @@ struct PrivacyInfoView: View {
             }
             .font(.subheadline)
             .foregroundStyle(Theme.text)
-            .listRowBackground(Theme.surface)
+            .listRowBackground(Theme.raised)
         }
         .tokTokListStyle()
         .navigationTitle("개인정보와 데이터")

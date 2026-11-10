@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 기록 완료 토스트. 단축어 결과(App Intent 스니펫)와 앱 안 기록에 같은 디자인을 쓴다.
+/// 앱 안 기록 완료 토스트. 단축어 결과에는 쓰지 않는다(iOS 실행 표시와 겹치지 않게, 2026-11-10).
 /// 소리는 내지 않는다(사용자 결정 2026-11-10: 새벽에 울리면 안 됨).
 /// 튀어나온 둥근 카드 + 메인 색 눈금 + 얇은 둥근 시각 숫자.
 struct RecordToastView: View {
@@ -44,11 +44,4 @@ struct RecordToastView: View {
     private static var time: DateFormatter { formatter("HH:mm:ss") }
     private static var day: DateFormatter { formatter("M월 d일") }
     private static var spoken: DateFormatter { formatter("a h시 m분 s초") }
-}
-
-extension AppAccent {
-    /// 앱 밖(App Intent)에서 쓰는 저장된 메인 색.
-    static var stored: AppAccent {
-        AppAccent(rawValue: UserDefaults.standard.string(forKey: storageKey) ?? "") ?? .amber
-    }
 }

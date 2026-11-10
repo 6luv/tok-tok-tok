@@ -20,7 +20,7 @@ struct BoundarySetupView: View {
                             .font(.title2)
                             .foregroundStyle(Theme.text)
                             .accessibilityAddTraits(.isHeader)
-                        Text("TokTok은 이 시간을 기준으로 하루치 기록을 묶어 보여줘요. 예를 들어 늦게 자는 편이라면 새벽 기록이 전날에 함께 보이도록 정할 수 있어요. 나중에 설정에서 바꿀 수 있어요.")
+                        Text("TokTokTok은 이 시간을 기준으로 하루치 기록을 묶어 보여줘요. 예를 들어 늦게 자는 편이라면 새벽 기록이 전날에 함께 보이도록 정할 수 있어요. 나중에 설정에서 바꿀 수 있어요.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)

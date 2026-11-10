@@ -12,7 +12,7 @@ import TokTokCore
 /// - 단축어·Siri·뒷면 탭 중 어느 경로인지 추정하지 않고 source = .intent로 저장한다.
 /// - 결과: 글자 대화(dialog) 대신 디자인한 스니펫(`RecordToastView`)을 돌려준다(사용자 요청 2026-11-10).
 ///   단축어 실행 중이라는 iOS 자체 표시는 시스템 UI라 앱이 끌 수 없다.
-/// - 저장 확인 뒤 짧은 소리 한 번(`RecordSound`, 무음 모드에서는 iOS가 소리를 내지 않음).
+/// - 소리는 내지 않는다(사용자 결정 2026-11-10). 토스트만 잠깐 보이고 iOS가 닫는다.
 struct RecordNowIntent: AppIntent {
     static var title: LocalizedStringResource = "현재 시간 기록"
     static var description = IntentDescription("지금 이 순간의 시각을 TokTokTok에 기록합니다. 입력할 값은 없습니다.")
@@ -31,7 +31,6 @@ struct RecordNowIntent: AppIntent {
             let record = try service.recordNow(source: .intent)
             // 저장이 확인된 뒤에만 알린다.
             RecordsChangeNotifier.post()
-            RecordSound.play()
             return .result(view: RecordToastView(date: record.occurredAt)
                 .environment(\.tokTokAccent, AppAccent.stored)
                 .fontDesign(.rounded))

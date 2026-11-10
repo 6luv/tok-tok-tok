@@ -1,28 +1,7 @@
-import AudioToolbox
 import SwiftUI
 
-/// 기록 완료 소리(사용자 결정 2026-11-10, Q07): 저장이 확인된 뒤 짧은 ‘띵’ 한 번.
-///
-/// System Sound Services(`AudioServicesPlaySystemSound`)로 재생한다. 이 방식은 기기 무음 모드에서
-/// 소리를 내지 않으므로 “무음이 아니면 한 번 띵”이 된다. 앱이 무음 스위치 상태를 직접 읽는 공개 API는 없다.
-/// 앱이 화면에 없을 때(단축어·뒷면 탭) 실제로 들리는지는 실기기에서 확인해야 하며,
-/// 이를 위해 background audio 모드를 추가하지 않는다(CLAUDE.md 구현 제약).
-/// 소리 파일 `record-ding.wav`는 이 프로젝트에서 만든 0.35초 사인파 음(외부 소리 아님).
-enum RecordSound {
-    private static let soundID: SystemSoundID? = {
-        guard let url = Bundle.main.url(forResource: "record-ding", withExtension: "wav") else { return nil }
-        var id: SystemSoundID = 0
-        let status = AudioServicesCreateSystemSoundID(url as CFURL, &id)
-        return status == kAudioServicesNoError ? id : nil
-    }()
-
-    static func play() {
-        guard let soundID else { return }
-        AudioServicesPlaySystemSound(soundID)
-    }
-}
-
 /// 기록 완료 토스트. 단축어 결과(App Intent 스니펫)와 앱 안 기록에 같은 디자인을 쓴다.
+/// 소리는 내지 않는다(사용자 결정 2026-11-10: 새벽에 울리면 안 됨).
 /// 튀어나온 둥근 카드 + 메인 색 눈금 + 얇은 둥근 시각 숫자.
 struct RecordToastView: View {
     let date: Date

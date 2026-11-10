@@ -6,9 +6,10 @@ import TokTokCore
 /// 뒷면 탭 연결 도우미(R03).
 ///
 /// 앱이 할 수 있는 것: 미리 만든 ‘톡톡톡’ 단축어의 iCloud 공유 링크 열기(단축어 앱이 열리고 사용자가 ‘단축어 추가’를 누름),
-/// 단축어 앱의 TokTok 페이지 열기(`ShortcutsLink`, iOS 16+),
 /// 새 단축어 편집기 열기(`shortcuts://create-shortcut`, Apple 단축어 사용 설명서의 URL 스킴),
 /// 연결 후 마지막 단축어 기록을 보여 줘 사용자가 직접 확인하게 하기.
+/// `ShortcutsLink`(단축어 앱의 앱 페이지)는 2026-11-10 제거했다. 그 페이지의 자동 단축어를 지우면 버튼이 사라져
+/// 사용자가 어떻게 하라는 건지 헷갈렸다. 직접 만드는 단축어에는 영향이 없다.
 /// 앱이 할 수 없는 것: 손쉬운 사용 > 뒷면 탭 설정 화면을 열거나 값을 바꾸기, 연결 여부 자동 확인.
 /// 공개되지 않은 설정 URL은 사용하지 않는다.
 struct RecordingGuideView: View {
@@ -56,12 +57,6 @@ struct RecordingGuideView: View {
                         Label("단축어 앱에서 만들기", systemImage: "plus")
                     }
                     .buttonStyle(SecondaryButtonStyle(emphasized: true))
-                    HStack(spacing: 8) {
-                        Text("동작 미리 보기")
-                            .font(.footnote)
-                            .foregroundStyle(Theme.mutedText)
-                        ShortcutsLink()
-                    }
                 }
             }
 

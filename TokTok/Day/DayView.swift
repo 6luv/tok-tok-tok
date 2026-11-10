@@ -132,62 +132,78 @@ struct DayView: View {
     @ViewBuilder
     private var recordList: some View {
         GeometryReader { geo in
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // 맨 위(최신 블록) 가시성 감지용
-                        Color.clear.frame(height: 1).id(topSentinelID)
-                            .background(GeometryReader { g in
-                                Color.clear.preference(key: TopOffsetKey.self,
-                                                       value: g.frame(in: .named("toktok.scroll")).minY)
-                            })
-                        statusArea
-                        if !model.blocks.isEmpty {
-                            // 목록 전체를 파인 판 하나에 담는다(시안 H). 최신 행만 판 안에서 튀어나온다.
-                            VStack(spacing: 2) {
-                                ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                                    RecordBlockView(block: block, isNewest: index == 0)
-                                        .id(block.id)
-                                        .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
-                                }
-                            }
-                            .padding(8)
-                            // 판 모서리 24 = 행 모서리 16 + 안쪽 여백 8
-                            .inset(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous), depth: 3)
-                            .padding(.horizontal, 8)
-                            .padding(.bottom, 12)
-                        }
-                    }
-                    // 첫 기록부터 헤더 바로 아래, 위에서부터 쌓는다(사용자 결정 2026-11-10)
-                    .frame(maxWidth: .infinity, minHeight: geo.size.height, alignment: .top)
+            VStack(spacing: 0) {
+                statusArea
+                if !model.blocks.isEmpty {
+                    recordPanel(maxHeight: max(geo.size.height - 12, 0))
+                        .padding(.horizontal, 8)
+                        .padding(.bottom, 12)
                 }
-                .coordinateSpace(name: "toktok.scroll")
-                .onPreferenceChange(TopOffsetKey.self) { minY in
-                    // 맨 위(최신 블록 쪽)가 화면에 보이는지
-                    model.isViewingNewest = minY > -44
-                    if model.isViewingNewest { model.clearUnseen() }
-                }
-                .onChange(of: model.scrollTarget) { _, target in
-                    guard let target else { return }
-                    if reduceMotion {
-                        proxy.scrollTo(target, anchor: .top)
-                    } else {
-                        withAnimation(Theme.ease(0.35)) { proxy.scrollTo(target, anchor: .top) }
+                Spacer(minLength: 0)
+            }
+            .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+            .overlay(alignment: .top) {
+                if model.unseenCount > 0 {
+                    Button {
+                        model.showNewest()
+                    } label: {
+                        Label("새 기록 \(model.unseenCount)개", systemImage: "arrow.up")
                     }
-                    model.scrollTarget = nil
-                }
-                .overlay(alignment: .top) {
-                    if model.unseenCount > 0 {
-                        Button {
-                            model.showNewest()
-                        } label: {
-                            Label("새 기록 \(model.unseenCount)개", systemImage: "arrow.up")
-                        }
-                        .buttonStyle(SecondaryButtonStyle())
-                        .padding(.top, 12)
-                    }
+                    .buttonStyle(SecondaryButtonStyle())
+                    .padding(.top, 12)
                 }
             }
+        }
+    }
+
+    /// 기록 목록 판(시안 H). 판 모양은 스크롤 밖에 고정하고, 스크롤되는 행은 판의 둥근 모서리로 잘라
+    /// 중간까지 스크롤해도 위아래가 네모로 잘리지 않게 한다.
+    /// 기록이 적으면 판은 내용 높이만큼만(ViewThatFits 첫 후보), 많으면 남은 높이를 채우고 스크롤한다.
+    private func recordPanel(maxHeight: CGFloat) -> some View {
+        let shape = RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous)
+        return ScrollViewReader { proxy in
+            ViewThatFits(in: .vertical) {
+                recordScroll(proxy: proxy).fixedSize(horizontal: false, vertical: true)
+                recordScroll(proxy: proxy)
+            }
+            .frame(maxHeight: maxHeight, alignment: .top)
+            .insetPanel(shape, depth: 3)
+        }
+    }
+
+    private func recordScroll(proxy: ScrollViewProxy) -> some View {
+        ScrollView {
+            VStack(spacing: 2) {
+                // 맨 위(최신 블록) 가시성 감지용
+                Color.clear.frame(height: 0).id(topSentinelID)
+                    .background(GeometryReader { g in
+                        Color.clear.preference(key: TopOffsetKey.self,
+                                               value: g.frame(in: .named("toktok.scroll")).minY)
+                    })
+                ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
+                    RecordBlockView(block: block, isNewest: index == 0)
+                        .id(block.id)
+                        .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
+                }
+            }
+            // 판 모서리 24 = 행 모서리 16 + 안쪽 여백 8
+            .padding(8)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .coordinateSpace(name: "toktok.scroll")
+        .onPreferenceChange(TopOffsetKey.self) { minY in
+            // 맨 위(최신 블록 쪽)가 화면에 보이는지
+            model.isViewingNewest = minY > -44
+            if model.isViewingNewest { model.clearUnseen() }
+        }
+        .onChange(of: model.scrollTarget) { _, target in
+            guard let target else { return }
+            if reduceMotion {
+                proxy.scrollTo(target, anchor: .top)
+            } else {
+                withAnimation(Theme.ease(0.35)) { proxy.scrollTo(target, anchor: .top) }
+            }
+            model.scrollTarget = nil
         }
     }
 

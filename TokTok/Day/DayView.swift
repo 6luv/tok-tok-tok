@@ -140,17 +140,25 @@ struct DayView: View {
                                 Color.clear.preference(key: TopOffsetKey.self,
                                                        value: g.frame(in: .named("toktok.scroll")).minY)
                             })
-                        Spacer(minLength: 0)
                         statusArea
-                        ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                            if index > 0 { Color.clear.frame(height: 4) }
-                            RecordBlockView(block: block, isNewest: index == 0)
-                                .id(block.id)
-                                .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
+                        if !model.blocks.isEmpty {
+                            // 목록 전체를 파인 판 하나에 담는다(시안 H). 최신 행만 판 안에서 튀어나온다.
+                            VStack(spacing: 2) {
+                                ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
+                                    RecordBlockView(block: block, isNewest: index == 0)
+                                        .id(block.id)
+                                        .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
+                                }
+                            }
+                            .padding(8)
+                            // 판 모서리 24 = 행 모서리 16 + 안쪽 여백 8
+                            .inset(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous), depth: 3)
+                            .padding(.horizontal, 8)
+                            .padding(.bottom, 12)
                         }
                     }
-                    // 블록을 목록 영역 바닥에서부터 쌓는다
-                    .frame(minHeight: geo.size.height, alignment: .bottom)
+                    // 첫 기록부터 헤더 바로 아래, 위에서부터 쌓는다(사용자 결정 2026-11-10)
+                    .frame(maxWidth: .infinity, minHeight: geo.size.height, alignment: .top)
                 }
                 .coordinateSpace(name: "toktok.scroll")
                 .onPreferenceChange(TopOffsetKey.self) { minY in

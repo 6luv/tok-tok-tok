@@ -11,6 +11,9 @@ public struct RecordBlock: Identifiable, Equatable, Sendable {
     public let dayText: String
     /// 블록 오른쪽 작은 줄 "11월 · 토"
     public let monthWeekdayText: String
+    /// 바로 위 블록과 달력 날짜가 다를 때만(맨 위 블록 포함) 날짜를 보인다.
+    /// 경계가 자정이 아니면 한 기록일 안에 두 날짜가 섞이므로, 날짜가 바뀌는 첫 행에 다시 표시한다.
+    public let showsDate: Bool
     /// "11월 1일 오전 3시 15분 8초, 시간 기록"
     public let accessibilityLabel: String
 }
@@ -42,13 +45,18 @@ public struct DayPresentation: Sendable {
         let spoken = formatter("M월 d일 a h시 m분 s초")
         let day = formatter("d일")
         let monthWeekday = formatter("M월 · E")
+        let calendarDay = formatter("yyyy-MM-dd")
+        var previousDay: String?
         return records.sorted(by: TimeRecord.chronological).reversed().map { r in
-            RecordBlock(id: r.id,
-                        timeText: time.string(from: r.occurredAt),
-                        dateText: date.string(from: r.occurredAt),
-                        dayText: day.string(from: r.occurredAt),
-                        monthWeekdayText: monthWeekday.string(from: r.occurredAt),
-                        accessibilityLabel: spoken.string(from: r.occurredAt) + ", 시간 기록")
+            let key = calendarDay.string(from: r.occurredAt)
+            defer { previousDay = key }
+            return RecordBlock(id: r.id,
+                               timeText: time.string(from: r.occurredAt),
+                               dateText: date.string(from: r.occurredAt),
+                               dayText: day.string(from: r.occurredAt),
+                               monthWeekdayText: monthWeekday.string(from: r.occurredAt),
+                               showsDate: key != previousDay,
+                               accessibilityLabel: spoken.string(from: r.occurredAt) + ", 시간 기록")
         }
     }
 

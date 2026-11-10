@@ -72,4 +72,4 @@ AGENTS.md에 따라 feature/day-boundary, feature/local-storage, feature/app-int
 
 ## App Store
 
-실제 제출은 하지 않았다. 남은 준비: 앱 아이콘 이미지(현재 비어 있음), Team·Bundle ID 확정, 개인정보처리방침 URL·지원 URL, 스크린샷, App Privacy 응답, Release 빌드·TestFlight 확인, 실기기 매트릭스 결과 반영.
+실제 제출은 하지 않았다. 남은 준비: Team·Bundle ID 확정, 개인정보처리방침 URL·지원 URL, 스크린샷, App Privacy 응답, Release 빌드·TestFlight 확인, 실기기 매트릭스 결과 반영.

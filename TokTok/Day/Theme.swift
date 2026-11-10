@@ -167,6 +167,26 @@ extension View {
         }
     }
 
+    /// 스크롤 내용을 담는 파인 판. 면은 뒤에, 안쪽 그림자는 위에 얹고, 내용은 판 모양으로 자른다.
+    /// 스크롤 중에도 위아래 모서리가 둥글게 유지된다.
+    func insetPanel<S: Shape>(_ shape: S, depth: CGFloat = 3) -> some View {
+        self
+            .clipShape(shape)
+            .background(shape.fill(Theme.well))
+            .overlay {
+                ZStack {
+                    shape.stroke(Theme.shadowDark, lineWidth: depth * 1.5)
+                        .blur(radius: depth)
+                        .offset(x: depth * 0.6, y: depth * 0.6)
+                    shape.stroke(Theme.shadowLight, lineWidth: depth * 1.5)
+                        .blur(radius: depth)
+                        .offset(x: -depth * 0.6, y: -depth * 0.6)
+                }
+                .mask(shape)
+                .allowsHitTesting(false)
+            }
+    }
+
     /// 앱 공통 글꼴: SF Pro Rounded(시스템 둥근 글꼴). 한글은 시스템 고딕으로 대체된다.
     func tokTokFont() -> some View {
         fontDesign(.rounded)
@@ -177,14 +197,59 @@ extension View {
 
 /// 보조 버튼: 작은 튀어나온 알약. 누르면 파인다.
 struct SecondaryButtonStyle: ButtonStyle {
+    /// true면 글자를 메인 색(tint)으로: 설정의 ‘적용’처럼 확정 동작에 쓴다.
+    var emphasized = false
+    @Environment(\.isEnabled) private var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         let shape = Capsule(style: .continuous)
         return configuration.label
             .font(.subheadline.weight(.medium))
-            .foregroundStyle(Theme.text)
+            .foregroundStyle(emphasized && isEnabled ? AnyShapeStyle(.tint) : AnyShapeStyle(Theme.text))
             .padding(.horizontal, 20)
             .frame(minHeight: 44)
             .modifier(NeuPress(pressed: configuration.isPressed, shape: shape, depth: 4))
+            .opacity(isEnabled ? 1 : 0.45)
+    }
+}
+
+/// 뉴모피즘 분할 선택: 파인 알약 홈 안에서 고른 칸만 튀어나온다.
+struct NeuSegmented<Value: Hashable & Identifiable>: View {
+    let options: [Value]
+    @Binding var selection: Value
+    let title: (Value) -> String
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(options) { option in
+                let selected = option == selection
+                Button {
+                    if reduceMotion { selection = option } else {
+                        withAnimation(Theme.ease(0.2)) { selection = option }
+                    }
+                } label: {
+                    Text(title(option))
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(selected ? Theme.text : Theme.secondaryText)
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .background {
+                            if selected {
+                                Capsule(style: .continuous)
+                                    .fill(Theme.background)
+                                    .shadow(color: Theme.shadowDark, radius: 5, x: 3, y: 3)
+                                    .shadow(color: Theme.shadowLight, radius: 5, x: -3, y: -3)
+                            }
+                        }
+                        .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(title(option))
+                .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+            }
+        }
+        .padding(4)
+        .inset(Capsule(style: .continuous), depth: 3)
     }
 }
 

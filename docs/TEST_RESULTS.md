@@ -229,3 +229,15 @@
 | 하루 화면 메인 색 반영 | `defaults write … toktok.accent sky`(라이트)·`coral`(다크) 후 스크린숏, 눈금 색 변경 확인 | PASS (시각 확인, 시뮬레이터) |
 | 설정 화면 메인 색 견본·선택 전환·문구 제거 | 컴파일만 확인(시뮬레이터에서 설정 화면 진입 불가) | NOT RUN |
 | VoiceOver 선택됨 낭독, 큰 글씨, 실기기 | | NOT RUN |
+
+## R-014 문서 docs/ 이동·목록 판 스크롤 모서리·설정 버튼 (feature/docs-and-polish)
+
+- 날짜: 2026-11-10 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 변경: PRD·DESIGN·QUESTIONS·TEST_PLAN·TEST_RESULTS·TROUBLESHOOTING·SOURCES·HANDOFF를 docs/로 이동(CLAUDE.md·AGENTS.md·README.md는 맨 위 유지, 경로 갱신), 목록 판을 스크롤 밖에 고정하고 행을 둥근 판 모양으로 자름, 설정 ‘취소·적용’ 뉴모피즘 버튼, 화면 모드 뉴모피즘 분할 선택, ‘바로 적용돼요’ 제거
+- 명령: `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| 기록 많을 때 판 모양 | 예시 기록 17건 스크린숏: 판이 기록 버튼 위까지 차고 맨 아래 행이 판의 둥근 모서리로 잘림 | PASS (시각 확인, 시뮬레이터) |
+| 중간 스크롤 시 위쪽 모서리 | 시뮬레이터에서 스크롤 조작 불가. 같은 clipShape가 위쪽에도 적용됨(코드 확인) | NOT RUN (조작 필요) |
+| 설정 취소·적용·화면 모드 버튼 | 컴파일만 확인 | NOT RUN |

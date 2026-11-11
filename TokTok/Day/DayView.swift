@@ -247,19 +247,37 @@ struct DayView: View {
             .multilineTextAlignment(.center)
             .padding(24)
         case .loaded where model.blocks.isEmpty:
-            VStack(spacing: 16) {
-                Text("기록한 순간이 여기에 쌓여요")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryText)
+            // 빈 상태: 기록 목록과 같은 파인 판 안에 비어 있는 시각 창을 보여 준다(2026-11-11).
+            VStack(spacing: 20) {
+                Text("--:--:--")
+                    .font(.system(size: 32, weight: .light, design: .rounded).monospacedDigit())
+                    .foregroundStyle(Theme.mutedText.opacity(0.6))
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .extruded(RoundedRectangle(cornerRadius: 16, style: .continuous), depth: 4)
+                    .accessibilityHidden(true)
+                VStack(spacing: 6) {
+                    Text("기록한 순간이 여기에 쌓여요")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(Theme.text)
+                    Text("아래 버튼을 누르거나 뒷면을 세 번 톡톡톡 쳐 보세요")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 Button {
                     showingBackTapGuide = true
                 } label: {
-                    Label("뒷면 탭으로 기록 연결하기", systemImage: "hand.tap")
+                    Label("뒷면 탭 연결하기", systemImage: "hand.tap")
                 }
                 .buttonStyle(SecondaryButtonStyle())
             }
             .multilineTextAlignment(.center)
-            .padding(24)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 32)
+            .padding(.horizontal, 20)
+            .insetPanel(RoundedRectangle(cornerRadius: Theme.boxRadius, style: .continuous), depth: 3)
+            .padding(.horizontal, 8)
         default:
             EmptyView()
         }

@@ -85,6 +85,17 @@ docs/              제품·설계·테스트·인계 문서
 | [DEVICE_CHECKLIST.md](docs/DEVICE_CHECKLIST.md) | 실기기에서만 확인할 수 있는 항목 점검표 |
 | [HANDOFF.md](docs/HANDOFF.md) | 기능별 인계 |
 
+## 안내 페이지
+
+App Store Connect에 등록할 개인정보처리방침·지원 페이지는 [`site/`](site/)의 정적 HTML이며 Vercel(Hobby, 프로젝트 `toktoktok`)에 배포합니다. 앱 안에는 웹 링크를 두지 않고 같은 내용의 전문(`PrivacyPolicyView`)을 넣었습니다(사용자 결정 2026-11-11). 가이드라인 5.1.1(i)이 앱 안 ‘링크’를 요구하므로 이 방식이 인정될지는 확인되지 않은 심사 위험입니다(`docs/HANDOFF.md`). 두 곳의 문구와 시행일은 함께 고칩니다.
+
+| 페이지 | 주소 |
+|---|---|
+| 개인정보처리방침 | https://toktoktok-nine.vercel.app/privacy/ |
+| 지원 | https://toktoktok-nine.vercel.app/support/ |
+
+배포: `cd site && npx vercel deploy --prod` (로그인한 계정에서, `.vercelignore`로 `.env*`·`.vercel` 제외)
+
 ## 개발 환경 기록
 
 | 항목 | 값 |

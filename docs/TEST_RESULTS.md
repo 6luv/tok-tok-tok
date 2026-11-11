@@ -361,3 +361,4 @@
 | 수정 후 Codex 재검증(1차) | FAIL: 접근 불가를 ‘이미 없음’으로 분류(P1② 잔존), EOF 빈 줄. 아래 2차 수정 |
 
 - 2차 수정(Codex 재검증 지적): `fileExists` 대신 직접 읽고, 파일 없음 오류(Cocoa NSFileReadNoSuchFileError·NSFileNoSuchFileError, POSIX ENOENT)만 `alreadyMissing`, 권한 거부 등 그 밖의 읽기 실패는 `unreadable`로 보존·보고. 테스트 `testDeleteCountsInaccessibleTargetAsUnreadable`(월 디렉터리 권한 제거), `testNoSuchFileClassification` 추가. EOF 빈 줄 제거
+- Codex 재검증(2차, `codex exec -m gpt-6-astra -s workspace-write`, 추적 파일 수정 금지 지시) 대상 4ece5d5: **PASS(수정 재검증 범위)**. P1①·P1②·P3·EOF 지적 모두 해소, 새 지적 없음. Codex 실행 `swift test --disable-sandbox`(모듈 캐시 경로 지정) → 38 tests, 0 failures, 0 skipped. Codex 쪽 시뮬레이터 build-for-testing은 패키지 캐시 쓰기 제한으로 BLOCKED. 실기기·T18·T19는 NOT RUN. Codex 실행 후 `git status` 변경 없음

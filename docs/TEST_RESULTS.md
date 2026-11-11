@@ -482,3 +482,26 @@
   - 링크 생략을 조건부 대응으로 기록 → HANDOFF·README에 미확인 심사 위험으로 명시(링크는 사용자 결정대로 넣지 않음)
   - EOF 빈 줄 제거
 - Codex 재검증(대상 ed7f573, `gpt-6-astra`): **PASS**. P2 4건·EOF 해소, 새 지적 없음. 웹·앱 방침 16개 조항·시행일·이메일 일치 확인. 앱 안 링크 생략에 따른 심사 위험은 남음(기록됨). Codex 쪽 swift test·앱 빌드는 샌드박스 권한으로 BLOCKED
+
+## R-035 로딩 화면·기록 삭제 스와이프 방향 오른쪽 (feature/launch-swipe-right)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 기준: main e13ce47
+- 변경(사용자 요청): 시작 화면에 `LaunchLogo`(라이트·다크 PNG @1x~3x, 투명) 추가, 앱 안 `LaunchSplashView`(0.7초 후 흐려짐, 모션 감소면 바로), `RootView`에서 하루 화면 위에 겹침. `SwipeToDelete`를 오른쪽 밀기로 대칭 변경(휴지통·그라데이션 왼쪽, 열림 72·즉시 삭제 180 유지). 시작 방향 고정·밀린 동안만 마스크·`deleteOne` 알림 등 기존 Codex 반영 동작은 그대로. README·DESIGN·QUESTIONS Q06 갱신
+- 명령: `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED, 빌드된 앱 Info.plist에 `UILaunchScreen.UIImageName = LaunchLogo` 확인 / `build-for-testing`·`swift test`는 아래 표
+
+| 항목 | 판정 |
+|---|---|
+| 앱 빌드·시작 화면 키 | PASS (빌드·plist 확인만) |
+| TokTokCore 회귀·테스트 타깃 빌드 | `swift test` 38 tests 0 failures, build-for-testing TEST BUILD SUCCEEDED |
+| 시작 화면 → 로딩 화면 이어짐·위치 일치, 오른쪽 스와이프 열림·즉시 삭제·닫힘, 세로 스크롤 비간섭 | NOT RUN (실기기 확인 대기) |
+| 수정 후 Codex 검증 | NOT RUN (Codex 사용 한도 초과, 22:37 이후 가능) |
+
+- 2차(사용자 요청): 시작·로딩 화면을 기기 모드와 관계없이 다크로, 화면 전체 그림 `LaunchArt`(큰 자명종 오른쪽 아래) + 로딩 화면 위쪽 ‘TokTokTok’·소개 한 줄, 1.5초 표시. `LaunchLogo` 제거. 스와이프 덜 예민하게(시작 24pt, 가로≥세로×2, 0.8배 추종). 사용자가 ‘아직 왼쪽’이라 본 것은 이 브랜치가 아직 main에 병합되지 않았기 때문(메인 폴더 main은 e13ce47, 왼쪽 밀기). generic iOS build → BUILD SUCCEEDED
+
+- 3차(사용자 요청): 로딩 화면 제목을 ‘Tok Tok Tok’으로 띄어 씀(앱 이름 표기 TokTokTok 유지), 4a7bbfb
+- Codex 검증(`codex exec -m gpt-6-astra -s workspace-write`, 대상 4a7bbfb): **FAIL**. 스와이프 대칭·감쇠 계산·기존 동작 유지·plist/Assets·LaunchLogo 참조 제거는 PASS, Codex 실행 `swift test` 38 tests 0 failures, 앱 빌드는 캐시 권한으로 BLOCKED
+  - P2 로딩 중 뒤 하루 화면이 VoiceOver에 노출 → `DayView().accessibilityHidden(showsSplash)`
+  - P3 스와이프 거리 설명(180은 행 최종 이동 거리, 손가락 약 249pt / 열린 행 약 159pt, 열림 약 69pt, ‘2배 초과’) → DESIGN 정정
+  - P3 고정 글꼴 예외(로딩 제목 40pt)·최신 제목 표기 → DESIGN·이 기록 보완
+- Codex 재검증(대상 d9ded16, `gpt-6-astra`): **PASS**. P2·P3 지적 모두 해소, 새 지적 없음. Codex 실행 swift test 38 tests 0 failures, 앱 전체 Swift 소스 타입 검사 통과(기존 RecordNowIntent 미사용 변수 경고만), 공유 scheme 빌드는 캐시 권한으로 BLOCKED. 실기기 NOT RUN

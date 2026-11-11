@@ -522,3 +522,14 @@
 | 실기기 로딩 화면 선명도·위치 | NOT RUN (사용자 기기 확인 대기) |
 - Codex 검증(`gpt-6-astra`, 대상 dffb29a): **FAIL**(P3 1건). LaunchClock 형태·구도·배치·plist·접근성 PASS(정적), Codex 실행 swift test 38 tests 0 failures, 앱 Swift 타입 검사 통과, 공유 scheme 빌드 BLOCKED. 지적: DESIGN·Info.plist 주석이 추정 원인을 확정처럼 서술 → 증상(사용자 보고)과 추정 원인(재현 미확인)을 나눠 정정
 - Codex 재검증(대상 2401291): **PASS**. P3 해소, 새 지적 없음. plist·공백 검사 통과
+
+## R-037 개인정보처리방침 문의에서 운영자 표기 제거 (fix/privacy-contact)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 변경(사용자 요청): 웹(`site/privacy/index.html`)·앱(`PrivacyPolicyView`) ‘8. 문의’에서 ‘운영자: TokTokTok’ 줄을 빼고 이메일만 남김. 시행일은 내용 변경이 연락처 표기뿐이라 그대로 둠
+- 명령: `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED
+
+| 항목 | 판정 |
+|---|---|
+| 앱 빌드 | PASS (generic iOS BUILD SUCCEEDED) |
+| 웹·앱 문의 문구 일치 | 구현 측 수동 대조, Codex 검증 아래 |

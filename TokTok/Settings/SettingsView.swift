@@ -20,6 +20,7 @@ struct SettingsView: View {
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
     @AppStorage(AppAccent.storageKey) private var accent: AppAccent = .amber
     @AppStorage(RecordHaptic.storageKey) private var vibration = true
+    @AppStorage(RecordSound.storageKey) private var sound = true
 
     var body: some View {
         NavigationStack {
@@ -101,11 +102,18 @@ struct SettingsView: View {
 
                 // 스위치 줄의 위아래 여백을 아래 ‘뒷면 탭 연결’ 줄과 같게(compact: 카드 위아래 4 + 줄 높이 44)
                 NeuSection(compact: true) {
+                    Toggle("기록할 때 소리", isOn: $sound)
+                        .toggleStyle(NeuToggleStyle())
+                    Theme.hairline.frame(height: 1)
                     Toggle("기록할 때 진동", isOn: $vibration)
                         .toggleStyle(NeuToggleStyle())
                     // 기기 설정이 진동을 막으면 앱이 무시할 수 없어, 같은 칸 안에서 확인할 곳을 알려 준다(사용자 요청 2026-11-11).
                     Theme.hairline.frame(height: 1)
                     VStack(alignment: .leading, spacing: 8) {
+                        Text("무음 모드에서는 소리 없이 진동만 울려요")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.mutedText)
+                            .fixedSize(horizontal: false, vertical: true)
                         Text("진동이 울리지 않으면 iPhone 설정에서 확인해 주세요")
                             .font(.footnote)
                             .foregroundStyle(Theme.mutedText)
@@ -116,7 +124,7 @@ struct SettingsView: View {
                     .padding(.top, 12)
                     .padding(.bottom, 8)
                 } header: {
-                    Text("진동")
+                    Text("소리와 진동")
                 }
 
                 NeuSection(compact: true) {

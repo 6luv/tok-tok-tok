@@ -505,3 +505,20 @@
   - P3 스와이프 거리 설명(180은 행 최종 이동 거리, 손가락 약 249pt / 열린 행 약 159pt, 열림 약 69pt, ‘2배 초과’) → DESIGN 정정
   - P3 고정 글꼴 예외(로딩 제목 40pt)·최신 제목 표기 → DESIGN·이 기록 보완
 - Codex 재검증(대상 d9ded16, `gpt-6-astra`): **PASS**. P2·P3 지적 모두 해소, 새 지적 없음. Codex 실행 swift test 38 tests 0 failures, 앱 전체 Swift 소스 타입 검사 통과(기존 RecordNowIntent 미사용 변수 경고만), 공유 scheme 빌드는 캐시 권한으로 BLOCKED. 실기기 NOT RUN
+
+## R-036 로딩 화면 기종별 벡터 그리기 (fix/launch-vector)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 기준: main b572c73
+- 사용자 보고: 시작·로딩 화면 그림이 사용자 기기에서 크게 깨져 보임(기종·iOS 미기록)
+- 원인 추정: iOS 시작 화면 그림(440×956pt `LaunchArt`)의 배치·확대가 기종마다 달라 앱 안 로딩 화면과 어긋나거나 흐려짐(실기기 재현 미확인)
+- 변경: 시작 화면은 바탕색만(`UIImageName` 제거, `LaunchArt` 이미지셋 삭제). `LaunchSplashView`가 `LaunchClock`(Canvas 벡터, 아이콘 1024 구도)을 화면 너비 정사각형으로 화면 맨 아래에 그림. 제목 최소 축소 0.7
+- 명령: `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED / `plutil -lint Config/Info.plist` → OK / 같은 구도 HTML 미리보기(SE 375×667, 13 mini 375×812, 16 393×852, 16 Pro Max 440×956)로 비율 확인
+
+| 항목 | 판정 |
+|---|---|
+| 앱 빌드·plist | PASS (빌드만) |
+| 기종별 구도(HTML 미리보기, 앱 실제 렌더링 아님) | PASS (미리보기만) |
+| 실기기 로딩 화면 선명도·위치 | NOT RUN (사용자 기기 확인 대기) |
+- Codex 검증(`gpt-6-astra`, 대상 dffb29a): **FAIL**(P3 1건). LaunchClock 형태·구도·배치·plist·접근성 PASS(정적), Codex 실행 swift test 38 tests 0 failures, 앱 Swift 타입 검사 통과, 공유 scheme 빌드 BLOCKED. 지적: DESIGN·Info.plist 주석이 추정 원인을 확정처럼 서술 → 증상(사용자 보고)과 추정 원인(재현 미확인)을 나눠 정정
+- Codex 재검증(대상 2401291): **PASS**. P3 해소, 새 지적 없음. plist·공백 검사 통과

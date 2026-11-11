@@ -55,9 +55,6 @@ struct PrivacyPolicyView: View {
 
             NeuSection {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("운영자: TokTokTok")
-                        .font(.subheadline)
-                        .foregroundStyle(Theme.secondaryText)
                     if let mail = URL(string: "mailto:\(Self.contactEmail)") {
                         Link(destination: mail) {
                             Label(Self.contactEmail, systemImage: "envelope")

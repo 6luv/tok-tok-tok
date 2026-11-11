@@ -85,6 +85,10 @@ struct SettingsView: View {
                         .toggleStyle(NeuToggleStyle())
                 } header: {
                     Text("진동")
+                } footer: {
+                    // 기기 설정이 진동을 막으면 앱이 무시할 수 없어 확인할 곳을 알려 준다(사용자 요청 2026-11-11).
+                    Text("진동이 울리지 않으면 iPhone 설정 › 사운드 및 햅틱 › 햅틱을 ‘항상 재생’으로, 손쉬운 사용 › 터치 › 진동을 켜 주세요.")
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 NeuSection(compact: true) {

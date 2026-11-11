@@ -190,7 +190,7 @@ struct SettingsView: View {
                 .accessibilityAddTraits(.isHeader)
             HStack {
                 Button("닫기") { dismiss() }
-                    .buttonStyle(SecondaryButtonStyle())
+                    .buttonStyle(HeaderButtonStyle())
                     .accessibilityHint("저장하지 않은 하루 시작 시간 변경은 버려요")
                 Spacer()
             }
@@ -302,7 +302,7 @@ private struct DeleteConfirmView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.35)
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .onTapGesture(perform: onCancel)
                 .accessibilityHidden(true)
@@ -337,7 +337,8 @@ private struct DeleteConfirmView: View {
             .padding(.top, 24)
             .padding(.bottom, 20)
             .frame(maxWidth: 400)
-            .extruded(RoundedRectangle(cornerRadius: 28, style: .continuous), depth: 7)
+            // 어두운 배경 위에서는 밝은 그림자가 빛 번짐처럼 보여 어두운 그림자만 쓴다(사용자 요청 2026-11-11)
+            .extruded(RoundedRectangle(cornerRadius: 28, style: .continuous), depth: 7, glow: false)
             .padding(.horizontal, 28)
             .accessibilityElement(children: .contain)
             .accessibilityAddTraits(.isModal)

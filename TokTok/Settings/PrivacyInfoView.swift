@@ -2,15 +2,15 @@ import SwiftUI
 
 /// 앱 내 개인정보 안내(App Review 가이드라인의 앱 내 접근 경로 준비용).
 /// 2026-11-11 다시 정리: 한 줄 요약 카드 + 아이콘 행(제목·한 줄 설명).
-/// 외부 개인정보처리방침 URL은 배포 주소가 정해지면 ‘더 알아보기’ 카드 맨 아래에 링크 한 줄로 넣는다.
+/// 개인정보처리방침 전문은 별도 하위 화면으로 넣는다(사용자 결정, tok-tok-a8 담당).
 struct PrivacyInfoView: View {
     var body: some View {
         NeuPage {
             summary
 
             NeuSection {
-                PrivacyRow(icon: "iphone", title: "이 기기에만 저장",
-                           detail: "기록한 시각과 설정은 이 iPhone 안에만 있어요")
+                PrivacyRow(icon: "iphone", title: "이 기기에 저장",
+                           detail: "기록한 시각과 설정을 이 iPhone에 저장해요")
                 divider
                 PrivacyRow(icon: "person.crop.circle.badge.xmark", title: "계정·서버 없음",
                            detail: "로그인 없이 쓰고, 개발자에게 보내는 데이터가 없어요")
@@ -30,7 +30,6 @@ struct PrivacyInfoView: View {
                 divider
                 PrivacyRow(icon: "globe", title: "시간대",
                            detail: "지금 기기 시간대로 보여 주고, 기록 당시 시간대도 함께 보관해요")
-                // 개인정보처리방침 링크: 배포 주소가 정해지면 여기 한 줄로 넣는다(tok-tok-a8 담당).
             } header: {
                 Text("알아 두세요")
             }

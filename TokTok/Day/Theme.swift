@@ -468,29 +468,50 @@ struct HeaderButtonStyle: ButtonStyle {
 struct NeuNavHeader: View {
     let title: String
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        ZStack {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(Theme.text)
-                .lineLimit(1)
-                .padding(.horizontal, 64)
-                .accessibilityAddTraits(.isHeader)
-            HStack {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .semibold))
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                // 아주 큰 글씨: 제목을 뒤로 버튼 아래로 내려 잘리지 않게 한다(Codex 검증 P2).
+                VStack(alignment: .leading, spacing: 8) {
+                    backButton
+                    titleText.frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(HeaderButtonStyle())
-                .accessibilityLabel("뒤로")
-                Spacer()
+            } else {
+                ZStack {
+                    titleText
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 64)
+                    HStack {
+                        backButton
+                        Spacer()
+                    }
+                }
             }
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
         .padding(.bottom, 8)
         .background(Theme.background)
+    }
+
+    private var titleText: some View {
+        Text(title)
+            .font(.headline)
+            .foregroundStyle(Theme.text)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private var backButton: some View {
+        Button { dismiss() } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 16, weight: .semibold))
+        }
+        .buttonStyle(HeaderButtonStyle())
+        .accessibilityLabel("뒤로")
     }
 }
 
@@ -516,8 +537,9 @@ extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
         interactivePopGestureRecognizer?.delegate = self
     }
 
+    /// 루트 화면이거나 화면 전환이 진행 중이면 시작하지 않는다(전환 중 멈춤 방지).
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        viewControllers.count > 1
+        viewControllers.count > 1 && transitionCoordinator == nil
     }
 }
 #endif

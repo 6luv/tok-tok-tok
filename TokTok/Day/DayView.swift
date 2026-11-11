@@ -15,6 +15,8 @@ struct DayView: View {
     @AppStorage(AppAccent.storageKey) private var accent: AppAccent = .amber
 
     private let topSentinelID = "toktok.top"
+    /// 휴지통이 열려 있는 기록 행(한 번에 하나)
+    @State private var openRowID: UUID?
 
     var body: some View {
         ZStack {
@@ -197,9 +199,14 @@ struct DayView: View {
                                                value: g.frame(in: .named("toktok.scroll")).minY)
                     })
                 ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                    RecordBlockView(block: block, isNewest: index == 0)
-                        .id(block.id)
-                        .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
+                    // 왼쪽으로 밀면 휴지통이 나오고 지운다(사용자 결정 2026-11-11)
+                    SwipeToDelete(id: block.id, openID: $openRowID, onDelete: {
+                        Task { await model.deleteOne(block.id) }
+                    }) {
+                        RecordBlockView(block: block, isNewest: index == 0)
+                    }
+                    .id(block.id)
+                    .transition(reduceMotion ? AnyTransition.identity : AnyTransition.opacity)
                 }
             }
             // 판 모서리 24 = 행 모서리 16 + 안쪽 여백 8

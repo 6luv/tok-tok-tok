@@ -42,6 +42,43 @@ final class DayViewModelTests: XCTestCase {
         XCTAssertTrue(model.blocks.contains { $0.id == model.scrollTarget })
     }
 
+    /// 스와이프 삭제(Q06 2026-11-11): 고른 기록 하나만 지우고 나머지는 남는다.
+    func testDeleteOneRemovesOnlyThatRecord() async throws {
+        let model = makeModel()
+        try await model.saveBoundary(DayBoundary(minutes: 0)!)
+        let first = try model.service!.recordNow(source: .app)
+        let second = try model.service!.recordNow(source: .app)
+        await model.reload()
+        XCTAssertEqual(model.blocks.count, 2)
+
+        await model.deleteOne(first.id)
+        try await waitUntil { model.blocks.count == 1 }
+        XCTAssertEqual(model.blocks.map(\.id), [second.id])
+        XCTAssertNil(model.feedback)
+    }
+
+    /// 대상이 이미 목록에 없으면 아무것도 지우지 않고 알린다(Codex 검증 P2).
+    func testDeleteOneMissingTargetDeletesNothingAndReports() async throws {
+        let model = makeModel()
+        try await model.saveBoundary(DayBoundary(minutes: 0)!)
+        _ = try model.service!.recordNow(source: .app)
+        await model.reload()
+        await model.deleteOne(UUID())
+        XCTAssertEqual(model.blocks.count, 1)
+        if case .error = model.feedback {} else { XCTFail("오류 알림이 있어야 함") }
+    }
+
+    /// 목록에는 있지만 저장소에서 먼저 지워진 기록: 화면 알림이 있어야 한다(Codex 재검증 P2).
+    func testDeleteOneAlreadyMissingShowsNotice() async throws {
+        let model = makeModel()
+        try await model.saveBoundary(DayBoundary(minutes: 0)!)
+        let record = try model.service!.recordNow(source: .app)
+        await model.reload()
+        _ = try model.service!.deleteRecords([record]) // 다른 곳에서 먼저 지움
+        await model.deleteOne(record.id)
+        if case .error = model.feedback {} else { XCTFail("이미 지워짐 알림이 있어야 함") }
+    }
+
     func testExternalRecordWhileScrolledAwayCountsUnseen() async throws {
         let model = makeModel()
         try await model.saveBoundary(DayBoundary(minutes: 0)!)

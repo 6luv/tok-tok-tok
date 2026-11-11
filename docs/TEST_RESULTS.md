@@ -427,3 +427,19 @@
 - 확인: 임시로 시작 화면을 연결 안내로 바꾼 빌드(커밋 안 함), 예시 단축어 기록이 있는 상태에서 iPhone 17 Pro 시뮬레이터 라이트·다크 스크린숏 — PASS(시각 확인)
 - `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → failedTests:0 passedTests:6 
 - NOT RUN: ‘다시 보기’ 펼치기 조작(시뮬레이터 조작 불가), 실기기
+
+## R-032 기록 왼쪽 스와이프 삭제 (feature/swipe-delete)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42) / 사용자 결정(Q06 추가)
+- 변경: `SwipeToDelete`(휴지통 열기·끝까지 밀어 삭제·한 행만 열림·VoiceOver 삭제 동작), `DayViewModel.deleteOne`(스냅샷의 그 기록만 `deleteRecords`로, 실패 시 오류)
+- 명령: `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 7 passed, 0 failed(신규 `testDeleteOneRemovesOnlyThatRecord`)
+- 확인: 임시로 둘째 행을 열어 둔 빌드(커밋 안 함)로 라이트·다크 스크린숏
+
+| 항목 | 판정 |
+|---|---|
+| 한 개만 지우고 나머지 유지(단위 테스트) | PASS |
+| 휴지통 열린 모양·행 잘림·최신 행 그림자 유지 | PASS (시각 확인, 시뮬레이터) |
+| 실제 스와이프 조작·끝까지 밀기·세로 스크롤과 충돌 여부 | NOT RUN (시뮬레이터 조작 불가, 실기기) |
+- Codex 독립 검증 1차(병합 전, read-only, gpt-6-astra): 보류. P2 대상 없음 시 무알림, P2 실패 음성 안내 없음, P3 Q06 정책 혼재, 세로로 시작한 드래그가 가로로 끝나면 삭제 분기 위험 → 모두 수정(대상 없음 알림·음성, 실패 음성, Q06 일괄/개별 분리, 드래그 시작 방향 고정)
+- Codex 재검증(2차): 대상 없음·실패 음성·Q06·드래그 방향은 PASS, `alreadyMissing` 분기 화면 알림 누락 P2 1건 → 화면 알림 추가, 테스트 `testDeleteOneAlreadyMissingShowsNotice`
+- Codex 재검증(3차): P2 해결 확인, 새 결함 없음 → 병합 가능. 앱 테스트 9 passed, 0 failed

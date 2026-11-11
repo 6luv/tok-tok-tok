@@ -42,6 +42,21 @@ final class DayViewModelTests: XCTestCase {
         XCTAssertTrue(model.blocks.contains { $0.id == model.scrollTarget })
     }
 
+    /// 스와이프 삭제(Q06 2026-11-11): 고른 기록 하나만 지우고 나머지는 남는다.
+    func testDeleteOneRemovesOnlyThatRecord() async throws {
+        let model = makeModel()
+        try await model.saveBoundary(DayBoundary(minutes: 0)!)
+        let first = try model.service!.recordNow(source: .app)
+        let second = try model.service!.recordNow(source: .app)
+        await model.reload()
+        XCTAssertEqual(model.blocks.count, 2)
+
+        await model.deleteOne(first.id)
+        try await waitUntil { model.blocks.count == 1 }
+        XCTAssertEqual(model.blocks.map(\.id), [second.id])
+        XCTAssertNil(model.feedback)
+    }
+
     func testExternalRecordWhileScrolledAwayCountsUnseen() async throws {
         let model = makeModel()
         try await model.saveBoundary(DayBoundary(minutes: 0)!)

@@ -8,6 +8,8 @@ struct RootView: View {
         ZStack {
             // 하루 화면은 처음부터 뒤에서 만들어 자료를 읽는다
             DayView()
+                // 로딩 화면이 덮고 있는 동안 VoiceOver가 뒤의 하루 화면으로 가지 않게 한다(Codex 검증)
+                .accessibilityHidden(showsSplash)
             if showsSplash {
                 LaunchSplashView()
                     .transition(.opacity)

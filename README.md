@@ -87,7 +87,7 @@ docs/              제품·설계·테스트·인계 문서
 
 ## 안내 페이지
 
-App Store Connect에 등록할 개인정보처리방침·지원 페이지는 [`site/`](site/)의 정적 HTML이며 Vercel(Hobby, 프로젝트 `toktoktok`)에 배포합니다. 앱 안에는 웹 링크를 두지 않고 같은 내용의 전문(`PrivacyPolicyView`)을 넣었습니다(사용자 결정 2026-11-11). 두 곳의 문구와 시행일은 함께 고칩니다.
+App Store Connect에 등록할 개인정보처리방침·지원 페이지는 [`site/`](site/)의 정적 HTML이며 Vercel(Hobby, 프로젝트 `toktoktok`)에 배포합니다. 앱 안에는 웹 링크를 두지 않고 같은 내용의 전문(`PrivacyPolicyView`)을 넣었습니다(사용자 결정 2026-11-11). 가이드라인 5.1.1(i)이 앱 안 ‘링크’를 요구하므로 이 방식이 인정될지는 확인되지 않은 심사 위험입니다(`docs/HANDOFF.md`). 두 곳의 문구와 시행일은 함께 고칩니다.
 
 | 페이지 | 주소 |
 |---|---|

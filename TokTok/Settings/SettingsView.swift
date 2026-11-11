@@ -80,7 +80,8 @@ struct SettingsView: View {
                     Text("화면 모드")
                 }
 
-                NeuSection {
+                // 스위치 줄의 위아래 여백을 아래 ‘뒷면 탭 연결’ 줄과 같게(compact: 카드 위아래 4 + 줄 높이 44)
+                NeuSection(compact: true) {
                     Toggle("기록할 때 진동", isOn: $vibration)
                         .toggleStyle(NeuToggleStyle())
                     // 기기 설정이 진동을 막으면 앱이 무시할 수 없어, 같은 칸 안에서 확인할 곳을 알려 준다(사용자 요청 2026-11-11).
@@ -93,6 +94,8 @@ struct SettingsView: View {
                         VibrationHintRow(path: "사운드 및 햅틱 › 햅틱", value: "항상 재생")
                         VibrationHintRow(path: "손쉬운 사용 › 터치 › 진동", value: "켬")
                     }
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
                 } header: {
                     Text("진동")
                 }

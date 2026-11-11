@@ -6,8 +6,18 @@ import SwiftUI
 /// `kSystemSoundID_Vibrate`(Audio Toolbox 공개 상수)를 쓴다. 기기의 손쉬운 사용 › 터치 › 진동이 꺼져 있으면
 /// iOS가 울리지 않는다. 앱이 화면에 없을 때(뒷면 탭·단축어) 실제로 울리는지는 실기기 확인 대상이며,
 /// 이를 위해 background 모드를 추가하지 않는다(CLAUDE.md 구현 제약).
+/// 앱 설정의 ‘진동’ 토글(`storageKey`, 기본 켜짐)이 꺼져 있으면 진동 명령을 보내지 않는다(2026-11-11).
+/// 기기 설정(손쉬운 사용 › 터치 › 진동 등)이 진동을 막으면 앱이 이를 무시할 수 없다.
 enum RecordHaptic {
+    static let storageKey = "toktok.vibration"
+
+    /// 저장된 값이 없으면 켜짐.
+    static var isEnabled: Bool {
+        UserDefaults.standard.object(forKey: storageKey) as? Bool ?? true
+    }
+
     static func vibrate() {
+        guard isEnabled else { return }
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 }

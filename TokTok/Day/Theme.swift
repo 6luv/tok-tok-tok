@@ -213,6 +213,45 @@ struct SecondaryButtonStyle: ButtonStyle {
     }
 }
 
+/// 뉴모피즘 켜기·끄기 스위치: 파인 알약 홈 안에서 튀어나온 원이 좌우로 움직인다.
+/// 켜지면 원이 오른쪽으로 가고 홈 안쪽이 메인 색으로 옅게 물든다.
+struct NeuToggleStyle: ToggleStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            if reduceMotion { configuration.isOn.toggle() } else {
+                withAnimation(Theme.ease(0.2)) { configuration.isOn.toggle() }
+            }
+        } label: {
+            HStack(spacing: 12) {
+                configuration.label
+                    .font(.body)
+                    .foregroundStyle(Theme.text)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ZStack(alignment: configuration.isOn ? .trailing : .leading) {
+                    Capsule(style: .continuous)
+                        .fill(configuration.isOn ? AnyShapeStyle(.tint.opacity(0.35)) : AnyShapeStyle(Color.clear))
+                        .frame(width: 56, height: 32)
+                        .inset(Capsule(style: .continuous), depth: 3)
+                    Circle()
+                        .fill(Theme.background)
+                        .frame(width: 24, height: 24)
+                        .shadow(color: Theme.shadowDark, radius: 3, x: 2, y: 2)
+                        .shadow(color: Theme.shadowLight, radius: 3, x: -2, y: -2)
+                        .padding(4)
+                }
+            }
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(configuration.isOn ? "켜짐" : "꺼짐")
+        .accessibilityAddTraits(.isToggle)
+    }
+}
+
 /// 뉴모피즘 분할 선택: 파인 알약 홈 안에서 고른 칸만 튀어나온다.
 struct NeuSegmented<Value: Hashable & Identifiable>: View {
     let options: [Value]

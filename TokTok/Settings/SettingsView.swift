@@ -110,7 +110,7 @@ struct SettingsView: View {
                     // 기기 설정이 진동을 막으면 앱이 무시할 수 없어, 같은 칸 안에서 확인할 곳을 알려 준다(사용자 요청 2026-11-11).
                     Theme.hairline.frame(height: 1)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("무음 모드에서는 소리 없이 진동만 울려요")
+                        Text("무음 모드에서는 소리가 나지 않아요")
                             .font(.footnote)
                             .foregroundStyle(Theme.mutedText)
                             .fixedSize(horizontal: false, vertical: true)

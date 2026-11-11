@@ -31,56 +31,73 @@ struct RecordingGuideView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var latest: TimeRecord?
     @State private var checkedAt: Date?
+    @State private var showSteps = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         NeuPage {
-            Text("뒷면을 세 번 톡톡톡 치면 지금 시각이 기록되도록 한 번만 연결해요")
-                .font(.subheadline)
-                .foregroundStyle(Theme.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 4)
-
-            // 1. 단축어
-            stepCard(1, title: Self.sharedShortcutURL == nil ? "단축어 만들기" : "단축어 받기", done: false) {
-                if let shared = Self.sharedShortcutURL {
-                    subSteps(["아래 버튼을 눌러요", "단축어 앱에서 ‘단축어 추가’를 눌러요"])
-                    actionButton("‘\(Self.suggestedShortcutName)’ 받기", icon: "square.and.arrow.down") { openURL(shared) }
-                } else {
-                    subSteps([
-                        "아래 버튼으로 단축어 앱의 새 단축어를 열어요",
-                        "‘동작 추가’에서 ‘TokTokTok’을 검색해요",
-                        "‘현재 시간 기록’을 눌러 넣어요",
-                        "이름을 ‘\(Self.suggestedShortcutName)’로 바꾸고 완료를 눌러요",
-                    ])
-                    actionButton("단축어 앱 열기", icon: "arrow.up.forward.app") {
-                        if let url = URL(string: "shortcuts://create-shortcut") { openURL(url) }
-                    }
+            if latest != nil {
+                // 연결이 확인되면 요약을 먼저 보여 주고 단계는 접어 둔다(2026-11-11).
+                connectedSummary
+                Button {
+                    withAnimation(reduceMotion ? nil : Theme.ease(0.25)) { showSteps.toggle() }
+                } label: {
+                    Label(showSteps ? "연결 방법 접기" : "연결 방법 다시 보기",
+                          systemImage: showSteps ? "chevron.up" : "chevron.down")
+                        .frame(maxWidth: .infinity)
                 }
-            }
-
-            // 2. 뒷면 탭
-            stepCard(2, title: "뒷면 탭에 연결", done: false) {
-                subSteps([
-                    "설정 앱을 열어요",
-                    "‘손쉬운 사용’을 눌러요",
-                    "‘터치’를 눌러요",
-                    "맨 아래 ‘뒷면 탭’을 눌러요",
-                    "‘세 번 탭’을 눌러요",
-                    "목록 아래 단축어에서 ‘\(Self.suggestedShortcutName)’를 골라요",
-                ])
-                Text("TokTokTok이 설정 화면을 대신 열 수는 없어요. 메뉴 이름은 iOS 버전에 따라 조금 다를 수 있어요.")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.mutedText)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            // 3. 시험
-            stepCard(3, title: "시험하기", done: latest != nil) {
-                Text("화면이 켜진 상태에서 뒷면을 세 번 톡톡톡 친 뒤 이 화면으로 돌아와요")
+                .buttonStyle(SecondaryButtonStyle())
+            } else {
+                Text("뒷면을 세 번 톡톡톡 치면 지금 시각이 기록되도록 한 번만 연결해요")
                     .font(.subheadline)
                     .foregroundStyle(Theme.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
-                verification
+                    .padding(.horizontal, 4)
+            }
+
+            if latest == nil || showSteps {
+                // 1. 단축어
+                stepCard(1, title: Self.sharedShortcutURL == nil ? "단축어 만들기" : "단축어 받기", done: false) {
+                    if let shared = Self.sharedShortcutURL {
+                        subSteps(["아래 버튼을 눌러요", "단축어 앱에서 ‘단축어 추가’를 눌러요"])
+                        actionButton("‘\(Self.suggestedShortcutName)’ 받기", icon: "square.and.arrow.down") { openURL(shared) }
+                    } else {
+                        subSteps([
+                            "아래 버튼으로 단축어 앱의 새 단축어를 열어요",
+                            "‘동작 추가’에서 ‘TokTokTok’을 검색해요",
+                            "‘현재 시간 기록’을 눌러 넣어요",
+                            "이름을 ‘\(Self.suggestedShortcutName)’로 바꾸고 완료를 눌러요",
+                        ])
+                        actionButton("단축어 앱 열기", icon: "arrow.up.forward.app") {
+                            if let url = URL(string: "shortcuts://create-shortcut") { openURL(url) }
+                        }
+                    }
+                }
+
+                // 2. 뒷면 탭
+                stepCard(2, title: "뒷면 탭에 연결", done: false) {
+                    subSteps([
+                        "설정 앱을 열어요",
+                        "‘손쉬운 사용’을 눌러요",
+                        "‘터치’를 눌러요",
+                        "맨 아래 ‘뒷면 탭’을 눌러요",
+                        "‘세 번 탭’을 눌러요",
+                        "목록 아래 단축어에서 ‘\(Self.suggestedShortcutName)’를 골라요",
+                    ])
+                    Text("TokTokTok이 설정 화면을 대신 열 수는 없어요. 메뉴 이름은 iOS 버전에 따라 조금 다를 수 있어요.")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.mutedText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                // 3. 시험
+                stepCard(3, title: "시험하기", done: latest != nil) {
+                    Text("화면이 켜진 상태에서 뒷면을 세 번 톡톡톡 친 뒤 이 화면으로 돌아와요")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                    verification
+                }
             }
 
             NeuSection {
@@ -101,6 +118,52 @@ struct RecordingGuideView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: RecordsChangeNotifier.name).receive(on: RunLoop.main)) { _ in
             Task { await refresh() }
+        }
+    }
+
+    /// 연결 확인 요약: 체크 원 + ‘연결됐어요’ + 마지막 단축어 기록 시각 + 다시 확인.
+    @ViewBuilder
+    private var connectedSummary: some View {
+        if let latest {
+            let block = DayPresentation(timeZone: .current).blocks(for: [latest])[0]
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 12) {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.tint)
+                        .frame(width: 40, height: 40)
+                        .inset(Circle(), depth: 2)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("뒷면 탭이 연결됐어요")
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(Theme.text)
+                            .accessibilityAddTraits(.isHeader)
+                        Text("뒷면을 세 번 톡톡톡 치면 기록돼요")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.secondaryText)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("마지막 단축어 기록")
+                        .font(.caption)
+                        .foregroundStyle(Theme.mutedText)
+                    Text(block.timeText)
+                        .font(.system(.title2, design: .rounded).weight(.light).monospacedDigit())
+                        .foregroundStyle(Theme.text)
+                    Text(block.dateText)
+                        .font(.footnote)
+                        .foregroundStyle(Theme.mutedText)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .inset(RoundedRectangle(cornerRadius: 12, style: .continuous), depth: 3)
+                .accessibilityElement(children: .combine)
+                actionButton("다시 확인", icon: "arrow.clockwise") { Task { await refresh() } }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .extruded(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous), depth: 5)
         }
     }
 

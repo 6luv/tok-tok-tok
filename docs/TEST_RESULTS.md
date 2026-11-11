@@ -362,3 +362,18 @@
 
 - 2차 수정(Codex 재검증 지적): `fileExists` 대신 직접 읽고, 파일 없음 오류(Cocoa NSFileReadNoSuchFileError·NSFileNoSuchFileError, POSIX ENOENT)만 `alreadyMissing`, 권한 거부 등 그 밖의 읽기 실패는 `unreadable`로 보존·보고. 테스트 `testDeleteCountsInaccessibleTargetAsUnreadable`(월 디렉터리 권한 제거), `testNoSuchFileClassification` 추가. EOF 빈 줄 제거
 - Codex 재검증(2차, `codex exec -m gpt-6-astra -s workspace-write`, 추적 파일 수정 금지 지시) 대상 4ece5d5: **PASS(수정 재검증 범위)**. P1①·P1②·P3·EOF 지적 모두 해소, 새 지적 없음. Codex 실행 `swift test --disable-sandbox`(모듈 캐시 경로 지정) → 38 tests, 0 failures, 0 skipped. Codex 쪽 시뮬레이터 build-for-testing은 패키지 캐시 쓰기 제한으로 BLOCKED. 실기기·T18·T19는 NOT RUN. Codex 실행 후 `git status` 변경 없음
+
+## R-025 기록 완료 진동 한 번 (feature/record-haptic)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 사용자 결정: 소리는 빼고 기록할 때마다 기본 진동 한 번. 아이폰 기본 문자음(노트) 재생을 Mac에서 들려 드렸으나, Apple 소리 파일 저작권·비공개 소리 번호 문제를 듣고 소리 없이 진동만 선택
+- 변경: `RecordHaptic.vibrate()`(`kSystemSoundID_Vibrate`)를 앱 안 기록 성공·`RecordNowIntent` 저장 성공 뒤에 호출
+
+| 항목 | 판정 |
+|---|---|
+| 빌드·앱 테스트(커밋 5e4d614 기준) | PASS: `xcodebuild test -project TokTok.xcodeproj -scheme TokTok -destination 'platform=iOS Simulator,id=<iPhone 17 Pro, iOS 26.5>'` → 6 passed, 0 failed / `cd TokTokCore && swift test` → 38 tests, 0 failures |
+| 앱 안 버튼 기록 시 진동 한 번 | NOT RUN (시뮬레이터는 진동 없음, 실기기 필요) |
+| 뒷면 탭·단축어 기록 시 진동 한 번(앱이 화면에 없을 때) | NOT RUN (실기기 필요) |
+| 기기 진동 설정 끔 → 진동 없음 | NOT RUN (실기기) |
+
+- Codex 독립 검증(병합 전, `codex exec --sandbox read-only`, 모델 gpt-6-astra): 코드 결함 없음. 저장 성공 뒤에만 진동, 공개 API·iOS 17 호환, background mode 추가 없음 확인. P3 1건(R-025 실행 근거 누락)을 지적받아 위 표에 명령·결과를 보완. Codex 환경에서 빌드·테스트는 읽기 전용 제한으로 BLOCKED

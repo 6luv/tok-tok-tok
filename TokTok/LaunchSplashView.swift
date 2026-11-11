@@ -22,7 +22,8 @@ struct LaunchSplashView: View {
                 .ignoresSafeArea()
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 8) {
-                Text("TokTokTok")
+                // 로딩 화면 제목만 띄어 쓴다(사용자 요청 2026-11-11). 앱 이름 표기는 TokTokTok 그대로
+                Text("Tok Tok Tok")
                     .font(.system(size: 40, weight: .medium, design: .rounded))
                     .foregroundStyle(Self.ivory)
                 Text("뒷면을 톡톡톡, 지금 시각을 남겨요")

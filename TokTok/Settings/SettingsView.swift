@@ -131,6 +131,11 @@ struct SettingsView: View {
                     NeuLinkRow(title: "뒷면 탭 연결") { RecordingGuideView() }
                     Theme.hairline.frame(height: 1)
                     NeuLinkRow(title: "개인정보와 데이터") { PrivacyInfoView() }
+                } header: {
+                    EmptyView()
+                } footer: {
+                    // 화면이 꺼지면 iPhone이 뒷면 탭을 받지 않는다(TS-007, 사용자 결정 2026-11-11 Q10)
+                    Text("뒷면 탭 기록은 화면이 켜져 있을 때만 돼요")
                 }
 
                 NeuSection(compact: true) {

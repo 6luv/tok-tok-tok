@@ -391,3 +391,8 @@
 | 끄면 앱 안·뒷면 탭 기록에서 진동 없음 / 켜면 한 번 | NOT RUN (실기기 필요) |
 - 빌드·앱 테스트(커밋 7fa0b3e): `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
 - Codex 독립 검증(병합 전, read-only, gpt-6-astra): P1~P3 결함 없음. 토글 OFF 시 앱·Intent 진동 차단, 기본값 일치, 접근성(.isToggle iOS 17·44pt·값) 확인. Codex 환경의 빌드·테스트는 읽기 전용 제한으로 BLOCKED
+
+## R-027 진동 꼬리말 안내 (feature/vibration-hint)
+
+- 날짜: 2026-11-11 / 사용자 요청: ‘기록할 때 진동’ 아래에 진동이 울리지 않을 때 확인할 기기 설정 안내
+- 확인: 설정 화면 스크린숏(임시 진입 빌드, 커밋 안 함), `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed

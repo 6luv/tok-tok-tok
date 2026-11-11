@@ -420,3 +420,10 @@
 | 빌드·앱 테스트 | PASS: `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed |
 | 시간 변경 시 카드 안 버튼 표시 | PASS (임시로 시간을 1시간 바꾼 채 여는 빌드로 스크린숏, 커밋 안 함) |
 | 저장·되돌리기 동작, 닫기 시 변경 버림 | NOT RUN (시뮬레이터 조작 불가, 실기기 확인) |
+
+## R-031 뒷면 탭 연결 완료 요약 (feature/guide-connected)
+
+- 날짜: 2026-11-11 / 변경: 단축어 기록이 있으면 요약 카드 + 단계 접기(‘연결 방법 다시 보기’)
+- 확인: 임시로 시작 화면을 연결 안내로 바꾼 빌드(커밋 안 함), 예시 단축어 기록이 있는 상태에서 iPhone 17 Pro 시뮬레이터 라이트·다크 스크린숏 — PASS(시각 확인)
+- `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → failedTests:0 passedTests:6 
+- NOT RUN: ‘다시 보기’ 펼치기 조작(시뮬레이터 조작 불가), 실기기

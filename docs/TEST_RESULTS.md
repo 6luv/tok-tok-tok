@@ -456,3 +456,22 @@
 | 끝까지 밀 때 휴지통 채움 전환, 가장자리 밀어 뒤로 가기 | NOT RUN (시뮬레이터 조작 불가, 실기기) |
 - Codex 독립 검증 1차(병합 전, read-only): 보류. P2 개인정보 ‘이 iPhone 안에만’ 과장, P2 위 막대 제목 큰 글씨 잘림, P3 버튼 색 문서 불일치, 뒤로 제스처 전환 중 상태 미검사 → 문구 ‘이 iPhone에 저장해요’, 제목 2줄·접근성 크기에서 아래로, 문서 정정, `transitionCoordinator == nil` 조건 추가
 - Codex 재검증(2차): 1차 지적 모두 해결, 새 결함 없음 → 병합 가능. 앱 테스트 9 passed, 0 failed. 접근성 L 글씨에서 개인정보 위 막대 제목이 뒤로 버튼 아래로 내려가 잘리지 않음(스크린숏)
+
+## R-034 안내 페이지 배포·앱 안 개인정보처리방침 전문 (feature/site-pages)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Vercel CLI 65.14.0
+- 기준: main e13ce47
+- 변경: `site/`(index·privacy·support 정적 HTML, 앱 아이콘 색), Vercel 프로젝트 `toktoktok` 배포. 앱 안 웹 링크 없이 `PrivacyPolicyView` 전문 추가, ‘개인정보와 데이터’ 맨 아래 행. README 안내 페이지 절, DESIGN, HANDOFF
+- 명령과 결과:
+  - `cd site && npx vercel deploy --prod --yes` → https://toktoktok-nine.vercel.app
+  - `curl` 상태 코드: `/`·`/privacy/`·`/support/`·`/privacy`·`/support`·`/icon.svg` 200, `/.env.local` 404(배포 제외 확인)
+  - 로컬 미리보기(Chrome 헤드리스): 문서 폭 485px ≤ 화면 500px로 가로 넘침 없음, 다크 모드 렌더링 확인
+  - `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED
+
+| 항목 | 판정 |
+|---|---|
+| 웹 페이지 공개 접근·환경 파일 비노출 | PASS |
+| 앱 빌드(PrivacyPolicyView 포함) | PASS (빌드만) |
+| 전문 화면 표시·메일 링크·큰 글씨·VoiceOver | NOT RUN (실기기 확인 대기) |
+| 웹과 앱 문구 일치 | 수동 대조(구현 측). 독립 검증 대기 |
+

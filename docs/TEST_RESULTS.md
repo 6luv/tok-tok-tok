@@ -398,3 +398,14 @@
 - 확인: 설정 화면 스크린숏(임시 진입 빌드, 커밋 안 함), `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
 - 2차(같은 날, feature/vibration-hint-card): 사용자 요청으로 안내를 꼬리말에서 진동 카드 안으로 옮기고 경로·값 두 줄로 정리. 라이트·다크 스크린숏 확인, `xcodebuild test` → 6 passed, 0 failed
 - 3차(같은 날, feature/toggle-color): 켜짐 스위치 홈을 메인 색 `tick`으로 불투명하게, 진동 카드 여백을 ‘뒷면 탭 연결’ 카드와 같은 compact(위아래 4·줄 44)로. 스크린숏 확인, `xcodebuild test` → 6 passed, 0 failed
+
+## R-029 빈 상태·앱 시작 화면 (feature/empty-and-launch)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 변경: 빈 상태를 기록 목록과 같은 파인 판 + 빈 시각 창으로, 시작 화면 배경을 앱 바탕색과 같게(`Config/Info.plist` UILaunchScreen.UIColorName, `LaunchBackground` 색). Xcode 26.5 빌드 설정에는 시작 화면 색 키가 없어(`CoreBuildSystem.xcspec` 확인, `INFOPLIST_KEY_UILaunchScreen_Generation`만 있음) Info.plist 조각을 씀
+- 확인: 빌드된 앱 Info.plist에 `UILaunchScreen = { UIColorName = LaunchBackground }`, `CFBundleDisplayName = TokTokTok` 유지. iPhone 17 Pro 시뮬레이터 빈 상태 라이트·다크 스크린숏
+
+| 항목 | 판정 |
+|---|---|
+| 빈 상태 화면 라이트·다크 | PASS (시각 확인, 시뮬레이터) |
+| 시작 화면 색이 바탕색과 같은지(깜빡임) | NOT RUN (시작 순간 캡처 불가, 실기기 확인) |

@@ -457,6 +457,32 @@
 - Codex 독립 검증 1차(병합 전, read-only): 보류. P2 개인정보 ‘이 iPhone 안에만’ 과장, P2 위 막대 제목 큰 글씨 잘림, P3 버튼 색 문서 불일치, 뒤로 제스처 전환 중 상태 미검사 → 문구 ‘이 iPhone에 저장해요’, 제목 2줄·접근성 크기에서 아래로, 문서 정정, `transitionCoordinator == nil` 조건 추가
 - Codex 재검증(2차): 1차 지적 모두 해결, 새 결함 없음 → 병합 가능. 앱 테스트 9 passed, 0 failed. 접근성 L 글씨에서 개인정보 위 막대 제목이 뒤로 버튼 아래로 내려가 잘리지 않음(스크린숏)
 
+## R-034 안내 페이지 배포·앱 안 개인정보처리방침 전문 (feature/site-pages)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Vercel CLI 65.14.0
+- 기준: main e13ce47
+- 변경: `site/`(index·privacy·support 정적 HTML, 앱 아이콘 색), Vercel 프로젝트 `toktoktok` 배포. 앱 안 웹 링크 없이 `PrivacyPolicyView` 전문 추가, ‘개인정보와 데이터’ 맨 아래 행. README 안내 페이지 절, DESIGN, HANDOFF
+- 명령과 결과:
+  - `cd site && npx vercel deploy --prod --yes` → https://toktoktok-nine.vercel.app
+  - `curl` 상태 코드: `/`·`/privacy/`·`/support/`·`/privacy`·`/support`·`/icon.svg` 200, `/.env.local` 404(배포 제외 확인)
+  - 로컬 미리보기(Chrome 헤드리스): 문서 폭 485px ≤ 화면 500px로 가로 넘침 없음, 다크 모드 렌더링 확인
+  - `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED
+
+| 항목 | 판정 |
+|---|---|
+| 웹 페이지 공개 접근·환경 파일 비노출 | PASS |
+| 앱 빌드(PrivacyPolicyView 포함) | PASS (빌드만) |
+| 전문 화면 표시·메일 링크·큰 글씨·VoiceOver | NOT RUN (실기기 확인 대기) |
+| 웹과 앱 문구 일치 | Codex 1차 PASS(시행일·문구 일치) |
+
+- Codex 검증 1차(`codex exec -m gpt-6-astra -s workspace-write`, 대상 c444693): **FAIL**(P2 4건). Codex 실행 `swift test` 38 tests 0 failures, 앱 빌드는 캐시 권한으로 BLOCKED
+  - 저장 항목 누락(기록 식별자·UTC 오프셋·형식 버전) → 웹·앱 방침 2조 보완, source가 단축어 동작 경로(뒷면 탭·Siri 포함)임을 명시
+  - ‘기기 안에만’·‘누구에게도 전송되지 않음’과 백업 가능성 충돌 → ‘앱이 개발자·서버로 보내지 않음, 백업에는 포함될 수 있음’으로 통일(방침 요약·2조, 첫 화면, 지원 FAQ)
+  - 컴퓨터 백업 사본 삭제 경로 부정확 → ‘iCloud 백업 설정 또는 백업을 만든 컴퓨터’로 구분
+  - 링크 생략을 조건부 대응으로 기록 → HANDOFF·README에 미확인 심사 위험으로 명시(링크는 사용자 결정대로 넣지 않음)
+  - EOF 빈 줄 제거
+- Codex 재검증(대상 ed7f573, `gpt-6-astra`): **PASS**. P2 4건·EOF 해소, 새 지적 없음. 웹·앱 방침 16개 조항·시행일·이메일 일치 확인. 앱 안 링크 생략에 따른 심사 위험은 남음(기록됨). Codex 쪽 swift test·앱 빌드는 샌드박스 권한으로 BLOCKED
+
 ## R-035 로딩 화면·기록 삭제 스와이프 방향 오른쪽 (feature/launch-swipe-right)
 
 - 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)

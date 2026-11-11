@@ -478,3 +478,4 @@
   - P2 로딩 중 뒤 하루 화면이 VoiceOver에 노출 → `DayView().accessibilityHidden(showsSplash)`
   - P3 스와이프 거리 설명(180은 행 최종 이동 거리, 손가락 약 249pt / 열린 행 약 159pt, 열림 약 69pt, ‘2배 초과’) → DESIGN 정정
   - P3 고정 글꼴 예외(로딩 제목 40pt)·최신 제목 표기 → DESIGN·이 기록 보완
+- Codex 재검증(대상 d9ded16, `gpt-6-astra`): **PASS**. P2·P3 지적 모두 해소, 새 지적 없음. Codex 실행 swift test 38 tests 0 failures, 앱 전체 Swift 소스 타입 검사 통과(기존 RecordNowIntent 미사용 변수 경고만), 공유 scheme 빌드는 캐시 권한으로 BLOCKED. 실기기 NOT RUN

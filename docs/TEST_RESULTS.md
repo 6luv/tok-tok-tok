@@ -521,3 +521,4 @@
 | 기종별 구도(HTML 미리보기, 앱 실제 렌더링 아님) | PASS (미리보기만) |
 | 실기기 로딩 화면 선명도·위치 | NOT RUN (사용자 기기 확인 대기) |
 - Codex 검증(`gpt-6-astra`, 대상 dffb29a): **FAIL**(P3 1건). LaunchClock 형태·구도·배치·plist·접근성 PASS(정적), Codex 실행 swift test 38 tests 0 failures, 앱 Swift 타입 검사 통과, 공유 scheme 빌드 BLOCKED. 지적: DESIGN·Info.plist 주석이 추정 원인을 확정처럼 서술 → 증상(사용자 보고)과 추정 원인(재현 미확인)을 나눠 정정
+- Codex 재검증(대상 2401291): **PASS**. P3 해소, 새 지적 없음. plist·공백 검사 통과

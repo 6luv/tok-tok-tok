@@ -2,17 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- 앱 시작 화면(사용자 요청 2026-11-11): 기기 모드와 관계없이 다크(#1B1A18, Assets LaunchBackground)에
-	     화면 전체 크기(440×956pt) 그림 LaunchArt를 가운데 둔다. 그림 안에서 큰 자명종이 오른쪽 아래에 잘려 걸린다.
-	     앱 안 로딩 화면(LaunchSplashView)이 같은 그림을 같은 크기로 이어 보여 준다. 나머지 키는 Xcode가 생성한다. -->
+	<!-- 앱 시작 화면(사용자 요청 2026-11-11): 기기 모드와 관계없이 다크 바탕색(#1B1A18, Assets LaunchBackground)만 보인다.
+	     시계 그림은 기종마다 크기가 달라 깨져 보이므로 넣지 않고, 이어지는 앱 안 로딩 화면(LaunchSplashView)이
+	     화면 너비에 맞춰 벡터로 그린다. 나머지 키는 Xcode가 생성한다. -->
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
 		<string>LaunchBackground</string>
-		<key>UIImageName</key>
-		<string>LaunchArt</string>
-		<key>UIImageRespectsSafeAreaInsets</key>
-		<false/>
 	</dict>
 </dict>
 </plist>

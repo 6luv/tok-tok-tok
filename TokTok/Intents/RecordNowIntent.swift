@@ -12,7 +12,7 @@ import TokTokCore
 /// - 단축어·Siri·뒷면 탭 중 어느 경로인지 추정하지 않고 source = .intent로 저장한다.
 /// - 결과: 아무 대화·스니펫도 돌려주지 않는다(사용자 결정 2026-11-10). 뒷면 탭·단축어 실행 중이라는
 ///   iOS 자체 표시가 이미 보이므로 앱 결과 토스트를 겹쳐 띄우지 않는다. 실패는 오류로 알린다.
-/// - 소리는 내지 않는다(사용자 결정 2026-11-10). 토스트만 잠깐 보이고 iOS가 닫는다.
+/// - 저장 확인 뒤 기기 기본 진동 한 번(`RecordHaptic`, 사용자 결정 2026-11-11). 소리는 내지 않는다.
 struct RecordNowIntent: AppIntent {
     static var title: LocalizedStringResource = "현재 시간 기록"
     static var description = IntentDescription("지금 이 순간의 시각을 TokTokTok에 기록합니다. 입력할 값은 없습니다.")
@@ -31,6 +31,7 @@ struct RecordNowIntent: AppIntent {
             let record = try service.recordNow(source: .intent)
             // 저장이 확인된 뒤에만 알린다.
             RecordsChangeNotifier.post()
+            RecordHaptic.vibrate()
             return .result()
         } catch RecordError.boundaryNotConfigured {
             throw RecordIntentError.boundaryNotConfigured

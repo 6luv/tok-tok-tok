@@ -1,4 +1,16 @@
+import AudioToolbox
 import SwiftUI
+
+/// 기록 완료 진동(사용자 결정 2026-11-11, Q07): 저장이 확인된 뒤 기기 기본 진동 한 번, 소리 없음.
+///
+/// `kSystemSoundID_Vibrate`(Audio Toolbox 공개 상수)를 쓴다. 기기의 손쉬운 사용 › 터치 › 진동이 꺼져 있으면
+/// iOS가 울리지 않는다. 앱이 화면에 없을 때(뒷면 탭·단축어) 실제로 울리는지는 실기기 확인 대상이며,
+/// 이를 위해 background 모드를 추가하지 않는다(CLAUDE.md 구현 제약).
+enum RecordHaptic {
+    static func vibrate() {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+}
 
 /// 앱 안 기록 완료 토스트. 단축어 결과에는 쓰지 않는다(iOS 실행 표시와 겹치지 않게, 2026-11-10).
 /// 소리는 내지 않는다(사용자 결정 2026-11-10: 새벽에 울리면 안 됨).

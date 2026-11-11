@@ -442,3 +442,4 @@
 | 실제 스와이프 조작·끝까지 밀기·세로 스크롤과 충돌 여부 | NOT RUN (시뮬레이터 조작 불가, 실기기) |
 - Codex 독립 검증 1차(병합 전, read-only, gpt-6-astra): 보류. P2 대상 없음 시 무알림, P2 실패 음성 안내 없음, P3 Q06 정책 혼재, 세로로 시작한 드래그가 가로로 끝나면 삭제 분기 위험 → 모두 수정(대상 없음 알림·음성, 실패 음성, Q06 일괄/개별 분리, 드래그 시작 방향 고정)
 - Codex 재검증(2차): 대상 없음·실패 음성·Q06·드래그 방향은 PASS, `alreadyMissing` 분기 화면 알림 누락 P2 1건 → 화면 알림 추가, 테스트 `testDeleteOneAlreadyMissingShowsNotice`
+- Codex 재검증(3차): P2 해결 확인, 새 결함 없음 → 병합 가능. 앱 테스트 9 passed, 0 failed

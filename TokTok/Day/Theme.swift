@@ -268,6 +268,23 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
+/// 확인 창 버튼: 튀어나온 둥근 사각형(모서리 18, 높이 52). 누르면 파인다.
+/// emphasized면 글자를 메인 색(tint)으로: ‘N개 지우기’처럼 확정 동작에 쓴다. 빨간색은 쓰지 않는다.
+struct DialogButtonStyle: ButtonStyle {
+    var emphasized = false
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
+        return configuration.label
+            .font(.body.weight(.medium))
+            .foregroundStyle(emphasized && isEnabled ? AnyShapeStyle(.tint) : AnyShapeStyle(Theme.text))
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .modifier(NeuPress(pressed: configuration.isPressed, shape: shape, depth: 5))
+            .opacity(isEnabled ? 1 : 0.45)
+    }
+}
+
 /// 원형 아이콘 버튼(설정 톱니 등).
 struct CircleButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -322,10 +339,14 @@ struct NeuSection<Content: View, Header: View, Footer: View>: View {
     let content: Content
     let header: Header
     let footer: Footer
+    /// true면 행 목록 카드: 위아래 안쪽 4, 행 사이 0(행 높이 44가 간격을 맡음). 사용자 요청 2026-11-11
+    var compact = false
 
-    init(@ViewBuilder content: () -> Content,
+    init(compact: Bool = false,
+         @ViewBuilder content: () -> Content,
          @ViewBuilder header: () -> Header,
          @ViewBuilder footer: () -> Footer) {
+        self.compact = compact
         self.content = content()
         self.header = header()
         self.footer = footer()
@@ -338,11 +359,12 @@ struct NeuSection<Content: View, Header: View, Footer: View>: View {
                 .foregroundStyle(Theme.secondaryText)
                 .padding(.leading, 4)
                 .accessibilityAddTraits(.isHeader)
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: compact ? 0 : 12) {
                 content
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, compact ? 4 : 16)
             .extruded(RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous), depth: 5)
             footer
                 .font(.footnote)
@@ -353,14 +375,14 @@ struct NeuSection<Content: View, Header: View, Footer: View>: View {
 }
 
 extension NeuSection where Footer == EmptyView {
-    init(@ViewBuilder content: () -> Content, @ViewBuilder header: () -> Header) {
-        self.init(content: content, header: header, footer: { EmptyView() })
+    init(compact: Bool = false, @ViewBuilder content: () -> Content, @ViewBuilder header: () -> Header) {
+        self.init(compact: compact, content: content, header: header, footer: { EmptyView() })
     }
 }
 
 extension NeuSection where Header == EmptyView, Footer == EmptyView {
-    init(@ViewBuilder content: () -> Content) {
-        self.init(content: content, header: { EmptyView() }, footer: { EmptyView() })
+    init(compact: Bool = false, @ViewBuilder content: () -> Content) {
+        self.init(compact: compact, content: content, header: { EmptyView() }, footer: { EmptyView() })
     }
 }
 

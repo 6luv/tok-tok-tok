@@ -313,3 +313,17 @@
 
 - 날짜: 2026-11-11 / 사용자 요청: 2단계도 1단계처럼 번호로, 안내 기준은 두 번이 아니라 세 번 탭
 - 변경: 설정 경로 세로 목록 → 번호 목록 6줄, 안내 문구 ‘세 번 탭’·‘뒷면을 세 번 톡톡톡’
+
+## R-022 설정 순서·행 여백·지우기 강조·지우기 확인 창 (feature/settings-polish)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42), Apple Swift 6.3.2
+- 기준: main f464910에서 분기
+- 변경(사용자 요청): 메인 색을 화면 모드 위로, 행 목록 카드 `NeuSection(compact:)`(위아래 4·행 사이 0), ‘오늘 기록 지우기’ 메인 색 글자·꼬리말 삭제, 시스템 확인 대화상자를 앱 확인 창(`DeleteConfirmView`, `DialogButtonStyle`)으로 교체, 제목 ‘11월 10일 기록을 지울까요?’
+- 명령: `xcodebuild -project TokTok.xcodeproj -scheme TokTok -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED / `cd TokTokCore && swift test` → 아래 표
+
+| 항목 | 내용 | 판정 |
+|---|---|---|
+| TokTokCore 회귀 | `swift test` 35 tests, 0 failures | PASS |
+| 앱 빌드 | generic iOS 빌드 | PASS (빌드만) |
+| 설정 순서·여백·강조 글씨·확인 창 모양·바깥 탭 취소·VoiceOver 모달 | 사용자 실기기 확인 대기 | NOT RUN |
+

@@ -33,12 +33,23 @@ struct SettingsView: View {
             // 시스템 막대 대신 화면 안의 뉴모피즘 버튼을 쓴다. 하위 화면(뒷면 탭 연결 등)은 시스템 뒤로 가기를 유지한다.
             .toolbar(.hidden, for: .navigationBar)
             .onAppear(perform: loadCurrent)
-            .confirmationDialog(deleteTitle, isPresented: $confirmingDelete, titleVisibility: .visible) {
-                Button("\(dayRecordCount)개 지우기", role: .destructive) { deleteToday() }
-                Button("취소", role: .cancel) {}
-            } message: {
-                Text("지운 기록은 되돌릴 수 없어요")
+        }
+        .overlay {
+            if confirmingDelete {
+                DeleteConfirmView(title: deleteTitle,
+                                  confirmTitle: "\(dayRecordCount)개 지우기",
+                                  onCancel: { setConfirming(false) },
+                                  onConfirm: { setConfirming(false); deleteToday() })
+                    .transition(.opacity)
             }
+        }
+    }
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private func setConfirming(_ value: Bool) {
+        if reduceMotion { confirmingDelete = value } else {
+            withAnimation(Theme.ease(0.2)) { confirmingDelete = value }
         }
     }
 
@@ -56,26 +67,26 @@ struct SettingsView: View {
                 }
 
                 NeuSection {
-                    NeuSegmented(options: AppAppearance.allCases, selection: $appearance) { $0.title }
-                } header: {
-                    Text("화면 모드")
-                }
-
-                NeuSection {
                     AccentPicker(selection: $accent)
                 } header: {
                     Text("메인 색")
                 }
 
                 NeuSection {
+                    NeuSegmented(options: AppAppearance.allCases, selection: $appearance) { $0.title }
+                } header: {
+                    Text("화면 모드")
+                }
+
+                NeuSection(compact: true) {
                     NeuLinkRow(title: "뒷면 탭 연결") { RecordingGuideView() }
                     Theme.hairline.frame(height: 1)
                     NeuLinkRow(title: "개인정보와 데이터") { PrivacyInfoView() }
                 }
 
-                NeuSection {
+                NeuSection(compact: true) {
                     Button {
-                        confirmingDelete = true
+                        setConfirming(true)
                     } label: {
                         HStack(spacing: 8) {
                             if deleting { ProgressView().tint(Theme.secondaryText) }
@@ -85,7 +96,8 @@ struct SettingsView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(dayRecordCount > 0 ? Theme.text : Theme.mutedText)
+                    // 강조 글씨: 메인 색(사용자 요청 2026-11-11). 지울 기록이 없으면 흐린색
+                    .foregroundStyle(dayRecordCount > 0 ? AnyShapeStyle(.tint) : AnyShapeStyle(Theme.mutedText))
                     .font(.body.weight(.medium))
                     .disabled(dayRecordCount == 0 || deleting)
                     .accessibilityHint("\(dayTitle)의 기록 \(dayRecordCount)개를 지워요")
@@ -93,13 +105,10 @@ struct SettingsView: View {
                         Label(deleteMessage, systemImage: "exclamationmark.triangle")
                             .font(.subheadline)
                             .foregroundStyle(Theme.text)
+                            .padding(.vertical, 8)
                     }
                 } header: {
                     Text("기록")
-                } footer: {
-                    Text(dayRecordCount > 0
-                         ? "\(dayTitle) 기록 \(dayRecordCount)개만 지워요. 다른 날 기록은 그대로예요"
-                         : "\(dayTitle)에는 지울 기록이 없어요")
                 }
             }
     }
@@ -112,7 +121,7 @@ struct SettingsView: View {
         return "\(day.month)월 \(day.day)일"
     }
 
-    private var deleteTitle: String { "\(dayTitle) 기록 \(dayRecordCount)개를 지울까요?" }
+    private var deleteTitle: String { "\(dayTitle) 기록을 지울까요?" }
 
     private func deleteToday() {
         deleting = true
@@ -219,3 +228,58 @@ private struct SwatchDepth: ViewModifier {
         }
     }
 }
+
+/// ‘오늘 기록 지우기’ 확인 창(사용자 요청 2026-11-11, HTML 시안).
+/// 시스템 회색 창 대신 앱과 같은 튀어나온 카드. 바깥을 누르면 취소된다. 빨간색은 쓰지 않는다.
+private struct DeleteConfirmView: View {
+    let title: String
+    let confirmTitle: String
+    let onCancel: () -> Void
+    let onConfirm: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture(perform: onCancel)
+                .accessibilityHidden(true)
+            VStack(spacing: 0) {
+                Image(systemName: "trash")
+                    .font(.system(size: 22, weight: .regular))
+                    .foregroundStyle(.tint)
+                    .frame(width: 56, height: 56)
+                    .inset(Circle(), depth: 3)
+                    .padding(.bottom, 16)
+                    .accessibilityHidden(true)
+                Text(title)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(Theme.text)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+                Text("지운 기록은 되돌릴 수 없어요")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.secondaryText)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 8)
+                HStack(spacing: 12) {
+                    Button("취소", action: onCancel)
+                        .buttonStyle(DialogButtonStyle())
+                    Button(confirmTitle, action: onConfirm)
+                        .buttonStyle(DialogButtonStyle(emphasized: true))
+                }
+                .padding(.top, 24)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 20)
+            .frame(maxWidth: 400)
+            .extruded(RoundedRectangle(cornerRadius: 28, style: .continuous), depth: 7)
+            .padding(.horizontal, 28)
+            .accessibilityElement(children: .contain)
+            .accessibilityAddTraits(.isModal)
+            .accessibilityAction(.escape, onCancel)
+        }
+    }
+}
+

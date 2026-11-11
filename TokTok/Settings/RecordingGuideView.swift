@@ -34,7 +34,7 @@ struct RecordingGuideView: View {
 
     var body: some View {
         NeuPage {
-            Text("뒷면을 톡톡 치면 지금 시각이 기록되도록 한 번만 연결해요")
+            Text("뒷면을 세 번 톡톡톡 치면 지금 시각이 기록되도록 한 번만 연결해요")
                 .font(.subheadline)
                 .foregroundStyle(Theme.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -60,10 +60,14 @@ struct RecordingGuideView: View {
 
             // 2. 뒷면 탭
             stepCard(2, title: "뒷면 탭에 연결", done: false) {
-                Text("설정 앱에서 아래 순서로 들어가요")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.secondaryText)
-                settingsPath(["설정", "손쉬운 사용", "터치", "뒷면 탭", "두 번 탭", "‘\(Self.suggestedShortcutName)’ 선택"])
+                subSteps([
+                    "설정 앱을 열어요",
+                    "‘손쉬운 사용’을 눌러요",
+                    "‘터치’를 눌러요",
+                    "맨 아래 ‘뒷면 탭’을 눌러요",
+                    "‘세 번 탭’을 눌러요",
+                    "목록 아래 단축어에서 ‘\(Self.suggestedShortcutName)’를 골라요",
+                ])
                 Text("TokTokTok이 설정 화면을 대신 열 수는 없어요. 메뉴 이름은 iOS 버전에 따라 조금 다를 수 있어요.")
                     .font(.footnote)
                     .foregroundStyle(Theme.mutedText)
@@ -72,7 +76,7 @@ struct RecordingGuideView: View {
 
             // 3. 시험
             stepCard(3, title: "시험하기", done: latest != nil) {
-                Text("화면이 켜진 상태에서 뒷면을 톡톡 친 뒤 이 화면으로 돌아와요")
+                Text("화면이 켜진 상태에서 뒷면을 세 번 톡톡톡 친 뒤 이 화면으로 돌아와요")
                     .font(.subheadline)
                     .foregroundStyle(Theme.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
@@ -155,33 +159,6 @@ struct RecordingGuideView: View {
                 .accessibilityElement(children: .combine)
             }
         }
-    }
-
-    /// 설정 앱 경로: 파인 홈 안에 한 줄씩 세로로. 마지막 줄은 메인 색.
-    private func settingsPath(_ items: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                let last = index == items.count - 1
-                HStack(spacing: 8) {
-                    Image(systemName: index == 0 ? "gearshape" : "arrow.turn.down.right")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(Theme.mutedText)
-                        .frame(width: 20)
-                    Text(item)
-                        .font(.subheadline.weight(last ? .medium : .regular))
-                        .foregroundStyle(last ? AnyShapeStyle(.tint) : AnyShapeStyle(Theme.text))
-                        .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 0)
-                }
-                .padding(.leading, CGFloat(min(index, 1)) * 4)
-                .frame(minHeight: 32)
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .inset(RoundedRectangle(cornerRadius: 12, style: .continuous), depth: 3)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(items.joined(separator: ", "))
     }
 
     private func actionButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {

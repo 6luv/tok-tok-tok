@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 import TokTokCore
 
 struct SettingsView: View {
@@ -21,7 +24,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // 취소 · 설정 · 적용은 스크롤해도 위에 고정한다(사용자 요청 2026-11-10)
+                // 닫기 · 설정은 스크롤해도 위에 고정한다(사용자 요청 2026-11-10)
                 header
                     .padding(.horizontal, 20)
                     .padding(.bottom, 8)
@@ -59,6 +62,22 @@ struct SettingsView: View {
             NeuPage {
                 NeuSection {
                     BoundaryPicker(hour: $hour, minute: $minute, showsExample: false)
+                    // 다른 설정은 바로 적용되므로, 하루 시작 시간도 이 카드 안에서 저장한다(2026-11-11).
+                    // 바꿨을 때만 버튼이 나타나고, 저장하면 사라진다.
+                    if hasChanges || saving {
+                        HStack(spacing: 12) {
+                            Button("되돌리기") { revert() }
+                                .buttonStyle(SecondaryButtonStyle())
+                                .disabled(saving)
+                            Button { apply() } label: {
+                                Text(saving ? "저장 중…" : "\(String(format: "%02d:%02d", hour, minute))로 저장")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(SecondaryButtonStyle(emphasized: true))
+                            .disabled(saving)
+                        }
+                        .transition(.opacity)
+                    }
                     if let errorText {
                         Label(errorText, systemImage: "exclamationmark.triangle")
                             .font(.subheadline)
@@ -170,12 +189,10 @@ struct SettingsView: View {
                 .foregroundStyle(Theme.text)
                 .accessibilityAddTraits(.isHeader)
             HStack {
-                Button("취소") { dismiss() }
+                Button("닫기") { dismiss() }
                     .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityHint("저장하지 않은 하루 시작 시간 변경은 버려요")
                 Spacer()
-                Button(saving ? "저장 중…" : "적용") { apply() }
-                    .buttonStyle(SecondaryButtonStyle(emphasized: true))
-                    .disabled(saving || !hasChanges)
             }
         }
         .padding(.top, 8)
@@ -193,6 +210,14 @@ struct SettingsView: View {
         }
     }
 
+    private func revert() {
+        guard let original else { return }
+        withAnimation(reduceMotion ? nil : Theme.ease(0.2)) {
+            hour = original.hour
+            minute = original.minute
+        }
+    }
+
     private func apply() {
         guard let boundary = DayBoundary(hour: hour, minute: minute) else { return }
         saving = true
@@ -200,7 +225,11 @@ struct SettingsView: View {
         Task {
             do {
                 try await model.saveBoundary(boundary)
-                dismiss()
+                // 설정 화면은 그대로 두고, 저장된 값을 새 기준으로 삼아 버튼을 숨긴다.
+                withAnimation(reduceMotion ? nil : Theme.ease(0.2)) { original = boundary }
+                #if canImport(UIKit)
+                UIAccessibility.post(notification: .announcement, argument: "하루 시작 시간을 \(DayPresentation.boundaryText(boundary))로 저장했어요")
+                #endif
             } catch {
                 // 저장 실패 시 이전 설정이 유지된다.
                 errorText = "저장하지 못했어요. 이전 설정이 그대로 유지돼요."

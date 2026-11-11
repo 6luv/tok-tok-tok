@@ -1,7 +1,7 @@
 import AudioToolbox
 import SwiftUI
 
-/// 기록 완료 진동(사용자 결정 2026-11-11, Q07): 저장이 확인된 뒤 기기 기본 진동 한 번, 소리 없음.
+/// 기록 완료 진동(사용자 결정 2026-11-11, Q07): 저장이 확인된 뒤 기기 기본 진동 한 번. 소리는 `RecordSound`.
 ///
 /// `kSystemSoundID_Vibrate`(Audio Toolbox 공개 상수)를 쓴다. 기기의 손쉬운 사용 › 터치 › 진동이 꺼져 있으면
 /// iOS가 울리지 않는다. 앱이 화면에 없을 때(뒷면 탭·단축어) 실제로 울리는지는 실기기 확인 대상이며,
@@ -19,6 +19,33 @@ enum RecordHaptic {
     static func vibrate() {
         guard isEnabled else { return }
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+}
+
+/// 기록 완료 소리(사용자 결정 2026-11-11, Q07): 저장 확인 뒤 짧은 마림바 소리 한 번.
+///
+/// 소리 파일 `record-sound.wav`는 이 프로젝트에서 만든 0.45초 합성음(외부·Apple 소리 아님).
+/// System Sound Services(`AudioServicesCreateSystemSoundID`·`AudioServicesPlaySystemSound`, 공개 API)로 재생해
+/// 기기가 무음 모드면 iOS가 소리를 내지 않는다(진동은 `RecordHaptic`이 따로 처리).
+/// 앱 설정의 ‘기록할 때 소리’(`storageKey`, 기본 켜짐)가 꺼져 있으면 재생하지 않는다.
+/// 앱이 화면에 없을 때(뒷면 탭·단축어) 실제로 들리는지는 실기기 확인 대상이며 background 모드는 추가하지 않는다.
+enum RecordSound {
+    static let storageKey = "toktok.sound"
+
+    /// 저장된 값이 없으면 켜짐.
+    static var isEnabled: Bool {
+        UserDefaults.standard.object(forKey: storageKey) as? Bool ?? true
+    }
+
+    private static let soundID: SystemSoundID? = {
+        guard let url = Bundle.main.url(forResource: "record-sound", withExtension: "wav") else { return nil }
+        var id: SystemSoundID = 0
+        return AudioServicesCreateSystemSoundID(url as CFURL, &id) == kAudioServicesNoError ? id : nil
+    }()
+
+    static func play() {
+        guard isEnabled, let soundID else { return }
+        AudioServicesPlaySystemSound(soundID)
     }
 }
 

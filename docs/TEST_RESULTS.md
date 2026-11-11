@@ -559,3 +559,4 @@
   - `PrivacyInfo.xcprivacy`: `NSPrivacyAccessedAPICategoryUserDefaults` 이유 `CA92.1` 신고(키 toktok.appearance·accent·vibration·sound), 잘못된 ‘UserDefaults 안 씀’ 주석 정정
   - 개인정보처리방침(웹·앱) 앱 설정 항목에 ‘소리 켜기·끄기’ 추가
 - 명령: `plutil -lint TokTok/PrivacyInfo.xcprivacy` → OK, `xcodebuild ... generic/platform=iOS build` → BUILD SUCCEEDED(빌드된 앱 번들의 PrivacyInfo에 UserDefaults·CA92.1 확인), `swift test` → 38 tests 0 failures. 실기기 NOT RUN
+- Codex 검증(`gpt-6-astra`, 대상 23de0df): **FAIL**(P3 1건). 매니페스트·required-reason API 전체 검색·방침 일치·안내 일관성 PASS, swift test 38 통과, 공유 scheme 빌드 BLOCKED. 지적: TROUBLESHOOTING TS-007에 Siri 대안·Q10 미결정이 남음 → 후속 기록 추가, 상태 closed(지원 범위 제한). 참고: App Shortcut phrases는 Siri 호출 문구이기도 해서 안내 제거가 Siri 비활성화를 뜻하지 않음(TS-007에 명시)

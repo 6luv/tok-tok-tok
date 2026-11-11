@@ -94,7 +94,7 @@ App Store Connect에 등록할 개인정보처리방침·지원 페이지는 [`s
 | 개인정보처리방침 | https://toktoktok-nine.vercel.app/privacy/ |
 | 지원 | https://toktoktok-nine.vercel.app/support/ |
 
-배포: `cd site && npx vercel deploy --prod` (로그인한 계정에서, `.vercelignore`로 `.env*`·`.vercel` 제외)
+배포: `cd site && npx vercel link --project toktoktok`(처음 한 번) 후 `npx vercel deploy --prod` (로그인한 계정에서, `.vercelignore`로 `.env*`·`.vercel` 제외). 보안 헤더(CSP·X-Frame-Options·nosniff·Referrer-Policy·Permissions-Policy·COOP·CORP)는 `site/vercel.json`에서 모든 경로에 붙인다. 페이지에 인라인 스크립트·스타일을 넣으면 CSP에 막히므로 `style.css`만 쓴다.
 
 ## 개발 환경 기록
 

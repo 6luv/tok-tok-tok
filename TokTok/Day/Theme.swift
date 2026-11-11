@@ -140,11 +140,12 @@ enum AppAppearance: String, CaseIterable, Identifiable {
 
 extension View {
     /// 바탕에서 튀어나온 면.
-    func extruded<S: Shape>(_ shape: S, depth: CGFloat = 6) -> some View {
+    /// `glow`가 false면 밝은 그림자를 빼 어두운 배경 위에서 빛 번짐이 생기지 않게 한다(모달용).
+    func extruded<S: Shape>(_ shape: S, depth: CGFloat = 6, glow: Bool = true) -> some View {
         background {
             shape.fill(Theme.background)
                 .shadow(color: Theme.shadowDark, radius: depth * 1.6, x: depth, y: depth)
-                .shadow(color: Theme.shadowLight, radius: depth * 1.6, x: -depth, y: -depth)
+                .shadow(color: glow ? Theme.shadowLight : .clear, radius: depth * 1.6, x: -depth, y: -depth)
         }
     }
 
@@ -446,3 +447,99 @@ struct NeuLinkRow<Destination: View>: View {
         .buttonStyle(.plain)
     }
 }
+
+// MARK: 화면 위 막대
+
+/// 화면 위 막대 버튼(닫기·뒤로): 모서리 12 둥근 사각형, 튀어나오고 누르면 파인다.
+/// 카드(20)·행(16)과 같은 계열로 알약보다 조금 더 네모나다(사용자 요청 2026-11-11).
+struct HeaderButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(Theme.text)
+            .padding(.horizontal, 14)
+            .frame(minWidth: 44, minHeight: 44)
+            .modifier(NeuPress(pressed: configuration.isPressed,
+                               shape: RoundedRectangle(cornerRadius: 12, style: .continuous), depth: 4))
+    }
+}
+
+/// 하위 화면 공통 위 막대: 뒤로 버튼 + 가운데 제목. 시스템 탐색 막대 대신 쓴다.
+struct NeuNavHeader: View {
+    let title: String
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                // 아주 큰 글씨: 제목을 뒤로 버튼 아래로 내려 잘리지 않게 한다(Codex 검증 P2).
+                VStack(alignment: .leading, spacing: 8) {
+                    backButton
+                    titleText.frame(maxWidth: .infinity, alignment: .leading)
+                }
+            } else {
+                ZStack {
+                    titleText
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 64)
+                    HStack {
+                        backButton
+                        Spacer()
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+        .padding(.bottom, 8)
+        .background(Theme.background)
+    }
+
+    private var titleText: some View {
+        Text(title)
+            .font(.headline)
+            .foregroundStyle(Theme.text)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private var backButton: some View {
+        Button { dismiss() } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 16, weight: .semibold))
+        }
+        .buttonStyle(HeaderButtonStyle())
+        .accessibilityLabel("뒤로")
+    }
+}
+
+extension View {
+    /// 시스템 탐색 막대를 숨기고 뉴모피즘 위 막대를 붙인다. 화면 가장자리 밀어서 뒤로 가기는 유지된다.
+    func neuNavigation(title: String) -> some View {
+        VStack(spacing: 0) {
+            NeuNavHeader(title: title).zIndex(1)
+            self
+        }
+        .background(Theme.background)
+        .navigationTitle(title)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+}
+
+#if canImport(UIKit)
+/// 탐색 막대를 숨겨도 화면 왼쪽 가장자리를 밀어 뒤로 가기가 되도록 한다.
+/// UIKit 공개 API(`interactivePopGestureRecognizer`, `UIGestureRecognizerDelegate`)만 쓴다.
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+
+    /// 루트 화면이거나 화면 전환이 진행 중이면 시작하지 않는다(전환 중 멈춤 방지).
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        viewControllers.count > 1 && transitionCoordinator == nil
+    }
+}
+#endif

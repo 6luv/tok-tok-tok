@@ -109,8 +109,7 @@ struct RecordingGuideView: View {
                 Text("알아 두세요")
             }
         }
-        .navigationTitle("뒷면 탭 연결")
-        .navigationBarTitleDisplayMode(.inline)
+        .neuNavigation(title: "뒷면 탭 연결")
         .task { await refresh() }
         .onChange(of: scenePhase) { _, phase in
             // 설정 앱에서 시험 탭 후 돌아오면 다시 확인

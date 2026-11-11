@@ -14,6 +14,7 @@ struct SwipeToDelete<Content: View>: View {
     @ViewBuilder let content: Content
 
     @State private var drag: CGFloat = 0
+    @Environment(\.tokTokAccent) private var accent
     /// 드래그 시작 때 정한 방향(가로면 true). 세로로 시작한 드래그는 끝까지 무시한다(Codex 검증).
     @State private var horizontal: Bool?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -25,15 +26,27 @@ struct SwipeToDelete<Content: View>: View {
 
     private var base: CGFloat { openID == id ? -reveal : 0 }
     private var offset: CGFloat { min(0, base + drag) }
+    /// 0(닫힘) → 1(놓으면 지워지는 거리)
+    private var progress: CGFloat { min(1, -offset / fullSwipe) }
+    private var willDelete: Bool { -offset >= fullSwipe }
 
     var body: some View {
         ZStack(alignment: .trailing) {
+            // 밀수록 오른쪽에서 메인 색 그라데이션이 짙어져 ‘지우는 중’임을 보여 준다(사용자 요청 2026-11-11).
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(LinearGradient(colors: [accent.tick.opacity(0), accent.tick.opacity(0.15 + 0.6 * progress)],
+                                     startPoint: .leading, endPoint: .trailing))
+                .opacity(offset < 0 ? 1 : 0)
+                .accessibilityHidden(true)
             Button(action: delete) {
-                Image(systemName: "trash")
+                Image(systemName: willDelete ? "trash.fill" : "trash")
                     .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(willDelete ? AnyShapeStyle(Theme.onAccent) : AnyShapeStyle(.tint))
                     .frame(width: 44, height: 44)
+                    .background(Circle().fill(willDelete ? accent.tick : .clear))
                     .extruded(Circle(), depth: 3)
+                    .scaleEffect(willDelete ? 1.1 : 1)
+                    .animation(reduceMotion ? nil : Theme.ease(0.15), value: willDelete)
             }
             .buttonStyle(.plain)
             .padding(.trailing, 14)

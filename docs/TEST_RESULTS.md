@@ -548,3 +548,16 @@
 | 소리 모드에서 소리 한 번 / 무음 모드에서 소리 없음 / 스위치 끄면 소리 없음 | NOT RUN (실기기) |
 | 뒷면 탭 기록에서 소리(앱이 화면에 없을 때) | NOT RUN (실기기) |
 - 앱 테스트 9 passed, 0 failed. Codex 독립 검증(병합 전, read-only): P1·P2 없음, P3 2건(DESIGN 옛 결정 문구 모순, 진동 꺼도 ‘진동만 울려요’ 안내) → 문구 정리
+
+## R-039 화면 켜짐에서만 지원·Siri 안내 제거·개인정보 매니페스트 (fix/screen-on-only)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 기준: main 1aaf7c6
+- 변경(사용자 결정 Q10, 배포 전 보안 점검 반영):
+  - 뒷면 탭 기록은 화면이 켜진 상태에서만 지원. 설정 연결 카드 꼬리말 ‘뒷면 탭 기록은 화면이 켜져 있을 때만 돼요’, 연결 화면 ‘알아 두세요’, 지원 FAQ 문구 변경
+  - Siri 안내 제거(사용자 보고: 잠금 상태에서 Siri 실행 안 됨). README·DESIGN·DEVICE_CHECKLIST·개인정보처리방침(웹·앱)에서 Siri 언급 정리. App Shortcut 문구는 단축어 앱 노출에 필요해 유지
+  - `PrivacyInfo.xcprivacy`: `NSPrivacyAccessedAPICategoryUserDefaults` 이유 `CA92.1` 신고(키 toktok.appearance·accent·vibration·sound), 잘못된 ‘UserDefaults 안 씀’ 주석 정정
+  - 개인정보처리방침(웹·앱) 앱 설정 항목에 ‘소리 켜기·끄기’ 추가
+- 명령: `plutil -lint TokTok/PrivacyInfo.xcprivacy` → OK, `xcodebuild ... generic/platform=iOS build` → BUILD SUCCEEDED(빌드된 앱 번들의 PrivacyInfo에 UserDefaults·CA92.1 확인), `swift test` → 38 tests 0 failures. 실기기 NOT RUN
+- Codex 검증(`gpt-6-astra`, 대상 23de0df): **FAIL**(P3 1건). 매니페스트·required-reason API 전체 검색·방침 일치·안내 일관성 PASS, swift test 38 통과, 공유 scheme 빌드 BLOCKED. 지적: TROUBLESHOOTING TS-007에 Siri 대안·Q10 미결정이 남음 → 후속 기록 추가, 상태 closed(지원 범위 제한). 참고: App Shortcut phrases는 Siri 호출 문구이기도 해서 안내 제거가 Siri 비활성화를 뜻하지 않음(TS-007에 명시)
+- Codex 재검증(대상 87be173): **PASS**. TS-007 후속 기록 일치, 새 지적 없음

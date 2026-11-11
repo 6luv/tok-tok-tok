@@ -561,3 +561,21 @@
 - 명령: `plutil -lint TokTok/PrivacyInfo.xcprivacy` → OK, `xcodebuild ... generic/platform=iOS build` → BUILD SUCCEEDED(빌드된 앱 번들의 PrivacyInfo에 UserDefaults·CA92.1 확인), `swift test` → 38 tests 0 failures. 실기기 NOT RUN
 - Codex 검증(`gpt-6-astra`, 대상 23de0df): **FAIL**(P3 1건). 매니페스트·required-reason API 전체 검색·방침 일치·안내 일관성 PASS, swift test 38 통과, 공유 scheme 빌드 BLOCKED. 지적: TROUBLESHOOTING TS-007에 Siri 대안·Q10 미결정이 남음 → 후속 기록 추가, 상태 closed(지원 범위 제한). 참고: App Shortcut phrases는 Siri 호출 문구이기도 해서 안내 제거가 Siri 비활성화를 뜻하지 않음(TS-007에 명시)
 - Codex 재검증(대상 87be173): **PASS**. TS-007 후속 기록 일치, 새 지적 없음
+
+## R-040 안내 페이지 보안 헤더 (fix/site-headers)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Vercel CLI 65.14.0
+- 기준: main 226858b
+- 변경(배포 전 보안 점검 권장 사항, 사용자 요청): `site/vercel.json`으로 모든 경로에 `Content-Security-Policy`(default-src 'none'; style-src·img-src 'self'; base-uri·form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy`(camera·microphone·geolocation·payment·usb 차단, 폐기된 interest-cohort는 Codex 지적으로 뺌), `Cross-Origin-Opener-Policy`·`Cross-Origin-Resource-Policy: same-origin`. HSTS는 Vercel 기본값 유지. README 배포 절 보완
+- 명령과 결과:
+  - `python3 -m json.tool site/vercel.json` → OK
+  - 미리보기 배포 `npx vercel deploy`(비프로덕션, 1차 https://toktoktok-k35ttzblx-shus-projects-aaf463a9.vercel.app) 후 `curl -I` → 위 헤더 7종과 HSTS 확인, `/`·`/privacy/`·`/style.css`·`/icon.svg` 200, `/vercel.json`·`/.vercelignore`·`/.gitignore`·`/.env.local` 404
+  - Chrome 헤드리스로 미리보기 `/privacy/` 렌더링: CSP 아래에서 스타일·아이콘 정상 표시
+
+| 항목 | 판정 |
+|---|---|
+| 헤더 적용(미리보기 배포) | PASS |
+| CSP 아래 페이지 표시 | PASS (Chrome 데스크톱 헤드리스, iPhone Safari NOT RUN) |
+| 설정·환경 파일 비노출 | PASS |
+- Codex 검증(`gpt-6-astra`, 미커밋 작업 트리 기준 — 커밋이 EOF 검사로 멈춘 상태): **FAIL**(P3 2건). 형식·CSP 정적 검토 PASS, 미리보기 헤더는 Codex 쪽 DNS 차단으로 NOT RUN. 지적: 폐기된 `interest-cohort` 제거, TEST_RESULTS EOF 빈 줄 제거 → 반영
+- 2차 미리보기 https://toktoktok-a7kv6f7gm-shus-projects-aaf463a9.vercel.app: 헤더 7종·HSTS, 주요 경로 200 확인. Codex 재검증(대상 02d4f8a): **PASS**(지적 2건 해소, 새 지적 없음. Codex 쪽 네트워크 차단으로 헤더는 구현 측 저장 응답과 대조, 독립 재현 아님)

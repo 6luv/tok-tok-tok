@@ -396,3 +396,4 @@
 
 - 날짜: 2026-11-11 / 사용자 요청: ‘기록할 때 진동’ 아래에 진동이 울리지 않을 때 확인할 기기 설정 안내
 - 확인: 설정 화면 스크린숏(임시 진입 빌드, 커밋 안 함), `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) → 6 passed, 0 failed
+- 2차(같은 날, feature/vibration-hint-card): 사용자 요청으로 안내를 꼬리말에서 진동 카드 안으로 옮기고 경로·값 두 줄로 정리. 라이트·다크 스크린숏 확인, `xcodebuild test` → 6 passed, 0 failed

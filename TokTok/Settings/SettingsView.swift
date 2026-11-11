@@ -83,12 +83,18 @@ struct SettingsView: View {
                 NeuSection {
                     Toggle("기록할 때 진동", isOn: $vibration)
                         .toggleStyle(NeuToggleStyle())
+                    // 기기 설정이 진동을 막으면 앱이 무시할 수 없어, 같은 칸 안에서 확인할 곳을 알려 준다(사용자 요청 2026-11-11).
+                    Theme.hairline.frame(height: 1)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("진동이 울리지 않으면 iPhone 설정에서 확인해 주세요")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.mutedText)
+                            .fixedSize(horizontal: false, vertical: true)
+                        VibrationHintRow(path: "사운드 및 햅틱 › 햅틱", value: "항상 재생")
+                        VibrationHintRow(path: "손쉬운 사용 › 터치 › 진동", value: "켬")
+                    }
                 } header: {
                     Text("진동")
-                } footer: {
-                    // 기기 설정이 진동을 막으면 앱이 무시할 수 없어 확인할 곳을 알려 준다(사용자 요청 2026-11-11).
-                    Text("진동이 울리지 않으면 iPhone 설정 › 사운드 및 햅틱 › 햅틱을 ‘항상 재생’으로, 손쉬운 사용 › 터치 › 진동을 켜 주세요.")
-                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 NeuSection(compact: true) {
@@ -308,3 +314,28 @@ private struct DeleteConfirmView: View {
     }
 }
 
+
+/// 진동 안내 한 줄: 왼쪽 iPhone 설정 경로, 오른쪽 맞출 값(메인 색). 큰 글씨에서는 값이 아래로 내려간다.
+private struct VibrationHintRow: View {
+    let path: String
+    let value: String
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+        layout {
+            Text(path)
+                .font(.subheadline)
+                .foregroundStyle(Theme.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+            if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
+            Text(value)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.tint)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(path)를 \(value)(으)로")
+    }
+}

@@ -2,7 +2,7 @@ import SwiftUI
 
 /// 앱 내 개인정보 안내(App Review 가이드라인의 앱 내 접근 경로 준비용).
 /// 2026-11-11 다시 정리: 한 줄 요약 카드 + 아이콘 행(제목·한 줄 설명).
-/// 개인정보처리방침 전문은 별도 하위 화면으로 넣는다(사용자 결정, tok-tok-a8 담당).
+/// 개인정보처리방침 전문은 하위 화면 `PrivacyPolicyView`(사용자 결정 2026-11-11, 앱 안에는 웹 링크 없음).
 struct PrivacyInfoView: View {
     var body: some View {
         NeuPage {
@@ -32,6 +32,11 @@ struct PrivacyInfoView: View {
                            detail: "지금 기기 시간대로 보여 주고, 기록 당시 시간대도 함께 보관해요")
             } header: {
                 Text("알아 두세요")
+            }
+
+            // 앱 안 전문(사용자 결정 2026-11-11: 웹 링크 대신 전문을 넣는다)
+            NeuSection(compact: true) {
+                NeuLinkRow(title: "개인정보처리방침 전문") { PrivacyPolicyView() }
             }
         }
         .neuNavigation(title: "개인정보와 데이터")

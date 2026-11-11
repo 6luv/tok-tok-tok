@@ -6,7 +6,9 @@ App Store Connect의 ‘심사 정보 › 메모’에 붙여 넣는다. 심사 
 
 TokTokTok is a personal time-stamp app. It saves the current time with one action and groups records by a day boundary the user chooses (for example, a day that starts at 4:00 AM).
 
-No account or login is required. There is no server, no ads and no analytics. All data stays on the device.
+No account or login is required. There is no server, no ads and no analytics. All data is stored on the device and is never sent to the developer or any server. It may be included in the user's own iCloud or computer backups.
+
+Privacy policy: the full text is available in the app at Settings (gear icon) > 개인정보와 데이터 > 개인정보처리방침 전문, and at https://toktoktok-nine.vercel.app/privacy/.
 
 How to test in under a minute:
 1. On first launch, pick any day start time and tap "이 시간으로 시작" (Start with this time).
@@ -23,7 +25,9 @@ The app is in Korean.
 
 TokTokTok은 개인 시각 기록 앱이에요. 한 번의 동작으로 지금 시각을 저장하고, 사용자가 정한 하루 기준(예: 새벽 4시 시작)으로 기록을 묶어 보여 줘요.
 
-계정·로그인이 필요 없고 서버·광고·분석이 없어요. 모든 데이터는 기기에만 있어요.
+계정·로그인이 필요 없고 서버·광고·분석이 없어요. 모든 데이터는 이 기기에 저장되고 개발자나 서버로 보내지 않아요. 사용자의 iCloud·컴퓨터 백업에는 포함될 수 있어요.
+
+개인정보처리방침: 앱 안 설정(톱니) › 개인정보와 데이터 › 개인정보처리방침 전문, 그리고 https://toktoktok-nine.vercel.app/privacy/ 에 전문이 있어요.
 
 1분 안에 확인하는 방법:
 1. 처음 실행하면 아무 하루 시작 시간이나 고르고 ‘이 시간으로 시작’을 눌러요.

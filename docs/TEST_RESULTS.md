@@ -533,3 +533,4 @@
 |---|---|
 | 앱 빌드 | PASS (generic iOS BUILD SUCCEEDED) |
 | 웹·앱 문의 문구 일치 | 구현 측 수동 대조, Codex 검증 아래 |
+- Codex 검증(`gpt-6-astra`, 대상 890f3ce): **PASS**. 웹·앱 문의 일치, 다른 문서에 운영자 표기 없음, 메일 링크 44pt 유지, swift test 38 통과. 참고: 웹 메일 링크는 기존부터 최소 높이 지정 없음(회귀 아님)

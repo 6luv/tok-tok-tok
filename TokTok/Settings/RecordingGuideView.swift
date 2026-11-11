@@ -103,7 +103,8 @@ struct RecordingGuideView: View {
             NeuSection {
                 note("clock", "기록 시각은 단축어가 실행된 순간이라 탭한 순간과 조금 다를 수 있어요")
                 note("rectangle.topthird.inset.filled", "실행할 때 iOS가 화면 위에 실행 중 표시를 띄워요")
-                note("moon", "화면이 꺼져 있으면 뒷면 탭이 인식되지 않아요. 이때는 Siri에게 “TokTokTok 기록”이라고 말해 보세요.")
+                // 화면이 켜진 상태에서만 지원(사용자 결정 2026-11-11 Q10). 잠금 상태 Siri 대안 안내는 실기기에서 동작하지 않아 뺐다
+                note("moon", "화면이 켜져 있을 때만 기록돼요. 화면이 꺼져 있으면 iPhone이 뒷면 탭을 인식하지 않아요.")
                 note("hand.tap", "앱 안 ‘현재 시간 기록’ 버튼은 연결 없이 언제든 쓸 수 있어요")
             } header: {
                 Text("알아 두세요")

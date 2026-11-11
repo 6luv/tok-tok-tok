@@ -3,7 +3,8 @@
 <plist version="1.0">
 <dict>
 	<!-- 추적 없음, 서버 전송 없음. 기록은 기기 로컬 파일로만 저장한다.
-	     현재 코드는 required-reason API(파일 타임스탬프, 시스템 부팅 시간, 디스크 공간, UserDefaults 등)를 쓰지 않는다.
+	     required-reason API: UserDefaults만 쓴다(화면 모드·메인 색·진동·소리 설정, 키 toktok.appearance·accent·vibration·sound).
+	     앱 자신만 읽고 쓰므로 이유 CA92.1. 파일 타임스탬프·부팅 시간·디스크 공간·활성 키보드 API는 쓰지 않는다.
 	     제출 전 실제 바이너리·SDK 기준으로 Apple 문서(S09)와 다시 대조할 것. -->
 	<key>NSPrivacyTracking</key>
 	<false/>
@@ -12,6 +13,15 @@
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array/>
 	<key>NSPrivacyAccessedAPITypes</key>
-	<array/>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

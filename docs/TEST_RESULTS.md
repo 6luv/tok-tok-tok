@@ -377,3 +377,15 @@
 | 기기 진동 설정 끔 → 진동 없음 | NOT RUN (실기기) |
 
 - Codex 독립 검증(병합 전, `codex exec --sandbox read-only`, 모델 gpt-6-astra): 코드 결함 없음. 저장 성공 뒤에만 진동, 공개 API·iOS 17 호환, background mode 추가 없음 확인. P3 1건(R-025 실행 근거 누락)을 지적받아 위 표에 명령·결과를 보완. Codex 환경에서 빌드·테스트는 읽기 전용 제한으로 BLOCKED
+
+## R-026 설정 ‘진동’ 토글 (feature/vibration-toggle)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 사용자 요청: 기기 설정과 상관없이 울리게(→ iOS가 허용하지 않아 불가, 안내함), 앱 설정에 진동 켜기·끄기
+- 변경: `RecordHaptic.isEnabled`(`toktok.vibration`, 기본 켜짐) 확인 후에만 진동, 설정에 ‘진동’ 섹션과 `NeuToggleStyle`
+- 확인: 임시로 시작 화면을 설정으로 바꾼 빌드(커밋 안 함)로 iPhone 17 Pro 시뮬레이터 라이트·다크·꺼짐 상태 스크린숏
+
+| 항목 | 판정 |
+|---|---|
+| 설정 화면 진동 스위치 켜짐·꺼짐 표시 | PASS (시각 확인, 시뮬레이터) |
+| 끄면 앱 안·뒷면 탭 기록에서 진동 없음 / 켜면 한 번 | NOT RUN (실기기 필요) |

@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var deleteMessage: String?
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
     @AppStorage(AppAccent.storageKey) private var accent: AppAccent = .amber
+    @AppStorage(RecordHaptic.storageKey) private var vibration = true
 
     var body: some View {
         NavigationStack {
@@ -77,6 +78,13 @@ struct SettingsView: View {
                     NeuSegmented(options: AppAppearance.allCases, selection: $appearance) { $0.title }
                 } header: {
                     Text("화면 모드")
+                }
+
+                NeuSection {
+                    Toggle("기록할 때 진동", isOn: $vibration)
+                        .toggleStyle(NeuToggleStyle())
+                } header: {
+                    Text("진동")
                 }
 
                 NeuSection(compact: true) {

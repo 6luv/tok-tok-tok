@@ -351,12 +351,13 @@
   - P1 일부 대상 읽기 실패·내용 불일치를 오류 없이 종료 → `RecordDeleteResult`(deleted·alreadyMissing·unreadable·mismatched) 반환, 설정에 ‘N개를 지웠어요. M개는 확인하지 못해 남겨 뒀어요.’ 표시
   - P3 TEST_PLAN 상태 문구·삭제 검증 범위 → 상태 문구 갱신, T17~T19 추가(T18·T19는 미실행, T19는 알려진 위험)
   - 그 밖의 위험(스크롤 위치 보존, 확인 창 큰 글씨·VoiceOver)은 실기기 확인 대상으로 남김
-- 명령(구현 측): `cd TokTokCore && swift test` → 36 tests, 0 failures(`testDeleteReportsUnreadableTargetAndKeepsIt` 추가, 기존 삭제 테스트를 결과 구조로 갱신) / `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED / `build-for-testing` → TEST BUILD SUCCEEDED
+- 명령(구현 측): `cd TokTokCore && swift test` → 36 tests, 0 failures(`testDeleteReportsUnreadableTargetAndKeepsIt` 추가, 기존 삭제 테스트를 결과 구조로 갱신). 2차 수정 후 38 tests, 0 failures, 건너뜀 없음 / `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED / `build-for-testing` → TEST BUILD SUCCEEDED
 
 | 항목 | 판정 |
 |---|---|
 | T17 삭제 보존·부분 보고(TokTokCore) | PASS |
 | T18 확인 창 대상 고정(앱 경로) | NOT RUN (코드 수정만, 실기기 확인 대기) |
 | T19 같은 ID 재시도·삭제 경합 | NOT RUN (알려진 위험) |
-| 수정 후 Codex 재검증 | 아래 기록 참고 |
+| 수정 후 Codex 재검증(1차) | FAIL: 접근 불가를 ‘이미 없음’으로 분류(P1② 잔존), EOF 빈 줄. 아래 2차 수정 |
 
+- 2차 수정(Codex 재검증 지적): `fileExists` 대신 직접 읽고, 파일 없음 오류(Cocoa NSFileReadNoSuchFileError·NSFileNoSuchFileError, POSIX ENOENT)만 `alreadyMissing`, 권한 거부 등 그 밖의 읽기 실패는 `unreadable`로 보존·보고. 테스트 `testDeleteCountsInaccessibleTargetAsUnreadable`(월 디렉터리 권한 제거), `testNoSuchFileClassification` 추가. EOF 빈 줄 제거

@@ -349,4 +349,35 @@ final class StorageAndServiceTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: bURL.path))
         XCTAssertFalse(try service.loadDay().records.contains { $0.id == a.id })
     }
+
+    /// 접근할 수 없는 대상은 ‘이미 없음’이 아니라 확인하지 못한 대상으로 센다(Codex 재검증 P1).
+    func testDeleteCountsInaccessibleTargetAsUnreadable() throws {
+        let t = utc("2026-11-10T03:00:00Z")
+        let service = try makeService(clock: { t })
+        let a = try service.recordNow(source: .app)
+        let shown = try service.loadDay().records
+        let monthDir = root.appendingPathComponent("records/2026-11")
+        // 월 디렉터리 탐색 권한 제거(테스트 끝에 복구)
+        try FileManager.default.setAttributes([.posixPermissions: 0o000], ofItemAtPath: monthDir.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: monthDir.path) }
+        if FileManager.default.isReadableFile(atPath: FileRecordRepository(rootDirectory: root).fileURL(for: a).path) {
+            throw XCTSkip("권한 제거가 적용되지 않는 환경(root 등)")
+        }
+
+        let result = try service.deleteRecords(shown)
+        XCTAssertEqual(result.deleted, 0)
+        XCTAssertEqual(result.alreadyMissing, 0)
+        XCTAssertEqual(result.unreadable, 1)
+        XCTAssertEqual(result.kept, 1)
+
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: monthDir.path)
+        XCTAssertEqual(try service.loadDay().records.map(\.id), [a.id]) // 보존됨
+    }
+
+    func testNoSuchFileClassification() {
+        XCTAssertTrue(FileRecordRepository.isNoSuchFile(NSError(domain: NSCocoaErrorDomain, code: NSFileReadNoSuchFileError)))
+        XCTAssertTrue(FileRecordRepository.isNoSuchFile(NSError(domain: NSPOSIXErrorDomain, code: Int(ENOENT))))
+        XCTAssertFalse(FileRecordRepository.isNoSuchFile(NSError(domain: NSCocoaErrorDomain, code: NSFileReadNoPermissionError)))
+        XCTAssertFalse(FileRecordRepository.isNoSuchFile(NSError(domain: NSPOSIXErrorDomain, code: Int(EACCES))))
+    }
 }

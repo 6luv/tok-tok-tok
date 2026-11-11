@@ -92,7 +92,7 @@ docs/              제품·설계·테스트·인계 문서
 | 프로젝트 / scheme | `TokTok.xcodeproj` / shared scheme `TokTok`(앱 + `TokTokTests`), 로컬 패키지 `TokTokCore` |
 | 테스트 시뮬레이터 | iPhone 17 Pro(iOS 26.5). 실기기 기종·OS는 docs/TEST_RESULTS.md에 실행별로 기록 |
 | 구현 모델 | Claude Opus 5.5(`claude-opus-5-5`) |
-| 검증 모델 | Codex Astra(요청 명칭). 현재 설정 모델 사용 불가로 미실행 |
+| 검증 모델 | Codex Astra(요청 명칭) → 실제 모델 ID `gpt-6-astra`(codex-cli 0.167.0, ChatGPT 계정 로그인). 2026-11-11 사용자 확인 후 사용. 이전 기본값 `gpt-5.4`는 이 계정에서 지원되지 않아 PR #11~#24 병합 전 검증 미실행 |
 
 <details>
 <summary>구현·검증 인계 프롬프트</summary>

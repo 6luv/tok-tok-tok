@@ -304,14 +304,17 @@ final class StorageAndServiceTests: XCTestCase {
         let bad = dir.appendingPathComponent("broken.json")
         try Data("{not json".utf8).write(to: bad)
 
-        XCTAssertEqual(try service.deleteRecords(shown), 2)
+        XCTAssertEqual(try service.deleteRecords(shown).deleted, 2)
 
         let after = try service.loadDay()
         XCTAssertEqual(after.records.map(\.id), [late.id])
         XCTAssertEqual(after.unreadableCount, 1)
         XCTAssertTrue(FileManager.default.fileExists(atPath: bad.path)) // 읽지 못한 파일은 보존
-        // 이미 지운 기록을 다시 지워도 오류 없이 0개
-        XCTAssertEqual(try service.deleteRecords(shown), 0)
+        // 이미 지운 기록을 다시 지워도 오류 없이 0개, 이미 없음으로 보고
+        let again = try service.deleteRecords(shown)
+        XCTAssertEqual(again.deleted, 0)
+        XCTAssertEqual(again.alreadyMissing, 2)
+        XCTAssertEqual(again.kept, 0)
     }
 
     func testDeleteSkipsFileWhoseContentDiffers() throws {
@@ -320,7 +323,61 @@ final class StorageAndServiceTests: XCTestCase {
         let saved = try service.recordNow(source: .app)
         // 같은 ID지만 내용이 다른 기록을 넘기면 지우지 않는다
         let other = TimeRecord(id: saved.id, occurredAt: saved.occurredAt.addingTimeInterval(1), timeZone: seoul, source: .app)
-        XCTAssertEqual(try service.deleteRecords([other]), 0)
+        let result = try service.deleteRecords([other])
+        XCTAssertEqual(result.deleted, 0)
+        XCTAssertEqual(result.mismatched, 1)
+        XCTAssertEqual(result.kept, 1)
         XCTAssertEqual(try service.loadDay().records.map(\.id), [saved.id])
+    }
+
+    /// 확인한 대상 중 일부를 읽지 못하면 보존하고, 정상 완료와 구분되게 보고한다(Codex 검증 P1).
+    func testDeleteReportsUnreadableTargetAndKeepsIt() throws {
+        let t = utc("2026-11-10T03:00:00Z")
+        let tick = Counter()
+        let service = try makeService(clock: { t.addingTimeInterval(Double(tick.next())) })
+        let a = try service.recordNow(source: .app)
+        let b = try service.recordNow(source: .app)
+        let shown = try service.loadDay().records
+        // 확인 뒤 b 파일이 손상됨
+        let bURL = FileRecordRepository(rootDirectory: root).fileURL(for: b)
+        try Data("{broken".utf8).write(to: bURL)
+
+        let result = try service.deleteRecords(shown)
+        XCTAssertEqual(result.deleted, 1)
+        XCTAssertEqual(result.unreadable, 1)
+        XCTAssertEqual(result.kept, 1)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: bURL.path))
+        XCTAssertFalse(try service.loadDay().records.contains { $0.id == a.id })
+    }
+
+    /// 접근할 수 없는 대상은 ‘이미 없음’이 아니라 확인하지 못한 대상으로 센다(Codex 재검증 P1).
+    func testDeleteCountsInaccessibleTargetAsUnreadable() throws {
+        let t = utc("2026-11-10T03:00:00Z")
+        let service = try makeService(clock: { t })
+        let a = try service.recordNow(source: .app)
+        let shown = try service.loadDay().records
+        let monthDir = root.appendingPathComponent("records/2026-11")
+        // 월 디렉터리 탐색 권한 제거(테스트 끝에 복구)
+        try FileManager.default.setAttributes([.posixPermissions: 0o000], ofItemAtPath: monthDir.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: monthDir.path) }
+        if FileManager.default.isReadableFile(atPath: FileRecordRepository(rootDirectory: root).fileURL(for: a).path) {
+            throw XCTSkip("권한 제거가 적용되지 않는 환경(root 등)")
+        }
+
+        let result = try service.deleteRecords(shown)
+        XCTAssertEqual(result.deleted, 0)
+        XCTAssertEqual(result.alreadyMissing, 0)
+        XCTAssertEqual(result.unreadable, 1)
+        XCTAssertEqual(result.kept, 1)
+
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: monthDir.path)
+        XCTAssertEqual(try service.loadDay().records.map(\.id), [a.id]) // 보존됨
+    }
+
+    func testNoSuchFileClassification() {
+        XCTAssertTrue(FileRecordRepository.isNoSuchFile(NSError(domain: NSCocoaErrorDomain, code: NSFileReadNoSuchFileError)))
+        XCTAssertTrue(FileRecordRepository.isNoSuchFile(NSError(domain: NSPOSIXErrorDomain, code: Int(ENOENT))))
+        XCTAssertFalse(FileRecordRepository.isNoSuchFile(NSError(domain: NSCocoaErrorDomain, code: NSFileReadNoPermissionError)))
+        XCTAssertFalse(FileRecordRepository.isNoSuchFile(NSError(domain: NSPOSIXErrorDomain, code: Int(EACCES))))
     }
 }

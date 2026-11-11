@@ -9,6 +9,22 @@ public enum StorageError: Error, Equatable, Sendable {
     case readFailed(String)
 }
 
+/// 삭제 결과. 지우지 않은 대상도 이유별로 알려, 일부만 지운 작업을 정상 완료와 구분한다.
+public struct RecordDeleteResult: Sendable, Equatable {
+    /// 지운 개수
+    public var deleted = 0
+    /// 이미 없던 대상(다른 곳에서 먼저 지워짐)
+    public var alreadyMissing = 0
+    /// 읽지 못해 확인할 수 없어 보존한 대상
+    public var unreadable = 0
+    /// 같은 ID지만 내용이 달라 보존한 대상
+    public var mismatched = 0
+
+    public init() {}
+    /// 확인하지 못해 남긴 대상 수(읽기 실패 + 내용 불일치)
+    public var kept: Int { unreadable + mismatched }
+}
+
 /// 조회 결과. 읽지 못한 파일은 삭제하지 않고 개수만 알린다.
 public struct RecordQueryResult: Sendable, Equatable {
     public let records: [TimeRecord]
@@ -21,12 +37,13 @@ public protocol RecordRepository: Sendable {
     /// [start, end) 구간의 기록을 시간순으로 반환.
     func records(from start: Date, to end: Date) throws -> RecordQueryResult
     /// 사용자가 확인한 기록만 지운다. 넘겨준 기록과 내용이 같은 파일만 지우며,
-    /// 읽지 못한 파일·다른 기록은 건드리지 않는다. 지운 개수를 반환한다.
-    func delete(_ records: [TimeRecord]) throws -> Int
+    /// 읽지 못한 파일·다른 기록은 건드리지 않는다. 지우지 않은 대상은 이유별로 결과에 담는다.
+    /// 파일 삭제 자체가 실패하면 그때까지의 개수와 함께 오류를 던진다.
+    func delete(_ records: [TimeRecord]) throws -> RecordDeleteResult
 }
 
 extension RecordRepository {
-    public func delete(_ records: [TimeRecord]) throws -> Int {
+    public func delete(_ records: [TimeRecord]) throws -> RecordDeleteResult {
         throw StorageError.writeFailed("이 저장소는 삭제를 지원하지 않음")
     }
 }
@@ -134,22 +151,48 @@ public final class FileRecordRepository: RecordRepository, @unchecked Sendable {
         return RecordQueryResult(records: results, unreadableCount: unreadable)
     }
 
-    public func delete(_ records: [TimeRecord]) throws -> Int {
-        var deleted = 0
+    public func delete(_ records: [TimeRecord]) throws -> RecordDeleteResult {
+        var result = RecordDeleteResult()
         for record in records {
             let url = fileURL(for: record)
-            guard fileManager.fileExists(atPath: url.path) else { continue } // 이미 없음
+            // 존재 확인(fileExists)은 접근 불가도 ‘없음’으로 돌려주므로 쓰지 않는다(Codex 재검증 P1).
+            // 직접 읽어 보고, 파일이 없다는 오류일 때만 ‘이미 없음’으로 센다. 그 밖의 읽기 실패는 보존한다.
+            let data: Data
+            do {
+                data = try Data(contentsOf: url)
+            } catch {
+                if Self.isNoSuchFile(error) { result.alreadyMissing += 1 } else { result.unreadable += 1 }
+                continue
+            }
+            guard let existing = try? decoder.decode(TimeRecord.self, from: data) else {
+                result.unreadable += 1 // 확인할 수 없으면 보존한다
+                continue
+            }
             // 같은 ID라도 내용이 다르면 지우지 않는다(사용자가 본 기록만 지움)
-            guard let existing = try? decoder.decode(TimeRecord.self, from: Data(contentsOf: url)),
-                  existing == record else { continue }
+            guard existing == record else { result.mismatched += 1; continue }
             do {
                 try fileManager.removeItem(at: url)
-                deleted += 1
+                result.deleted += 1
             } catch {
-                throw StorageError.writeFailed("\(deleted)개 지운 뒤 실패: \(error)")
+                throw StorageError.writeFailed("\(result.deleted)개 지운 뒤 실패: \(error)")
             }
         }
-        return deleted
+        return result
+    }
+
+    /// 파일이 없어서 읽지 못한 경우만 true. 권한 거부 등은 false.
+    static func isNoSuchFile(_ error: Error) -> Bool {
+        let ns = error as NSError
+        if ns.domain == NSCocoaErrorDomain,
+           ns.code == NSFileReadNoSuchFileError || ns.code == NSFileNoSuchFileError {
+            return true
+        }
+        if ns.domain == NSPOSIXErrorDomain, ns.code == Int(ENOENT) { return true }
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError,
+           underlying.domain == NSPOSIXErrorDomain, underlying.code == Int(ENOENT) {
+            return true
+        }
+        return false
     }
 
     /// 구간이 걸치는 UTC 월 키들.

@@ -579,3 +579,11 @@
 | 설정·환경 파일 비노출 | PASS |
 - Codex 검증(`gpt-6-astra`, 미커밋 작업 트리 기준 — 커밋이 EOF 검사로 멈춘 상태): **FAIL**(P3 2건). 형식·CSP 정적 검토 PASS, 미리보기 헤더는 Codex 쪽 DNS 차단으로 NOT RUN. 지적: 폐기된 `interest-cohort` 제거, TEST_RESULTS EOF 빈 줄 제거 → 반영
 - 2차 미리보기 https://toktoktok-a7kv6f7gm-(Vercel 팀).vercel.app: 헤더 7종·HSTS, 주요 경로 200 확인. Codex 재검증(대상 02d4f8a): **PASS**(지적 2건 해소, 새 지적 없음. Codex 쪽 네트워크 차단으로 헤더는 구현 측 저장 응답과 대조, 독립 재현 아님)
+
+## R-041 App Store 스크린숏·미리보기 영상·등록 문구·심사 메모 (docs/appstore-assets)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 스크린숏 5장: iPhone 17 Pro Max 시뮬레이터(iOS 26.5) 1320×2868(6.9형), 예시 데이터, 상태 막대 고정
+- 미리보기 영상: 시뮬레이터 녹화 → AVFoundation으로 886×1920·30fps·20.0초, 홈 화면·시작 어두운 구간 잘라냄(프레임 추출로 확인)
+- 임시 진입·자동 재생 코드는 녹화에만 쓰고 커밋하지 않음(앱 코드 변경 없음)
+- 등록 문구는 사이트·개인정보처리방침 사실(무료·광고 없음, 화면 켜짐에서만 뒷면 탭, Siri 안내 없음)에 맞춤

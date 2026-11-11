@@ -472,3 +472,9 @@
 | 수정 후 Codex 검증 | NOT RUN (Codex 사용 한도 초과, 22:37 이후 가능) |
 
 - 2차(사용자 요청): 시작·로딩 화면을 기기 모드와 관계없이 다크로, 화면 전체 그림 `LaunchArt`(큰 자명종 오른쪽 아래) + 로딩 화면 위쪽 ‘TokTokTok’·소개 한 줄, 1.5초 표시. `LaunchLogo` 제거. 스와이프 덜 예민하게(시작 24pt, 가로≥세로×2, 0.8배 추종). 사용자가 ‘아직 왼쪽’이라 본 것은 이 브랜치가 아직 main에 병합되지 않았기 때문(메인 폴더 main은 e13ce47, 왼쪽 밀기). generic iOS build → BUILD SUCCEEDED
+
+- 3차(사용자 요청): 로딩 화면 제목을 ‘Tok Tok Tok’으로 띄어 씀(앱 이름 표기 TokTokTok 유지), 4a7bbfb
+- Codex 검증(`codex exec -m gpt-6-astra -s workspace-write`, 대상 4a7bbfb): **FAIL**. 스와이프 대칭·감쇠 계산·기존 동작 유지·plist/Assets·LaunchLogo 참조 제거는 PASS, Codex 실행 `swift test` 38 tests 0 failures, 앱 빌드는 캐시 권한으로 BLOCKED
+  - P2 로딩 중 뒤 하루 화면이 VoiceOver에 노출 → `DayView().accessibilityHidden(showsSplash)`
+  - P3 스와이프 거리 설명(180은 행 최종 이동 거리, 손가락 약 249pt / 열린 행 약 159pt, 열림 약 69pt, ‘2배 초과’) → DESIGN 정정
+  - P3 고정 글꼴 예외(로딩 제목 40pt)·최신 제목 표기 → DESIGN·이 기록 보완

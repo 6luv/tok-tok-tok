@@ -214,9 +214,10 @@ struct SecondaryButtonStyle: ButtonStyle {
 }
 
 /// 뉴모피즘 켜기·끄기 스위치: 파인 알약 홈 안에서 튀어나온 원이 좌우로 움직인다.
-/// 켜지면 원이 오른쪽으로 가고 홈 안쪽이 메인 색으로 옅게 물든다.
+/// 켜지면 원이 오른쪽으로 가고 홈이 메인 색(`tick`)으로 채워진다(사용자 요청 2026-11-11: 옅은 35%가 탁해 보여 불투명하게).
 struct NeuToggleStyle: ToggleStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.tokTokAccent) private var accent
 
     func makeBody(configuration: Configuration) -> some View {
         Button {
@@ -231,7 +232,7 @@ struct NeuToggleStyle: ToggleStyle {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ZStack(alignment: configuration.isOn ? .trailing : .leading) {
                     Capsule(style: .continuous)
-                        .fill(configuration.isOn ? AnyShapeStyle(.tint.opacity(0.35)) : AnyShapeStyle(Color.clear))
+                        .fill(configuration.isOn ? accent.tick : Color.clear)
                         .frame(width: 56, height: 32)
                         .inset(Capsule(style: .continuous), depth: 3)
                     Circle()

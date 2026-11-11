@@ -371,7 +371,9 @@
 
 | 항목 | 판정 |
 |---|---|
-| 빌드·앱 테스트 | 아래 명령 결과 참조 |
+| 빌드·앱 테스트(커밋 5e4d614 기준) | PASS: `xcodebuild test -project TokTok.xcodeproj -scheme TokTok -destination 'platform=iOS Simulator,id=<iPhone 17 Pro, iOS 26.5>'` → 6 passed, 0 failed / `cd TokTokCore && swift test` → 38 tests, 0 failures |
 | 앱 안 버튼 기록 시 진동 한 번 | NOT RUN (시뮬레이터는 진동 없음, 실기기 필요) |
 | 뒷면 탭·단축어 기록 시 진동 한 번(앱이 화면에 없을 때) | NOT RUN (실기기 필요) |
 | 기기 진동 설정 끔 → 진동 없음 | NOT RUN (실기기) |
+
+- Codex 독립 검증(병합 전, `codex exec --sandbox read-only`, 모델 gpt-6-astra): 코드 결함 없음. 저장 성공 뒤에만 진동, 공개 API·iOS 17 호환, background mode 추가 없음 확인. P3 1건(R-025 실행 근거 누락)을 지적받아 위 표에 명령·결과를 보완. Codex 환경에서 빌드·테스트는 읽기 전용 제한으로 BLOCKED

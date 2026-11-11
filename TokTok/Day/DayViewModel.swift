@@ -162,11 +162,11 @@ final class DayViewModel: ObservableObject {
         await reload()
     }
 
-    /// 지금 화면의 기록일 기록을 지운다. 사용자가 확인한 스냅샷의 기록만 대상이다.
+    /// 확인 창을 열 때 고정한 기록만 지운다. 그 뒤 새로 불러온 스냅샷은 대상에 넣지 않는다(Codex 검증 P1).
     @discardableResult
-    func deleteCurrentDayRecords() async throws -> Int {
-        guard let service, let records = snapshot?.records, !records.isEmpty else { return 0 }
-        let result: Result<Int, Error> = await Task.detached { Result { try service.deleteRecords(records) } }.value
+    func deleteRecords(_ records: [TimeRecord]) async throws -> RecordDeleteResult {
+        guard let service, !records.isEmpty else { return RecordDeleteResult() }
+        let result: Result<RecordDeleteResult, Error> = await Task.detached { Result { try service.deleteRecords(records) } }.value
         defer { Task { await reload() } }
         return try result.get()
     }

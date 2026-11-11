@@ -304,14 +304,17 @@ final class StorageAndServiceTests: XCTestCase {
         let bad = dir.appendingPathComponent("broken.json")
         try Data("{not json".utf8).write(to: bad)
 
-        XCTAssertEqual(try service.deleteRecords(shown), 2)
+        XCTAssertEqual(try service.deleteRecords(shown).deleted, 2)
 
         let after = try service.loadDay()
         XCTAssertEqual(after.records.map(\.id), [late.id])
         XCTAssertEqual(after.unreadableCount, 1)
         XCTAssertTrue(FileManager.default.fileExists(atPath: bad.path)) // 읽지 못한 파일은 보존
-        // 이미 지운 기록을 다시 지워도 오류 없이 0개
-        XCTAssertEqual(try service.deleteRecords(shown), 0)
+        // 이미 지운 기록을 다시 지워도 오류 없이 0개, 이미 없음으로 보고
+        let again = try service.deleteRecords(shown)
+        XCTAssertEqual(again.deleted, 0)
+        XCTAssertEqual(again.alreadyMissing, 2)
+        XCTAssertEqual(again.kept, 0)
     }
 
     func testDeleteSkipsFileWhoseContentDiffers() throws {
@@ -320,7 +323,30 @@ final class StorageAndServiceTests: XCTestCase {
         let saved = try service.recordNow(source: .app)
         // 같은 ID지만 내용이 다른 기록을 넘기면 지우지 않는다
         let other = TimeRecord(id: saved.id, occurredAt: saved.occurredAt.addingTimeInterval(1), timeZone: seoul, source: .app)
-        XCTAssertEqual(try service.deleteRecords([other]), 0)
+        let result = try service.deleteRecords([other])
+        XCTAssertEqual(result.deleted, 0)
+        XCTAssertEqual(result.mismatched, 1)
+        XCTAssertEqual(result.kept, 1)
         XCTAssertEqual(try service.loadDay().records.map(\.id), [saved.id])
+    }
+
+    /// 확인한 대상 중 일부를 읽지 못하면 보존하고, 정상 완료와 구분되게 보고한다(Codex 검증 P1).
+    func testDeleteReportsUnreadableTargetAndKeepsIt() throws {
+        let t = utc("2026-11-10T03:00:00Z")
+        let tick = Counter()
+        let service = try makeService(clock: { t.addingTimeInterval(Double(tick.next())) })
+        let a = try service.recordNow(source: .app)
+        let b = try service.recordNow(source: .app)
+        let shown = try service.loadDay().records
+        // 확인 뒤 b 파일이 손상됨
+        let bURL = FileRecordRepository(rootDirectory: root).fileURL(for: b)
+        try Data("{broken".utf8).write(to: bURL)
+
+        let result = try service.deleteRecords(shown)
+        XCTAssertEqual(result.deleted, 1)
+        XCTAssertEqual(result.unreadable, 1)
+        XCTAssertEqual(result.kept, 1)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: bURL.path))
+        XCTAssertFalse(try service.loadDay().records.contains { $0.id == a.id })
     }
 }

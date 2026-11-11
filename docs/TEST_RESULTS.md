@@ -341,3 +341,22 @@
 | 18 Pro 크기: 하루 화면 접근성 L | PASS |
 | 18 Pro 크기: 설정 접근성 L, 메인 색 이름 두 줄로 꺾여 견본 높이 어긋남 | FAIL → 수정(위쪽 정렬, 이름 한 줄·축소) 후 PASS |
 | iPhone Duo | NOT RUN (시뮬레이터·공식 사양 없음) |
+
+## R-024 Codex 검증(병합 후)과 삭제 대상 고정·부분 미삭제 보고 수정 (fix/delete-target-freeze)
+
+- 날짜: 2026-11-11 / 구현: Claude Opus 5.5(claude-opus-5-5) / 검증: Codex, `codex exec -m gpt-6-astra -s read-only`(codex-cli 0.167.0). Codex 보고서는 런타임 모델 ID를 스스로 확인하지 못했다고 적음
+- 검증 범위: 156cc35..a42544b(PR #11·#14·#17·#19·#21·#24). Codex 판정 FAIL. Codex 쪽 `swift test`·시뮬레이터 빌드는 읽기 전용 샌드박스 쓰기 제한으로 실행 실패(NOT RUN)
+- 지적과 조치:
+  - P1 확인 창 삭제 대상 미고정 → `PendingDelete`로 창을 열 때 기록일 제목·기록 배열 고정, `DayViewModel.deleteRecords(_:)`가 그 배열만 삭제
+  - P1 일부 대상 읽기 실패·내용 불일치를 오류 없이 종료 → `RecordDeleteResult`(deleted·alreadyMissing·unreadable·mismatched) 반환, 설정에 ‘N개를 지웠어요. M개는 확인하지 못해 남겨 뒀어요.’ 표시
+  - P3 TEST_PLAN 상태 문구·삭제 검증 범위 → 상태 문구 갱신, T17~T19 추가(T18·T19는 미실행, T19는 알려진 위험)
+  - 그 밖의 위험(스크롤 위치 보존, 확인 창 큰 글씨·VoiceOver)은 실기기 확인 대상으로 남김
+- 명령(구현 측): `cd TokTokCore && swift test` → 36 tests, 0 failures(`testDeleteReportsUnreadableTargetAndKeepsIt` 추가, 기존 삭제 테스트를 결과 구조로 갱신) / `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED / `build-for-testing` → TEST BUILD SUCCEEDED
+
+| 항목 | 판정 |
+|---|---|
+| T17 삭제 보존·부분 보고(TokTokCore) | PASS |
+| T18 확인 창 대상 고정(앱 경로) | NOT RUN (코드 수정만, 실기기 확인 대기) |
+| T19 같은 ID 재시도·삭제 경합 | NOT RUN (알려진 위험) |
+| 수정 후 Codex 재검증 | 아래 기록 참고 |
+

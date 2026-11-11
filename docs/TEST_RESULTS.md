@@ -561,3 +561,11 @@
 - 명령: `plutil -lint TokTok/PrivacyInfo.xcprivacy` → OK, `xcodebuild ... generic/platform=iOS build` → BUILD SUCCEEDED(빌드된 앱 번들의 PrivacyInfo에 UserDefaults·CA92.1 확인), `swift test` → 38 tests 0 failures. 실기기 NOT RUN
 - Codex 검증(`gpt-6-astra`, 대상 23de0df): **FAIL**(P3 1건). 매니페스트·required-reason API 전체 검색·방침 일치·안내 일관성 PASS, swift test 38 통과, 공유 scheme 빌드 BLOCKED. 지적: TROUBLESHOOTING TS-007에 Siri 대안·Q10 미결정이 남음 → 후속 기록 추가, 상태 closed(지원 범위 제한). 참고: App Shortcut phrases는 Siri 호출 문구이기도 해서 안내 제거가 Siri 비활성화를 뜻하지 않음(TS-007에 명시)
 - Codex 재검증(대상 87be173): **PASS**. TS-007 후속 기록 일치, 새 지적 없음
+
+## R-041 App Store 스크린숏·미리보기 영상·등록 문구·심사 메모 (docs/appstore-assets)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 스크린숏 5장: iPhone 17 Pro Max 시뮬레이터(iOS 26.5) 1320×2868(6.9형), 예시 데이터, 상태 막대 고정
+- 미리보기 영상: 시뮬레이터 녹화 → AVFoundation으로 886×1920·30fps·20.0초, 홈 화면·시작 어두운 구간 잘라냄(프레임 추출로 확인)
+- 임시 진입·자동 재생 코드는 녹화에만 쓰고 커밋하지 않음(앱 코드 변경 없음)
+- 등록 문구는 사이트·개인정보처리방침 사실(무료·광고 없음, 화면 켜짐에서만 뒷면 탭, Siri 안내 없음)에 맞춤

@@ -190,7 +190,8 @@ private struct AccentPicker: View {
     @Binding var selection: AppAccent
 
     var body: some View {
-        HStack(spacing: 0) {
+        // 큰 글씨에서도 견본 원이 한 줄에 맞춰지도록 위쪽 정렬, 이름은 한 줄로 줄여 맞춘다.
+        HStack(alignment: .top, spacing: 0) {
             ForEach(AppAccent.allCases) { option in
                 let selected = option == selection
                 Button {
@@ -205,8 +206,10 @@ private struct AccentPicker: View {
                         Text(option.title)
                             .font(.caption)
                             .foregroundStyle(selected ? Theme.text : Theme.secondaryText)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .top)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)

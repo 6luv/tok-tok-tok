@@ -10,7 +10,8 @@ struct SettingsView: View {
     @State private var original: DayBoundary?
     @State private var saving = false
     @State private var errorText: String?
-    @State private var confirmingDelete = false
+    /// 확인 창을 열 때 고정한 삭제 대상. 창이 열린 동안 목록이 바뀌어도 제목·개수·삭제는 이 값만 쓴다.
+    @State private var pendingDelete: PendingDelete?
     @State private var deleting = false
     @State private var deleteMessage: String?
     @AppStorage(AppAppearance.storageKey) private var appearance: AppAppearance = .dark
@@ -35,11 +36,11 @@ struct SettingsView: View {
             .onAppear(perform: loadCurrent)
         }
         .overlay {
-            if confirmingDelete {
-                DeleteConfirmView(title: deleteTitle,
-                                  confirmTitle: "\(dayRecordCount)개 지우기",
-                                  onCancel: { setConfirming(false) },
-                                  onConfirm: { setConfirming(false); deleteToday() })
+            if let pending = pendingDelete {
+                DeleteConfirmView(title: "\(pending.dayTitle) 기록을 지울까요?",
+                                  confirmTitle: "\(pending.records.count)개 지우기",
+                                  onCancel: { setPending(nil) },
+                                  onConfirm: { setPending(nil); delete(pending) })
                     .transition(.opacity)
             }
         }
@@ -47,9 +48,9 @@ struct SettingsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    private func setConfirming(_ value: Bool) {
-        if reduceMotion { confirmingDelete = value } else {
-            withAnimation(Theme.ease(0.2)) { confirmingDelete = value }
+    private func setPending(_ value: PendingDelete?) {
+        if reduceMotion { pendingDelete = value } else {
+            withAnimation(Theme.ease(0.2)) { pendingDelete = value }
         }
     }
 
@@ -86,7 +87,8 @@ struct SettingsView: View {
 
                 NeuSection(compact: true) {
                     Button {
-                        setConfirming(true)
+                        guard let records = model.snapshot?.records, !records.isEmpty else { return }
+                        setPending(PendingDelete(dayTitle: dayTitle, records: records))
                     } label: {
                         HStack(spacing: 8) {
                             if deleting { ProgressView().tint(Theme.secondaryText) }
@@ -121,14 +123,16 @@ struct SettingsView: View {
         return "\(day.month)월 \(day.day)일"
     }
 
-    private var deleteTitle: String { "\(dayTitle) 기록을 지울까요?" }
-
-    private func deleteToday() {
+    private func delete(_ pending: PendingDelete) {
         deleting = true
         deleteMessage = nil
         Task {
             do {
-                try await model.deleteCurrentDayRecords()
+                let result = try await model.deleteRecords(pending.records)
+                if result.kept > 0 {
+                    // 일부를 확인하지 못해 남겼다. 성공으로 끝내지 않는다(Codex 검증 P1)
+                    deleteMessage = "\(result.deleted)개를 지웠어요. \(result.kept)개는 확인하지 못해 남겨 뒀어요."
+                }
             } catch {
                 // 일부만 지워졌을 수 있다. 남은 기록은 다시 불러온 목록에 그대로 보인다.
                 deleteMessage = "기록을 지우지 못했어요. 남은 기록은 그대로예요."
@@ -230,6 +234,12 @@ private struct SwatchDepth: ViewModifier {
             content.extruded(Circle(), depth: 3)
         }
     }
+}
+
+/// 확인 창을 열 때 고정한 삭제 대상(기록일 제목과 그때 보이던 기록).
+private struct PendingDelete {
+    let dayTitle: String
+    let records: [TimeRecord]
 }
 
 /// ‘오늘 기록 지우기’ 확인 창(사용자 요청 2026-11-11, HTML 시안).

@@ -96,9 +96,10 @@ public final class RecordTimeService: @unchecked Sendable {
     }
 
     /// 사용자가 화면에서 확인한 기록을 지운다(사용자 결정 2026-11-10, 설정의 ‘오늘 기록 지우기’).
-    /// 확인 이후 새로 들어온 기록은 목록에 없으므로 지우지 않는다. 지운 개수를 반환한다.
+    /// 호출하는 쪽이 확인 창을 열 때 고정한 기록 배열을 넘긴다. 확인 이후 새로 들어온 기록은 지우지 않는다.
+    /// 지우지 못한 대상은 결과의 `kept`로 알린다.
     @discardableResult
-    public func deleteRecords(_ records: [TimeRecord]) throws -> Int {
+    public func deleteRecords(_ records: [TimeRecord]) throws -> RecordDeleteResult {
         try repository.delete(records)
     }
 

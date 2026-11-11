@@ -60,14 +60,15 @@ struct SwipeToDelete<Content: View>: View {
                 .contentShape(Rectangle())
                 .onTapGesture { if openID == id { close() } }
                 .simultaneousGesture(
-                    DragGesture(minimumDistance: 16)
+                    DragGesture(minimumDistance: 24)
                         .onChanged { value in
                             if horizontal == nil {
-                                horizontal = abs(value.translation.width) > abs(value.translation.height)
+                                // 확실히 가로로 민 경우만 반응(가로가 세로의 2배 이상). 사용자 요청 2026-11-11: 덜 예민하게
+                                horizontal = abs(value.translation.width) > abs(value.translation.height) * 2
                             }
                             guard horizontal == true else { return }
                             if openID != id, openID != nil { openID = nil }
-                            drag = value.translation.width
+                            drag = damped(value.translation.width)
                         }
                         .onEnded { value in
                             defer { horizontal = nil }
@@ -75,7 +76,7 @@ struct SwipeToDelete<Content: View>: View {
                                 settle { drag = 0 }
                                 return
                             }
-                            let total = base + value.translation.width
+                            let total = base + damped(value.translation.width)
                             if total >= fullSwipe {
                                 delete()
                             } else if total > reveal / 2 {
@@ -96,6 +97,13 @@ struct SwipeToDelete<Content: View>: View {
             }
         }
         .accessibilityAction(named: "삭제", delete)
+    }
+
+    /// 손가락을 따라가는 양을 줄여(0.8배) 조금만 밀려도 크게 움직이지 않게 한다. 시작 거리(24)만큼은 빼고 따라간다.
+    private func damped(_ width: CGFloat) -> CGFloat {
+        let start: CGFloat = 24
+        let moved = width > 0 ? max(0, width - start) : min(0, width + start)
+        return moved * 0.8
     }
 
     private func settle(_ change: () -> Void) {

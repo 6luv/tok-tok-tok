@@ -470,3 +470,5 @@
 | TokTokCore 회귀·테스트 타깃 빌드 | `swift test` 38 tests 0 failures, build-for-testing TEST BUILD SUCCEEDED |
 | 시작 화면 → 로딩 화면 이어짐·위치 일치, 오른쪽 스와이프 열림·즉시 삭제·닫힘, 세로 스크롤 비간섭 | NOT RUN (실기기 확인 대기) |
 | 수정 후 Codex 검증 | NOT RUN (Codex 사용 한도 초과, 22:37 이후 가능) |
+
+- 2차(사용자 요청): 시작·로딩 화면을 기기 모드와 관계없이 다크로, 화면 전체 그림 `LaunchArt`(큰 자명종 오른쪽 아래) + 로딩 화면 위쪽 ‘TokTokTok’·소개 한 줄, 1.5초 표시. `LaunchLogo` 제거. 스와이프 덜 예민하게(시작 24pt, 가로≥세로×2, 0.8배 추종). 사용자가 ‘아직 왼쪽’이라 본 것은 이 브랜치가 아직 main에 병합되지 않았기 때문(메인 폴더 main은 e13ce47, 왼쪽 밀기). generic iOS build → BUILD SUCCEEDED

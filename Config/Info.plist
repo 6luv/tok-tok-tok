@@ -2,11 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- 앱 시작 화면: 바탕색(Assets의 LaunchBackground)만 보여 앱 첫 화면과 색이 같게 한다. 나머지 키는 Xcode가 생성한다. -->
+	<!-- 앱 시작 화면: 바탕색(Assets의 LaunchBackground) 가운데에 자명종 로고(LaunchLogo, 160pt)를 둔다(사용자 요청 2026-11-11).
+	     앱 첫 화면의 로딩 화면(LaunchSplashView)과 같은 모습이라 이어져 보인다. 나머지 키는 Xcode가 생성한다. -->
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
 		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>LaunchLogo</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<false/>
 	</dict>
 </dict>
 </plist>

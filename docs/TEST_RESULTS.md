@@ -456,3 +456,17 @@
 | 끝까지 밀 때 휴지통 채움 전환, 가장자리 밀어 뒤로 가기 | NOT RUN (시뮬레이터 조작 불가, 실기기) |
 - Codex 독립 검증 1차(병합 전, read-only): 보류. P2 개인정보 ‘이 iPhone 안에만’ 과장, P2 위 막대 제목 큰 글씨 잘림, P3 버튼 색 문서 불일치, 뒤로 제스처 전환 중 상태 미검사 → 문구 ‘이 iPhone에 저장해요’, 제목 2줄·접근성 크기에서 아래로, 문서 정정, `transitionCoordinator == nil` 조건 추가
 - Codex 재검증(2차): 1차 지적 모두 해결, 새 결함 없음 → 병합 가능. 앱 테스트 9 passed, 0 failed. 접근성 L 글씨에서 개인정보 위 막대 제목이 뒤로 버튼 아래로 내려가 잘리지 않음(스크린숏)
+
+## R-035 로딩 화면·기록 삭제 스와이프 방향 오른쪽 (feature/launch-swipe-right)
+
+- 날짜: 2026-11-11 / 실행: Claude Opus 5.5(claude-opus-5-5), Xcode 26.5(17F42)
+- 기준: main e13ce47
+- 변경(사용자 요청): 시작 화면에 `LaunchLogo`(라이트·다크 PNG @1x~3x, 투명) 추가, 앱 안 `LaunchSplashView`(0.7초 후 흐려짐, 모션 감소면 바로), `RootView`에서 하루 화면 위에 겹침. `SwipeToDelete`를 오른쪽 밀기로 대칭 변경(휴지통·그라데이션 왼쪽, 열림 72·즉시 삭제 180 유지). 시작 방향 고정·밀린 동안만 마스크·`deleteOne` 알림 등 기존 Codex 반영 동작은 그대로. README·DESIGN·QUESTIONS Q06 갱신
+- 명령: `xcodebuild ... -destination 'generic/platform=iOS' build` → BUILD SUCCEEDED, 빌드된 앱 Info.plist에 `UILaunchScreen.UIImageName = LaunchLogo` 확인 / `build-for-testing`·`swift test`는 아래 표
+
+| 항목 | 판정 |
+|---|---|
+| 앱 빌드·시작 화면 키 | PASS (빌드·plist 확인만) |
+| TokTokCore 회귀·테스트 타깃 빌드 | `swift test` 38 tests 0 failures, build-for-testing TEST BUILD SUCCEEDED |
+| 시작 화면 → 로딩 화면 이어짐·위치 일치, 오른쪽 스와이프 열림·즉시 삭제·닫힘, 세로 스크롤 비간섭 | NOT RUN (실기기 확인 대기) |
+| 수정 후 Codex 검증 | NOT RUN (Codex 사용 한도 초과, 22:37 이후 가능) |

@@ -199,7 +199,7 @@ struct DayView: View {
                                                value: g.frame(in: .named("toktok.scroll")).minY)
                     })
                 ForEach(Array(model.blocks.enumerated()), id: \.element.id) { index, block in
-                    // 왼쪽으로 밀면 휴지통이 나오고 지운다(사용자 결정 2026-11-11)
+                    // 오른쪽으로 밀면 왼쪽에 휴지통이 나오고 지운다(사용자 결정 2026-11-11, 방향 변경)
                     SwipeToDelete(id: block.id, openID: $openRowID, onDelete: {
                         Task { await model.deleteOne(block.id) }
                     }) {

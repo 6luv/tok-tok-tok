@@ -155,9 +155,16 @@ public final class FileRecordRepository: RecordRepository, @unchecked Sendable {
         var result = RecordDeleteResult()
         for record in records {
             let url = fileURL(for: record)
-            guard fileManager.fileExists(atPath: url.path) else { result.alreadyMissing += 1; continue }
-            guard let data = try? Data(contentsOf: url),
-                  let existing = try? decoder.decode(TimeRecord.self, from: data) else {
+            // 존재 확인(fileExists)은 접근 불가도 ‘없음’으로 돌려주므로 쓰지 않는다(Codex 재검증 P1).
+            // 직접 읽어 보고, 파일이 없다는 오류일 때만 ‘이미 없음’으로 센다. 그 밖의 읽기 실패는 보존한다.
+            let data: Data
+            do {
+                data = try Data(contentsOf: url)
+            } catch {
+                if Self.isNoSuchFile(error) { result.alreadyMissing += 1 } else { result.unreadable += 1 }
+                continue
+            }
+            guard let existing = try? decoder.decode(TimeRecord.self, from: data) else {
                 result.unreadable += 1 // 확인할 수 없으면 보존한다
                 continue
             }
@@ -171,6 +178,21 @@ public final class FileRecordRepository: RecordRepository, @unchecked Sendable {
             }
         }
         return result
+    }
+
+    /// 파일이 없어서 읽지 못한 경우만 true. 권한 거부 등은 false.
+    static func isNoSuchFile(_ error: Error) -> Bool {
+        let ns = error as NSError
+        if ns.domain == NSCocoaErrorDomain,
+           ns.code == NSFileReadNoSuchFileError || ns.code == NSFileNoSuchFileError {
+            return true
+        }
+        if ns.domain == NSPOSIXErrorDomain, ns.code == Int(ENOENT) { return true }
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError,
+           underlying.domain == NSPOSIXErrorDomain, underlying.code == Int(ENOENT) {
+            return true
+        }
+        return false
     }
 
     /// 구간이 걸치는 UTC 월 키들.

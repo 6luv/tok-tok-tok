@@ -68,6 +68,17 @@ final class DayViewModelTests: XCTestCase {
         if case .error = model.feedback {} else { XCTFail("오류 알림이 있어야 함") }
     }
 
+    /// 목록에는 있지만 저장소에서 먼저 지워진 기록: 화면 알림이 있어야 한다(Codex 재검증 P2).
+    func testDeleteOneAlreadyMissingShowsNotice() async throws {
+        let model = makeModel()
+        try await model.saveBoundary(DayBoundary(minutes: 0)!)
+        let record = try model.service!.recordNow(source: .app)
+        await model.reload()
+        _ = try model.service!.deleteRecords([record]) // 다른 곳에서 먼저 지움
+        await model.deleteOne(record.id)
+        if case .error = model.feedback {} else { XCTFail("이미 지워짐 알림이 있어야 함") }
+    }
+
     func testExternalRecordWhileScrolledAwayCountsUnseen() async throws {
         let model = makeModel()
         try await model.saveBoundary(DayBoundary(minutes: 0)!)

@@ -186,7 +186,9 @@ final class DayViewModel: ObservableObject {
             if result.deleted == 1 {
                 announce("기록을 지웠어요")
             } else if result.alreadyMissing == 1 {
+                // 다른 곳에서 먼저 지워졌다(Codex 재검증 P2): 화면과 음성 모두 알린다.
                 announce("이미 지워진 기록이에요")
+                showFeedback(.error("이미 지워진 기록이에요"), autoHide: true)
             } else {
                 let message = "기록을 지우지 못했어요. 파일을 확인할 수 없어 그대로 두었어요."
                 announce(message)

@@ -1,0 +1,36 @@
+# App Store 제출 자료
+
+App Store Connect에 올릴 자료 모음. 개발자 프로그램 가입(연 99달러) 후 App Store Connect에서 앱을 등록하고 아래를 채운다.
+
+| 파일 | 넣는 곳 |
+|---|---|
+| [LISTING.md](LISTING.md) | 앱 정보·버전 정보: 이름, 부제, 프로모션 텍스트, 설명, 키워드, URL, 카테고리, 앱 개인정보, 연령 등급 |
+| [REVIEW_NOTES.md](REVIEW_NOTES.md) | 심사 정보 › 메모(영어 본문 제출, 한국어는 확인용) |
+| `screenshots/` | 버전 정보 › iPhone 6.9형 디스플레이 스크린숏 |
+| `preview/TokTokTok-preview-886x1920.mp4` | 버전 정보 › iPhone 6.9형 앱 미리보기(선택) |
+
+## 스크린숏 (6.9형, 1320×2868, PNG)
+
+iPhone 17 Pro Max 시뮬레이터(iOS 26.5)에서 실제 앱 화면을 찍었다. 기록은 예시 데이터이며 개인 기록이 아니다. 올리는 순서를 추천한다.
+
+1. `01-day-dark.png` — 하루 화면(다크): 하루 눈금과 기록 목록
+2. `02-day-light.png` — 하루 화면(라이트)
+3. `03-guide-light.png` — 뒷면 탭 연결 단계 안내
+4. `04-settings-dark.png` — 설정: 하루 시작 시간·메인 색·화면 모드·소리와 진동
+5. `05-setup-dark.png` — 첫 실행: 하루가 시작되는 시간 고르기
+
+6.9형만 올리면 더 작은 iPhone 화면용은 App Store Connect가 줄여서 쓴다.
+
+## 앱 미리보기 영상
+
+- 886×1920, 30fps, 20.0초(Apple 기준 15~30초), 소리 없음, 2.4MB
+- 내용: 하루 화면 → 기록 3번(위쪽 토스트) → 오른쪽 밀어 지우기(그라데이션·휴지통) → 설정
+- 시뮬레이터 화면 녹화(`xcrun simctl io recordVideo`)를 AVFoundation으로 크기만 바꿈. 홈 화면과 시작 직후 어두운 구간은 잘라 앱 화면만 남겼다(Apple은 앱 밖 화면을 넣지 못하게 한다)
+- 녹화용 자동 재생 코드는 임시로만 넣고 커밋하지 않았다
+
+## 제출 전에 남은 것
+
+- [ ] 개발자 프로그램 가입, 번들 ID 확정, App Store Connect에 앱 등록
+- [ ] 심사 연락처 입력(이 저장소에는 적지 않는다)
+- [ ] 실기기 점검([DEVICE_CHECKLIST.md](../DEVICE_CHECKLIST.md))
+- [ ] 앱 안에 개인정보처리방침 웹 링크가 없고 전문만 있다(가이드라인 5.1.1 링크 요구는 미확인 심사 위험, [HANDOFF.md](../HANDOFF.md))

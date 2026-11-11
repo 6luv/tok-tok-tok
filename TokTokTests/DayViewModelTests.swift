@@ -57,6 +57,17 @@ final class DayViewModelTests: XCTestCase {
         XCTAssertNil(model.feedback)
     }
 
+    /// 대상이 이미 목록에 없으면 아무것도 지우지 않고 알린다(Codex 검증 P2).
+    func testDeleteOneMissingTargetDeletesNothingAndReports() async throws {
+        let model = makeModel()
+        try await model.saveBoundary(DayBoundary(minutes: 0)!)
+        _ = try model.service!.recordNow(source: .app)
+        await model.reload()
+        await model.deleteOne(UUID())
+        XCTAssertEqual(model.blocks.count, 1)
+        if case .error = model.feedback {} else { XCTFail("오류 알림이 있어야 함") }
+    }
+
     func testExternalRecordWhileScrolledAwayCountsUnseen() async throws {
         let model = makeModel()
         try await model.saveBoundary(DayBoundary(minutes: 0)!)

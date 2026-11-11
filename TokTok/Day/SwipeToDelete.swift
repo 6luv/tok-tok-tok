@@ -5,7 +5,7 @@ import SwiftUI
 /// - 조금 밀면 오른쪽에 휴지통 버튼이 나오고 멈춘다. 휴지통을 누르면 지운다.
 /// - 끝까지(`fullSwipe` 이상) 밀면 바로 지운다.
 /// - 다시 오른쪽으로 밀거나 행을 누르면 닫힌다. 한 번에 한 행만 열린다(`openID`).
-/// - 세로 스크롤을 막지 않도록 가로 움직임이 더 클 때만 반응한다.
+/// - 세로 스크롤을 막지 않도록 드래그 시작 방향이 가로일 때만 반응한다(시작 방향을 끝까지 유지).
 /// - VoiceOver는 ‘삭제’ 동작으로 같은 일을 한다.
 struct SwipeToDelete<Content: View>: View {
     let id: UUID
@@ -14,6 +14,8 @@ struct SwipeToDelete<Content: View>: View {
     @ViewBuilder let content: Content
 
     @State private var drag: CGFloat = 0
+    /// 드래그 시작 때 정한 방향(가로면 true). 세로로 시작한 드래그는 끝까지 무시한다(Codex 검증).
+    @State private var horizontal: Bool?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// 휴지통이 보이도록 열리는 거리
@@ -46,12 +48,16 @@ struct SwipeToDelete<Content: View>: View {
                 .simultaneousGesture(
                     DragGesture(minimumDistance: 16)
                         .onChanged { value in
-                            guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                            if horizontal == nil {
+                                horizontal = abs(value.translation.width) > abs(value.translation.height)
+                            }
+                            guard horizontal == true else { return }
                             if openID != id, openID != nil { openID = nil }
                             drag = value.translation.width
                         }
                         .onEnded { value in
-                            guard abs(value.translation.width) > abs(value.translation.height) else {
+                            defer { horizontal = nil }
+                            guard horizontal == true else {
                                 settle { drag = 0 }
                                 return
                             }

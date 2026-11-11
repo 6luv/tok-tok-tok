@@ -175,7 +175,12 @@ final class DayViewModel: ObservableObject {
     /// 스와이프로 기록 하나 지우기. 지금 화면 스냅샷에 있는 그 기록만 넘겨, 내용이 같을 때만 지운다.
     /// 지우지 못하면 이유를 알리고, 지운 기록은 되돌리지 않는다(Q06).
     func deleteOne(_ id: UUID) async {
-        guard let record = snapshot?.records.first(where: { $0.id == id }) else { return }
+        guard let record = snapshot?.records.first(where: { $0.id == id }) else {
+            // 그사이 목록이 바뀌어 대상이 없다(Codex 검증 P2): 아무것도 지우지 않고 알린다.
+            announce("이미 지워진 기록이에요")
+            showFeedback(.error("이미 지워졌거나 목록이 바뀌었어요. 아무것도 지우지 않았어요."), autoHide: false)
+            return
+        }
         do {
             let result = try await deleteRecords([record])
             if result.deleted == 1 {
@@ -183,10 +188,14 @@ final class DayViewModel: ObservableObject {
             } else if result.alreadyMissing == 1 {
                 announce("이미 지워진 기록이에요")
             } else {
-                showFeedback(.error("기록을 지우지 못했어요. 파일을 확인할 수 없어 그대로 두었어요."), autoHide: false)
+                let message = "기록을 지우지 못했어요. 파일을 확인할 수 없어 그대로 두었어요."
+                announce(message)
+                showFeedback(.error(message), autoHide: false)
             }
         } catch {
-            showFeedback(.error("기록을 지우지 못했어요. 다시 시도해 주세요."), autoHide: false)
+            let message = "기록을 지우지 못했어요. 다시 시도해 주세요."
+            announce(message)
+            showFeedback(.error(message), autoHide: false)
         }
     }
 

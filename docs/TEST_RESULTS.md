@@ -596,3 +596,9 @@
 - 사용자 요청: 안내 문구를 넣은 App Store 미리보기 사진, 이름 ‘톡톡톡 - Tok Tok Tok’
 - 변경: `docs/appstore/marketing/` 5장(1320×2868, 원본 앱 화면 + 안내 문구), LISTING 이름 변경(16/30자), appstore README 갱신. 앱 코드 변경 없음
 - 확인: 5장 크기 1320×2868, 축소본으로 문구·화면 배치·잘림 확인 — PASS(시각 확인)
+
+## R-043 앱 버전 1.0.0 (chore/app-version-1.0.0)
+
+- 날짜: 2026-11-14 / 사용자 결정: 첫 출시 버전 1.0.0(빌드 번호 1 유지)
+- 변경: `MARKETING_VERSION` 0.1.0 → 1.0.0(앱·테스트 타깃, Debug·Release 4곳)
+- 확인: 빌드된 앱 `CFBundleShortVersionString` = 1.0.0, `xcodebuild test`(iPhone 17 Pro 시뮬레이터, iOS 26.5) 결과는 PR 본문

@@ -569,7 +569,7 @@
 - 변경(배포 전 보안 점검 권장 사항, 사용자 요청): `site/vercel.json`으로 모든 경로에 `Content-Security-Policy`(default-src 'none'; style-src·img-src 'self'; base-uri·form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy`(camera·microphone·geolocation·payment·usb 차단, 폐기된 interest-cohort는 Codex 지적으로 뺌), `Cross-Origin-Opener-Policy`·`Cross-Origin-Resource-Policy: same-origin`. HSTS는 Vercel 기본값 유지. README 배포 절 보완
 - 명령과 결과:
   - `python3 -m json.tool site/vercel.json` → OK
-  - 미리보기 배포 `npx vercel deploy`(비프로덕션, 1차 https://toktoktok-k35ttzblx-(Vercel 팀).vercel.app) 후 `curl -I` → 위 헤더 7종과 HSTS 확인, `/`·`/privacy/`·`/style.css`·`/icon.svg` 200, `/vercel.json`·`/.vercelignore`·`/.gitignore`·`/.env.local` 404
+  - 미리보기 배포 `npx vercel deploy`(비프로덕션, 1차 (미리보기 주소 생략)) 후 `curl -I` → 위 헤더 7종과 HSTS 확인, `/`·`/privacy/`·`/style.css`·`/icon.svg` 200, `/vercel.json`·`/.vercelignore`·`/.gitignore`·`/.env.local` 404
   - Chrome 헤드리스로 미리보기 `/privacy/` 렌더링: CSP 아래에서 스타일·아이콘 정상 표시
 
 | 항목 | 판정 |
@@ -578,7 +578,7 @@
 | CSP 아래 페이지 표시 | PASS (Chrome 데스크톱 헤드리스, iPhone Safari NOT RUN) |
 | 설정·환경 파일 비노출 | PASS |
 - Codex 검증(`gpt-6-astra`, 미커밋 작업 트리 기준 — 커밋이 EOF 검사로 멈춘 상태): **FAIL**(P3 2건). 형식·CSP 정적 검토 PASS, 미리보기 헤더는 Codex 쪽 DNS 차단으로 NOT RUN. 지적: 폐기된 `interest-cohort` 제거, TEST_RESULTS EOF 빈 줄 제거 → 반영
-- 2차 미리보기 https://toktoktok-a7kv6f7gm-(Vercel 팀).vercel.app: 헤더 7종·HSTS, 주요 경로 200 확인. Codex 재검증(대상 02d4f8a): **PASS**(지적 2건 해소, 새 지적 없음. Codex 쪽 네트워크 차단으로 헤더는 구현 측 저장 응답과 대조, 독립 재현 아님)
+- 2차 미리보기 (미리보기 주소 생략): 헤더 7종·HSTS, 주요 경로 200 확인. Codex 재검증(대상 02d4f8a): **PASS**(지적 2건 해소, 새 지적 없음. Codex 쪽 네트워크 차단으로 헤더는 구현 측 저장 응답과 대조, 독립 재현 아님)
 
 ## R-041 App Store 스크린숏·미리보기 영상·등록 문구·심사 메모 (docs/appstore-assets)
 

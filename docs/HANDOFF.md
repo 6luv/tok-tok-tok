@@ -81,6 +81,16 @@ AGENTS.md에 따라 feature/day-boundary, feature/local-storage, feature/app-int
 - 요청: 사용자(“Xcode에서도 TokTok인 것 전부 TokTokTok으로”) / 브랜치 `feature/rename-toktoktok`(기준 `chore/release-prep`, 누적)
 - 바뀐 것: `TokTokTok.xcodeproj`, 앱 타깃·모듈·scheme `TokTokTok`, 테스트 타깃 `TokTokTokTests`, 로컬 패키지·모듈 `TokTokTokCore`(테스트 `TokTokTokCoreTests`), 폴더 이름, `TokTokTokApp`·`TokTokTokShortcuts`·`TokTokTokAccentKey` 타입, 기록 변경 알림 이름, README 명령·구조, 현재 문서의 파일 경로, 로고 SVG 제목
 - 일부러 그대로 둔 것: 기록 저장 폴더 `Application Support/TokTok`(저장 위치를 바꾸면 기존 설치본 기록을 못 읽는다). 과거 기록 문서(HANDOFF 이전 절, TEST_RESULTS, TROUBLESHOOTING)의 옛 이름은 당시 기록이라 고치지 않음
-- 번들 ID는 로컬 설정 `(로컬 번들 ID)`(커밋 안 함). 새 번들 ID라 기존 테스트 앱과 별개로 설치되고, 뒷면 탭 단축어는 다시 연결해야 한다
+- 번들 ID는 새로 정한 값을 로컬 설정 파일에만 둠(커밋 안 함). 새 번들 ID라 기존 테스트 앱과 별개로 설치되고, 뒷면 탭 단축어는 다시 연결해야 한다
 - 테스트: **NOT RUN**. 이 세션 환경에 Swift·Xcode가 없음. Mac에서 `cd TokTokTokCore && swift test`, Xcode 빌드로 확인 필요
+- Codex 검증: 미실행
+
+## App Store 심사 제출 (2026-11-16)
+
+- 상태: iOS 1.0.0 (빌드 1) **심사 제출 완료**(사용자). App Store Connect 앱 이름 ‘톡톡톡 - Tok Tok Tok’, 한국만 출시, 무료, 출시 방식 ‘자동으로 버전 출시’
+- App Store 주소: https://apps.apple.com/kr/app/id6835431665 (승인·출시 전에는 열리지 않음)
+- 진행: Claude가 서명 설정(로컬 파일), Archive 업로드(Xcode Organizer), App Store Connect 앱 정보·연령 등급(4+)·앱 개인정보(수집 없음)·가격·버전 정보·심사 메모 입력. 스크린숏 업로드·심사 연락처·개인정보 게시·제출은 사용자
+- 바로잡은 것: 필수 스크린숏 칸은 6.3형(1206×2622)이라 `docs/appstore/marketing-6.3/` 추가(PR #52). 콘텐츠 권한 답을 앱 정보 저장 뒤에 골라 저장이 빠졌던 것을 다시 저장
+- 실기기 점검: 사용자 확인 완료 보고(2026-11-16). 항목별 결과는 DEVICE_CHECKLIST·TEST_RESULTS에 아직 옮기지 않음
+- 남은 심사 위험: 앱 안 개인정보처리방침이 웹 링크 없이 전문만 있음(가이드라인 5.1.1). 반려되면 전문 화면에 웹 링크 버튼 추가
 - Codex 검증: 미실행

@@ -163,7 +163,7 @@
 
 ## 토큰
 
-코드: `TokTok/Day/Theme.swift`. 값을 바꾸면 이 표와 TEST_RESULTS.md의 대비 기록을 함께 갱신한다.
+코드: `TokTokTok/Day/Theme.swift`. 값을 바꾸면 이 표와 TEST_RESULTS.md의 대비 기록을 함께 갱신한다.
 
 ### 색
 

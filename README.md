@@ -47,4 +47,3 @@
 
 - [개인정보처리방침](https://toktoktok-nine.vercel.app/privacy/)
 - [지원·자주 묻는 질문](https://toktoktok-nine.vercel.app/support/)
-- 문의: toktoktok.support@gmail.com

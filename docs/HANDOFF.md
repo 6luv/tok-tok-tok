@@ -94,3 +94,4 @@ AGENTS.md에 따라 feature/day-boundary, feature/local-storage, feature/app-int
 - 실기기 점검: 사용자 확인 완료 보고(2026-11-16). 항목별 결과는 DEVICE_CHECKLIST·TEST_RESULTS에 아직 옮기지 않음
 - 남은 심사 위험: 앱 안 개인정보처리방침이 웹 링크 없이 전문만 있음(가이드라인 5.1.1). 반려되면 전문 화면에 웹 링크 버튼 추가
 - Codex 검증: 미실행
+- 안내 페이지 404(2026-11-16 발견): Vercel GitHub 연동이 저장소 맨 위를 배포해 `/privacy/`·`/support/`가 404였다. 맨 위 `vercel.json`에 `outputDirectory: site`를 넣어 고침(PR #53), 프로덕션 세 주소 200 확인(내장 브라우저). 언제부터 404였는지는 Vercel 대시보드에 로그인하지 않아 확인하지 못함

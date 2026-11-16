@@ -56,6 +56,12 @@
 - 지원: https://toktoktok-nine.vercel.app/support/
 - 문의: toktoktok.support@gmail.com
 
+## 안내 페이지
+
+개인정보처리방침·지원 페이지는 [`site/`](site/)의 정적 HTML이에요. Vercel이 GitHub `main`에 병합될 때마다 자동으로 배포하고, 맨 위 [`vercel.json`](vercel.json)이 `site/`만 내보내며 보안 헤더(CSP 등)를 붙여요. `site/`에서 `npx vercel deploy --prod`로 직접 배포할 때는 [`site/vercel.json`](site/vercel.json)이 쓰이니, 헤더를 바꾸면 두 파일을 같이 고쳐요.
+
+앱 안에는 같은 내용의 방침 전문(`PrivacyPolicyView`)이 있어요. 두 곳의 문구와 시행일은 함께 고쳐요.
+
 ## 직접 빌드하기
 
 ### 요구 사항

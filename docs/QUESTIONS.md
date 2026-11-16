@@ -32,9 +32,9 @@
 | Q06 | 사용자 결정. **일괄(2026-11-10):** 설정 ‘오늘 기록 지우기’ — 지금 화면 기록일 스냅샷의 기록만, 내용 같은 파일만, 확인 대화상자 필수, 되돌리기 없음. **개별(2026-11-11):** 하루 화면 오른쪽 스와이프(처음엔 왼쪽, 같은 날 사용자 요청으로 변경) — 화면 스냅샷의 그 기록만, 내용 같을 때만, 확인 창 없음(휴지통 버튼 또는 끝까지 밀기), 되돌리기 없음, 실패·이미 없음은 알림과 음성 안내. 전체 기간 삭제·내보내기 없음. 자동 삭제 없음 | `FileRecordRepository.delete`, `RecordTimeService.deleteRecords`, `SettingsView`, `SwipeToDelete`, `DayViewModel.deleteOne` |
 | Q07 | 사용자 결정(2026-11-11): 마림바 소리 한 번(System Sound Services, 무음 모드에서는 무음)·기본 진동 한 번, 설정 ‘소리와 진동’ 스위치 2개(기본 켜짐), 단축어 결과 토스트 없음, 앱 안은 2초 토스트 | `RecordSound`, `RecordHaptic`, `NeuToggleStyle`, `RecordToastView`(앱 안), `RecordNowIntent` |
 | Q08 | 경과 시간 표시 없음 | — |
-| Q09 | 이름 TokTokTok(사용자 지정, 2026-11-10 TokTok에서 변경), iOS 17 이상, 한국어 우선, 번들 ID는 로컬 설정 파일에만 둠(저장소에는 자리표시), 가격 미정 | `project.pbxproj`, `Config/Signing.xcconfig` |
-| Q10 | **사용자 결정(2026-11-11): 뒷면 탭 기록은 화면이 켜진 상태에서만 지원한다.** 2026-10-31 화면 꺼짐 뒷면 탭 실패(TS-007), 잠금 상태 Siri 실행도 사용자 실기기에서 되지 않아 Siri 대안 안내를 뺐다. 설정 연결 카드 꼬리말·연결 화면 ‘알아 두세요’·지원 페이지에 ‘화면이 켜져 있을 때만’을 표기. App Shortcut 문구(`TokTokShortcuts`)는 단축어 앱 목록 노출에 필요해 남긴다. 잠금 화면 컨트롤 등 다른 대체 수단은 범위 밖 | `RecordingGuideView`, `SettingsView`, `site/support` |
-| Q11 | 사용자 결정(2026-11-10): 설정 ‘화면 모드’에서 다크·라이트 선택, 기본 다크. Info.plist 다크 고정 제거. 같은 날 ‘메인 색’ 5가지 선택 추가(기본 호박) | `TokTokApp`, `SettingsView`, `Theme.AppAppearance` |
+| Q09 | 이름 TokTokTok(사용자 지정, 2026-11-10 TokTokTok에서 변경), iOS 17 이상, 한국어 우선, 번들 ID는 로컬 설정 파일에만 둠(저장소에는 자리표시), 가격 미정 | `project.pbxproj`, `Config/Signing.xcconfig` |
+| Q10 | **사용자 결정(2026-11-11): 뒷면 탭 기록은 화면이 켜진 상태에서만 지원한다.** 2026-10-31 화면 꺼짐 뒷면 탭 실패(TS-007), 잠금 상태 Siri 실행도 사용자 실기기에서 되지 않아 Siri 대안 안내를 뺐다. 설정 연결 카드 꼬리말·연결 화면 ‘알아 두세요’·지원 페이지에 ‘화면이 켜져 있을 때만’을 표기. App Shortcut 문구(`TokTokTokShortcuts`)는 단축어 앱 목록 노출에 필요해 남긴다. 잠금 화면 컨트롤 등 다른 대체 수단은 범위 밖 | `RecordingGuideView`, `SettingsView`, `site/support` |
+| Q11 | 사용자 결정(2026-11-10): 설정 ‘화면 모드’에서 다크·라이트 선택, 기본 다크. Info.plist 다크 고정 제거. 같은 날 ‘메인 색’ 5가지 선택 추가(기본 호박) | `TokTokTokApp`, `SettingsView`, `Theme.AppAppearance` |
 
 추가 잠정 결정(구현 중 발생):
 

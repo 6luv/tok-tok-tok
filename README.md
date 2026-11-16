@@ -62,39 +62,6 @@
 
 앱 안에는 같은 내용의 방침 전문(`PrivacyPolicyView`)이 있어요. 두 곳의 문구와 시행일은 함께 고쳐요.
 
-## 직접 빌드하기
-
-### 요구 사항
-
-- Xcode 16 이상(확인한 버전: Xcode 26.5)
-- iOS 17 이상 기기 또는 시뮬레이터. 실기기 설치에는 Apple Developer 계정이 필요해요
-
-### 설치
-
-```sh
-git clone https://github.com/6luv/tok-tok-tok.git
-cd tok-tok-tok
-cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig
-```
-
-`Config/Signing.local.xcconfig`에 내 번들 ID와 Team ID를 넣고 `TokTokTok.xcodeproj`를 열어 실행해요.
-
-> [!IMPORTANT]
-> `Config/Signing.local.xcconfig`는 `.gitignore`에 있어 커밋되지 않아요. Xcode의 Signing & Capabilities에서 Team을 고르면 그 값이 `project.pbxproj`에 들어가니, 커밋하지 말고 로컬 설정 파일로 옮겨 주세요.
-
-### 테스트
-
-```sh
-# 도메인 로직(하루 경계·저장소·표시 규칙)
-cd TokTokTokCore && swift test
-
-# 앱 타깃(시뮬레이터 UDID는 xcrun simctl list devices 로 확인)
-xcodebuild test -project TokTokTok.xcodeproj -scheme TokTokTok \
-  -destination 'platform=iOS Simulator,id=<시뮬레이터 UDID>'
-```
-
-실제 실행 결과는 [TEST_RESULTS.md](docs/TEST_RESULTS.md)에 PASS / NOT RUN으로 나눠 적어요. 빌드 성공만으로 완료로 보지 않아요.
-
 ## 구조
 
 ```text

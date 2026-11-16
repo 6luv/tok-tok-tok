@@ -75,3 +75,12 @@ AGENTS.md에 따라 feature/day-boundary, feature/local-storage, feature/app-int
 실제 제출은 하지 않았다. 남은 준비: Team·Bundle ID 확정, 스크린샷, App Privacy 응답, Release 빌드·TestFlight 확인, 실기기 매트릭스 결과 반영.
 
 개인정보처리방침·지원 URL(2026-11-11 배포): https://toktoktok-nine.vercel.app/privacy/ , https://toktoktok-nine.vercel.app/support/ . 앱 안은 웹 링크 대신 전문(`PrivacyPolicyView`)만 둔다(사용자 결정 2026-11-11). **미확인 심사 위험:** 가이드라인 5.1.1(i)은 App Store Connect와 앱 안에 쉽게 접근할 수 있는 개인정보처리방침 ‘링크’를 요구한다. 앱 안 전문 화면으로 가는 행이 이 요구를 충족하는지 Apple이 인정할지는 확인하지 않았다. 반려되면 전문 화면에 웹 방침 링크 버튼을 추가하는 것이 가장 작은 수정이다.
+
+## 이름 변경 TokTok → TokTokTok (2026-11-16)
+
+- 요청: 사용자(“Xcode에서도 TokTok인 것 전부 TokTokTok으로”) / 브랜치 `feature/rename-toktoktok`(기준 `chore/release-prep`, 누적)
+- 바뀐 것: `TokTokTok.xcodeproj`, 앱 타깃·모듈·scheme `TokTokTok`, 테스트 타깃 `TokTokTokTests`, 로컬 패키지·모듈 `TokTokTokCore`(테스트 `TokTokTokCoreTests`), 폴더 이름, `TokTokTokApp`·`TokTokTokShortcuts`·`TokTokTokAccentKey` 타입, 기록 변경 알림 이름, README 명령·구조, 현재 문서의 파일 경로, 로고 SVG 제목
+- 일부러 그대로 둔 것: 기록 저장 폴더 `Application Support/TokTok`(저장 위치를 바꾸면 기존 설치본 기록을 못 읽는다). 과거 기록 문서(HANDOFF 이전 절, TEST_RESULTS, TROUBLESHOOTING)의 옛 이름은 당시 기록이라 고치지 않음
+- 번들 ID는 로컬 설정 `(로컬 번들 ID)`(커밋 안 함). 새 번들 ID라 기존 테스트 앱과 별개로 설치되고, 뒷면 탭 단축어는 다시 연결해야 한다
+- 테스트: **NOT RUN**. 이 세션 환경에 Swift·Xcode가 없음. Mac에서 `cd TokTokTokCore && swift test`, Xcode 빌드로 확인 필요
+- Codex 검증: 미실행

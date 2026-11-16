@@ -35,7 +35,7 @@ cd tok-tok-tok
 cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig
 ```
 
-`Config/Signing.local.xcconfig`에 내 번들 ID와 Team ID를 넣은 뒤 `TokTok.xcodeproj`를 열고 실행합니다.
+`Config/Signing.local.xcconfig`에 내 번들 ID와 Team ID를 넣은 뒤 `TokTokTok.xcodeproj`를 열고 실행합니다.
 
 > [!IMPORTANT]
 > `Config/Signing.local.xcconfig`는 `.gitignore`에 있어 커밋되지 않습니다. 번들 ID·Team ID·기기 정보는 저장소와 문서에 올리지 않습니다. 이미 설치한 앱의 기록을 유지하려면 그때 쓰던 번들 ID를 그대로 사용하세요.
@@ -44,10 +44,10 @@ cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig
 
 ```sh
 # 도메인 로직(하루 경계·저장소·표시 규칙)
-cd TokTokCore && swift test
+cd TokTokTokCore && swift test
 
 # 앱 타깃(시뮬레이터 UDID는 xcrun simctl list devices 로 확인)
-xcodebuild test -project TokTok.xcodeproj -scheme TokTok \
+xcodebuild test -project TokTokTok.xcodeproj -scheme TokTokTok \
   -destination 'platform=iOS Simulator,id=<시뮬레이터 UDID>'
 ```
 
@@ -56,12 +56,12 @@ xcodebuild test -project TokTok.xcodeproj -scheme TokTok \
 ## 프로젝트 구조
 
 ```text
-TokTok/            앱(SwiftUI)
+TokTokTok/            앱(SwiftUI)
   Day/             하루 화면, 기록 블록, 하루 눈금, 디자인 토큰(Theme)
   Settings/        첫 실행 경계 설정, 설정, 뒷면 탭 연결, 개인정보 안내
   Intents/         App Intent ‘현재 시간 기록’, App Shortcut
-TokTokCore/        도메인 Swift 패키지: 하루 경계 계산, 파일 저장소, 기록 서비스
-TokTokTests/       앱 타깃 테스트
+TokTokTokCore/        도메인 Swift 패키지: 하루 경계 계산, 파일 저장소, 기록 서비스
+TokTokTokTests/       앱 타깃 테스트
 Config/            서명 설정(로컬 값은 커밋하지 않음)
 docs/              제품·설계·테스트·인계 문서
 ```
@@ -103,7 +103,7 @@ App Store Connect에 등록할 개인정보처리방침·지원 페이지는 [`s
 | 앱 이름 / 번들 ID | TokTokTok / 저장소 기본값 `com.example.TokTokTok`(실제 값은 로컬 설정 파일) |
 | Xcode / Swift | Xcode 26.5(17F42), Apple Swift 6.3.2 (macOS 26.3.1) |
 | 최소 iOS | 17.0 (Q09) |
-| 프로젝트 / scheme | `TokTok.xcodeproj` / shared scheme `TokTok`(앱 + `TokTokTests`), 로컬 패키지 `TokTokCore` |
+| 프로젝트 / scheme | `TokTokTok.xcodeproj` / shared scheme `TokTokTok`(앱 + `TokTokTokTests`), 로컬 패키지 `TokTokTokCore` |
 | 테스트 시뮬레이터 | iPhone 17 Pro(iOS 26.5). 실기기 기종·OS는 docs/TEST_RESULTS.md에 실행별로 기록 |
 | 구현 모델 | Claude Opus 5.5(`claude-opus-5-5`) |
 | 검증 모델 | Codex Astra(요청 명칭) → 실제 모델 ID `gpt-6-astra`(codex-cli 0.167.0, ChatGPT 계정 로그인). 2026-11-11 사용자 확인 후 사용. 이전 기본값 `gpt-5.4`는 이 계정에서 지원되지 않아 PR #11~#24 병합 전 검증 미실행 |

@@ -41,9 +41,12 @@ iPhone 17 Pro Max 시뮬레이터(iOS 26.5)에서 실제 앱 화면을 찍었다
 - 시뮬레이터 화면 녹화(`xcrun simctl io recordVideo`)를 AVFoundation으로 크기만 바꿈. 홈 화면과 시작 직후 어두운 구간은 잘라 앱 화면만 남겼다(Apple은 앱 밖 화면을 넣지 못하게 한다)
 - 녹화용 자동 재생 코드는 임시로만 넣고 커밋하지 않았다
 
-## 제출 전에 남은 것
+## 제출 상태 (2026-11-16)
 
-- [ ] 개발자 프로그램 가입, 번들 ID 확정, App Store Connect에 앱 등록
-- [ ] 심사 연락처 입력(이 저장소에는 적지 않는다)
-- [ ] 실기기 점검([DEVICE_CHECKLIST.md](../DEVICE_CHECKLIST.md))
-- [ ] 앱 안에 개인정보처리방침 웹 링크가 없고 전문만 있다(가이드라인 5.1.1 링크 요구는 미확인 심사 위험, [HANDOFF.md](../HANDOFF.md))
+- [x] 개발자 프로그램 가입, 번들 ID 확정, App Store Connect에 앱 등록
+- [x] 심사 연락처 입력(이 저장소에는 적지 않는다)
+- [x] 실기기 점검(사용자 확인 보고, 항목별 기록은 [DEVICE_CHECKLIST.md](../DEVICE_CHECKLIST.md)에 옮기지 않음)
+- [x] 1.0.0 (1) 심사 제출
+- [ ] 심사 결과. 앱 안 개인정보처리방침이 웹 링크 없이 전문만 있어 가이드라인 5.1.1 반려 가능성이 있다([HANDOFF.md](../HANDOFF.md))
+
+App Store 주소(출시 후): https://apps.apple.com/kr/app/id6835431665

@@ -17,8 +17,8 @@
 <p align="center">
   <img src="docs/appstore/marketing-6.3/01-backtap.png" width="19%" alt="뒷면 세 번 톡톡톡, 지금 시각이 바로 기록돼요">
   <img src="docs/appstore/marketing-6.3/02-my-day.png" width="19%" alt="내가 정하는 하루, 새벽 기록도 어제와 함께 모아 봐요">
-  <img src="docs/appstore/marketing-6.3/03-connect.png" width="19%" alt="한 번만 연결하면 끝, 뒷면 탭 연결을 단계별로 안내해요">
-  <img src="docs/appstore/marketing-6.3/04-settings.png" width="19%" alt="내 취향대로 조용하게, 소리·진동과 화면 모드, 메인 색">
+  <img src="docs/appstore/marketing-6.3/03-settings.png" width="19%" alt="내 취향대로 조용하게, 소리·진동과 화면 모드, 메인 색">
+  <img src="docs/appstore/marketing-6.3/04-connect.png" width="19%" alt="한 번만 연결하면 끝, 뒷면 탭 연결을 단계별로 안내해요">
   <img src="docs/appstore/marketing-6.3/05-start.png" width="19%" alt="자정이 아니어도 괜찮아요, 하루가 시작되는 시간을 직접 골라요">
 </p>
 
